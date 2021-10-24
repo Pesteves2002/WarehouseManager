@@ -37,6 +37,7 @@ public class Warehouse<newBatch> implements Serializable {
 
     private Map<String, Product> allProducts = new TreeMap<String, Product>();
 
+
     private Map<String, Batch> allBatches = new TreeMap<String, Batch>();
 
 
@@ -62,7 +63,7 @@ public class Warehouse<newBatch> implements Serializable {
                 switch (fields[0]) {
                     case "PARTNER" -> doRegisterPartner((fields[1]), (fields[2]), (fields[3]));
                     case "BATCH_S" -> doRegisterBatchS((fields[1]), fields[2], Integer.parseInt(fields[3]), Integer.parseInt(fields[4]));
-                    case "BATCH_M" -> doRegisterBatchM((fields[1]), fields[2], Integer.parseInt(fields[3]), Integer.parseInt(fields[4]), Double.parseDouble(fields[5]), fields[6]);
+                    case "BATCH_M" -> doRegisterBatchM((fields[1]), fields[2], Integer.parseInt(fields[3]), Integer.parseInt(fields[4]), Float.parseFloat(fields[5]), fields[6]);
                     default -> throw new BadEntryException(fields[0]);
                 }
             }
@@ -100,9 +101,14 @@ public class Warehouse<newBatch> implements Serializable {
         if (allPartners.get(partnerKey) == null) {
             throw new UnknownPartnerKeyCException(partnerKey);
         }
-        Product newProduct = new Product(product);
-        allProducts.put(product, newProduct);
+        Product newProduct = new Product(product, price, stock);
+        if (allProducts.get(product) != null) {
+            allProducts.get(product).addStock (stock);
+            allProducts.get(product).changeMaxPrice(price);
+        } else {
 
+            allProducts.put(product, newProduct);
+        }
 
         Batch newBatch = new Batch(newProduct, price, stock, partnerKey);
 
@@ -112,13 +118,20 @@ public class Warehouse<newBatch> implements Serializable {
     }
 
 
-    public void doRegisterBatchM(String product, String partnerKey, int price, int stock, double reduction, String recipe) throws UnknownPartnerKeyCException {
+    public void doRegisterBatchM(String product, String partnerKey, int price, int stock, float reduction, String recipe) throws UnknownPartnerKeyCException {
 
         if (allPartners.get(partnerKey) == null) {
             throw new UnknownPartnerKeyCException(partnerKey);
         }
-        Derived newProduct = new Derived(product, recipe);
-        allProducts.put(product, newProduct);
+        Derived newProduct = new Derived(product,price, stock, recipe, reduction);
+
+        if (allProducts.get(product) != null) {
+            allProducts.get(product).addStock (stock);
+            allProducts.get(product).changeMaxPrice(price);
+        } else {
+
+            allProducts.put(product, newProduct);
+        }
 
 
         Batch newBatch = new Batch(newProduct, price, stock, partnerKey, reduction);
