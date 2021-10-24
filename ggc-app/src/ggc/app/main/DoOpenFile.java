@@ -38,7 +38,7 @@ class DoOpenFile extends Command<WarehouseManager> {
      catch (UnavailableFileException ufe) {
       throw new FileOpenFailedException(ufe.getFilename());}
      */ catch (ImportFileException ufe) {
-            ufe.printStackTrace();
+            throw new FileOpenFailedException(ufe.getMessage());
         }
 
     }

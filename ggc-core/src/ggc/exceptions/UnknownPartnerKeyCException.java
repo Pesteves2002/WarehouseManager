@@ -1,10 +1,10 @@
 package ggc.exceptions;
 
-public class UnknownPartnerKeyException extends Exception {
+public class UnknownPartnerKeyCException extends Exception {
 
     private String _partnerName;
 
-    public UnknownPartnerKeyException(String partnerName) {
+    public UnknownPartnerKeyCException(String partnerName) {
         _partnerName = partnerName;
     }
 

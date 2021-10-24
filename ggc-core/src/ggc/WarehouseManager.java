@@ -6,6 +6,7 @@ package ggc;
 // java ggc.app.App
 
 //FIXME import classes (cannot import from pt.tecnico or ggc.app)
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
@@ -23,90 +24,109 @@ import java.util.*;
 
 import ggc.exceptions.*;
 
-/** Façade for access. */
+/**
+ * Façade for access.
+ */
 public class WarehouseManager {
 
-  /** Name of file storing current store. */
-  private String _filename = "";
+    /**
+     * Name of file storing current store.
+     */
+    private String _filename = "";
 
-  /** The warehouse itself. */
-  private Warehouse _warehouse = new Warehouse();
+    /**
+     * The warehouse itself.
+     */
+    private Warehouse _warehouse = new Warehouse();
 
-  private int time = 0;
+    private int time = 0;
 
-  //FIXME define other attributes
-  //FIXME define constructor(s)
-  //FIXME define other methods
+    //FIXME define other attributes
+    //FIXME define constructor(s)
+    //FIXME define other methods
 
-  /**
-   * @@throws IOException
-   * @@throws FileNotFoundException
-   * @@throws MissingFileAssociationException
-   */
-  public void save() throws IOException, FileNotFoundException, MissingFileAssociationException {
-    //FIXME implement serialization method
-    if (_filename == "") {throw new MissingFileAssociationException();}
-     ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(_filename)));
-     out.writeObject(_warehouse);
-     out.close();
-  }
-
-  /**
-   * @@param filename
-   * @@throws MissingFileAssociationException
-   * @@throws IOException
-   * @@throws FileNotFoundException
-   */
-  public void saveAs(String filename) throws MissingFileAssociationException, FileNotFoundException, IOException {
-    _filename = filename;
-    save();
-  }
-
-  /**
-   * @@param filename
-   * @@throws UnavailableFileException
-   */
-  public void load(String filename) throws UnavailableFileException , IOException, ClassNotFoundException {
-    //FIXME implement serialization method
-    ObjectInputStream in =
-            new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)));
-    Warehouse _warehouse = (Warehouse) in.readObject();
-    in.close();
-  }
-  /**
-   * @param textfile
-   * @throws ImportFileException
-   */
-  public void importFile(String textfile) throws ImportFileException {
-    try {
-	    _warehouse.importFile(textfile);
-    } catch (IOException | BadEntryException /* FIXME maybe other exceptions */| UnknownPartnerKeyException e) {
-
-      throw new ImportFileException(textfile);
+    /**
+     * @@throws IOException
+     * @@throws FileNotFoundException
+     * @@throws MissingFileAssociationException
+     */
+    public void save() throws IOException, FileNotFoundException, MissingFileAssociationException {
+        //FIXME implement serialization method
+        if (_filename == "") {
+            throw new MissingFileAssociationException();
+        }
+        ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(_filename)));
+        out.writeObject(_warehouse);
+        out.close();
     }
 
-  }
+    /**
+     * @@param filename
+     * @@throws MissingFileAssociationException
+     * @@throws IOException
+     * @@throws FileNotFoundException
+     */
+    public void saveAs(String filename) throws MissingFileAssociationException, FileNotFoundException, IOException {
+        _filename = filename;
+        save();
+    }
+
+    /**
+     * @@param filename
+     * @@throws UnavailableFileException
+     */
+    public void load(String filename) throws UnavailableFileException, IOException, ClassNotFoundException {
+        //FIXME implement serialization method
+        ObjectInputStream in =
+                new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)));
+        Warehouse _warehouse = (Warehouse) in.readObject();
+        in.close();
+    }
+
+    /**
+     * @param textfile
+     * @throws ImportFileException
+     */
+    public void importFile(String textfile) throws ImportFileException {
+        try {
+            _warehouse.importFile(textfile);
+        } catch (IOException | BadEntryException /* FIXME maybe other exceptions */ |   UnknownPartnerKeyCException e) {
+
+            throw new ImportFileException(textfile);
+        }
+
+    }
 
 
-  public int time(){return this.time;}
+    public int time() {
+        return this.time;
+    }
 
-  public void AdvanceTime(int timeToAdvance) throws  InvalidDateException {
-  if (timeToAdvance < 0) throw new InvalidDateException(timeToAdvance);
-  {time += timeToAdvance; }}
+    public void AdvanceTime(int timeToAdvance) throws InvalidDateException {
+        if (timeToAdvance <= 0) throw new InvalidDateException(timeToAdvance);
+        {
+            time += timeToAdvance;
+        }
+    }
 
-  public void registerPartner(String key,String name, String address){
-        _warehouse.doRegisterPartner(key,name,address);
-  }
-  public Partner showPartner(String id) {return _warehouse.doShowPartner(id);}
+    public void registerPartner(String key, String name, String address) {
+        _warehouse.doRegisterPartner(key, name, address);
+    }
 
-  public Collection<Partner> ShowAllPartners(){return _warehouse.doShowAllPartners();}
+    public Partner showPartner(String id) throws UnknownPartnerKeyCException {
+        return _warehouse.doShowPartner(id);
+    }
 
-public Collection<Product> showAllProducts(){
-    return _warehouse.doShowAllProducts();
-}
+    public Collection<Partner> ShowAllPartners() {
+        return _warehouse.doShowAllPartners();
+    }
 
-  public Collection<Product> showAllBatches(){
-    return _warehouse.doShowAllBatches();
-  }
+    public Collection<Product> showAllProducts() {
+        return _warehouse.doShowAllProducts();
+    }
+
+    public Collection<Product> showAllBatches() {
+        return _warehouse.doShowAllBatches();
+    }
 
 }
