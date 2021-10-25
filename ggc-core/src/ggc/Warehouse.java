@@ -38,9 +38,6 @@ public class Warehouse<newBatch> implements Serializable {
     private Map<String, Product> allProducts = new TreeMap<String, Product>();
 
 
-    private Map<String, Batch> allBatches = new TreeMap<String, Batch>();
-
-
     // FIXME define attributes
     // FIXME define contructor(s)
     // FIXME define methods
@@ -102,20 +99,22 @@ public class Warehouse<newBatch> implements Serializable {
         if (allPartners.get(partnerKey) == null) {
             throw new UnknownPartnerKeyCException(partnerKey);
         }
-        Product newProduct = new Product(product, price, stock);
+
+        Batch newBatch = new Batch(product, price, stock, partnerKey);
+
+
         if (allProducts.get(product) != null) {
             allProducts.get(product).addStock (stock);
             allProducts.get(product).changeMaxPrice(price);
         } else {
-
+            Product newProduct = new Product(product, price, stock);
             allProducts.put(product, newProduct);
         }
-
-        Batch newBatch = new Batch(newProduct, price, stock, partnerKey);
+        allProducts.get(product).addBatch(newBatch);
 
         Partner p1 = allPartners.get(partnerKey);
         p1.addBatch(newBatch);
-        allBatches.put(newBatch.getThisProductID(), newBatch);
+
     }
 
 
@@ -124,22 +123,22 @@ public class Warehouse<newBatch> implements Serializable {
         if (allPartners.get(partnerKey) == null) {
             throw new UnknownPartnerKeyCException(partnerKey);
         }
-        Derived newProduct = new Derived(product,price, stock, recipe, reduction);
+
+        Batch newBatch = new Batch(product, price, stock, partnerKey, reduction);
 
         if (allProducts.get(product) != null) {
             allProducts.get(product).addStock (stock);
             allProducts.get(product).changeMaxPrice(price);
         } else {
-
+            Derived newProduct = new Derived(product, price, stock, recipe,reduction);
             allProducts.put(product, newProduct);
         }
+        allProducts.get(product).addBatch(newBatch);
 
 
-        Batch newBatch = new Batch(newProduct, price, stock, partnerKey, reduction);
 
         Partner p1 = allPartners.get(partnerKey);
         p1.addBatch(newBatch);
-        allBatches.put(newBatch.getThisProductID(), newBatch);
     }
 
     public Collection<Product> doShowAllProducts() {
@@ -147,7 +146,12 @@ public class Warehouse<newBatch> implements Serializable {
     }
 
     public Collection<Batch> doShowAllBatches() {
-        return Collections.unmodifiableCollection(allBatches.values());
+        List<Batch> _allBatches = new LinkedList<Batch>();
+        for (Product product : allProducts.values())
+            for (Batch batch : product.get_batches())
+            _allBatches.add(batch);
+
+        return _allBatches;
     }
 
 }

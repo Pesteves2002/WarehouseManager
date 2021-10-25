@@ -1,6 +1,8 @@
 package ggc;
 
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Product implements Serializable {
     private String productName;
@@ -9,37 +11,36 @@ public class Product implements Serializable {
 
     private int actualStock;
 
+    private List<Batch> _batches = new LinkedList<Batch>();
 
-    public Product(String productName) {
+
+    public Product(String productName, int maxPrice, int actualStock) {
+
         this.productName = productName;
-    }
-
-    public Product(String productName, int maxPrice, int actualStock)
-    {
-        this(productName);
         this.maxPrice = maxPrice;
         this.actualStock = actualStock;
     }
 
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void addStock(int newStock)
-    {
+    public void addStock(int newStock) {
         actualStock += newStock;
     }
 
-    public void changeMaxPrice(int value)
-    {
+    public void changeMaxPrice(int value) {
         if (maxPrice < value)
-        maxPrice = value;
+            maxPrice = value;
+    }
+
+    public void addBatch(Batch newBatch) {
+        _batches.add(newBatch);
+    }
+
+    public List<Batch> get_batches() {
+        return _batches;
     }
 
     @Override
     public String toString() {
-        return productName + "|" +  maxPrice +  "|" + actualStock ;
+        return productName + "|" + maxPrice + "|" + actualStock;
     }
 
 

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class Batch implements Serializable {
 
-    private Product _product;
+    private String _product;
 
     private int Price;
 
@@ -15,7 +15,7 @@ public class Batch implements Serializable {
     private String _partner;
 
 
-    public Batch(Product thisProduct, int price, int quantity, String partner) {
+    public Batch(String thisProduct, int price, int quantity, String partner) {
         _product = thisProduct;
         Price = price;
         this.quantity = quantity;
@@ -23,18 +23,18 @@ public class Batch implements Serializable {
 
     }
 
-    public Batch(Product thisProduct, int price, int quantity,String partner, double reduction) {
+    public Batch(String thisProduct, int price, int quantity,String partner, double reduction) {
         this(thisProduct, price, quantity, partner);
         this.reduction = reduction;
 
     }
 
     public String getThisProductID() {
-        return _product.getProductName();
+        return _product;
     }
 
     @Override
     public String toString() {
-        return _product.getProductName() + "|" + _partner + "|" + Price + "|" + quantity;
+        return _product + "|" + _partner + "|" + Price + "|" + quantity;
     }
 }

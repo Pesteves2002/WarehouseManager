@@ -1,5 +1,7 @@
 package ggc;
 
-public abstract class Status {
+import java.io.Serializable;
+
+public abstract class Status implements Serializable {
 
 }
