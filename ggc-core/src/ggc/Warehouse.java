@@ -50,7 +50,7 @@ public class Warehouse<newBatch> implements Serializable {
      * @throws IOException
      * @throws BadEntryException
      */
-    void importFile(String txtfile) throws IOException, BadEntryException /* FIXME maybe other exceptions */, UnknownPartnerKeyCException {
+    void importFile(String txtfile) throws IOException, BadEntryException /* FIXME maybe other exceptions */, UnknownPartnerKeyCException, DuplicateClientCException {
         //FIXME implement method
         // super(txtfile);
 
@@ -71,8 +71,8 @@ public class Warehouse<newBatch> implements Serializable {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        } //catch (DuplicateClientException e) {
-        // e.printStackTrace();}
+        } catch (DuplicateClientCException e) {
+         throw new DuplicateClientCException(e.get_duplicateID());}
         catch (BadEntryException e) {
             e.printStackTrace();
         } catch (UnknownPartnerKeyCException e) {
@@ -82,7 +82,8 @@ public class Warehouse<newBatch> implements Serializable {
     }
 
 
-    void doRegisterPartner(String partnerKey, String partnerName, String partnerAddress) {
+    void doRegisterPartner(String partnerKey, String partnerName, String partnerAddress) throws DuplicateClientCException{
+        if (allPartners.get(partnerKey) != null) throw new DuplicateClientCException(partnerKey);
         allPartners.put(partnerKey, new Partner(partnerKey, partnerName, partnerAddress));
     }
 

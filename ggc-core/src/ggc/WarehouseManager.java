@@ -90,7 +90,7 @@ public class WarehouseManager {
     public void importFile(String textfile) throws ImportFileException {
         try {
             _warehouse.importFile(textfile);
-        } catch (IOException | BadEntryException /* FIXME maybe other exceptions */ |   UnknownPartnerKeyCException e) {
+        } catch (IOException | BadEntryException /* FIXME maybe other exceptions */ |   UnknownPartnerKeyCException | DuplicateClientCException e) {
 
             throw new ImportFileException(textfile);
         }
@@ -109,7 +109,7 @@ public class WarehouseManager {
         }
     }
 
-    public void registerPartner(String key, String name, String address) {
+    public void registerPartner(String key, String name, String address) throws DuplicateClientCException {
         _warehouse.doRegisterPartner(key, name, address);
     }
 
