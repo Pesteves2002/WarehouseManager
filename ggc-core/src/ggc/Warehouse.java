@@ -69,8 +69,8 @@ public class Warehouse<newBatch> implements Serializable {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (DuplicateClientCException e) {
-         throw new DuplicateClientCException(e.get_duplicateID());}
-        catch (BadEntryException e) {
+            throw new DuplicateClientCException(e.get_duplicateID());
+        } catch (BadEntryException e) {
             e.printStackTrace();
         } catch (UnknownPartnerKeyCException e) {
             throw new UnknownPartnerKeyCException(e.get_partnerName());
@@ -79,8 +79,11 @@ public class Warehouse<newBatch> implements Serializable {
     }
 
 
-    void doRegisterPartner(String partnerKey, String partnerName, String partnerAddress) throws DuplicateClientCException{
-        if (allPartners.get(partnerKey) != null) throw new DuplicateClientCException(partnerKey);
+    void doRegisterPartner(String partnerKey, String partnerName, String partnerAddress) throws DuplicateClientCException {
+        for (Partner p : allPartners.values()) {
+            if (partnerKey.compareToIgnoreCase(p.getPartnerID()) == 0)
+                throw new DuplicateClientCException(partnerKey);
+        }
         allPartners.put(partnerKey, new Partner(partnerKey, partnerName, partnerAddress));
     }
 
@@ -104,7 +107,7 @@ public class Warehouse<newBatch> implements Serializable {
 
 
         if (allProducts.get(product) != null) {
-            allProducts.get(product).addStock (stock);
+            allProducts.get(product).addStock(stock);
             allProducts.get(product).changeMaxPrice(price);
         } else {
             Product newProduct = new Product(product, price, stock);
@@ -127,14 +130,13 @@ public class Warehouse<newBatch> implements Serializable {
         Batch newBatch = new Batch(product, price, stock, partnerKey, reduction);
 
         if (allProducts.get(product) != null) {
-            allProducts.get(product).addStock (stock);
+            allProducts.get(product).addStock(stock);
             allProducts.get(product).changeMaxPrice(price);
         } else {
-            Derived newProduct = new Derived(product, price, stock, recipe,reduction);
+            Derived newProduct = new Derived(product, price, stock, recipe, reduction);
             allProducts.put(product, newProduct);
         }
         allProducts.get(product).addBatch(newBatch);
-
 
 
         Partner p1 = allPartners.get(partnerKey);
@@ -149,7 +151,7 @@ public class Warehouse<newBatch> implements Serializable {
         List<Batch> _allBatches = new LinkedList<Batch>();
         for (Product product : allProducts.values())
             for (Batch batch : product.get_batches())
-            _allBatches.add(batch);
+                _allBatches.add(batch);
 
         return _allBatches;
     }

@@ -3,6 +3,7 @@ package ggc.exceptions;
 
 
 public class DuplicateClientCException extends Exception {
+
     private String _duplicateID;
 
     public DuplicateClientCException(String _duplicateID) {

@@ -32,7 +32,7 @@ class DoRegisterPartner extends Command<WarehouseManager> {
         }
         catch (DuplicateClientCException e)
         {
-            throw new DuplicatePartnerKeyException(e.getMessage());
+            throw new DuplicatePartnerKeyException(e.get_duplicateID());
         }
     }
 }

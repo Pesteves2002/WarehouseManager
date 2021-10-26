@@ -2,7 +2,9 @@ package ggc;
 
 import java.io.Serializable;
 
-public class Batch implements Serializable {
+import ggc.CollatorWrapper;
+
+public class Batch implements Serializable  {
 
     private String _product;
 
@@ -15,6 +17,8 @@ public class Batch implements Serializable {
     private String _partner;
 
 
+
+
     public Batch(String thisProduct, int price, int quantity, String partner) {
         _product = thisProduct;
         Price = price;
@@ -23,7 +27,7 @@ public class Batch implements Serializable {
 
     }
 
-    public Batch(String thisProduct, int price, int quantity,String partner, double reduction) {
+    public Batch(String thisProduct, int price, int quantity, String partner, double reduction) {
         this(thisProduct, price, quantity, partner);
         this.reduction = reduction;
 
@@ -44,6 +48,8 @@ public class Batch implements Serializable {
     public String get_partner() {
         return _partner;
     }
+
+
 
     @Override
     public String toString() {

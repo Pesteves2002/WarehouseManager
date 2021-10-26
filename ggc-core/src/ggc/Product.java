@@ -1,6 +1,8 @@
 package ggc;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,6 +39,7 @@ public class Product implements Serializable {
 
     public List<Batch> get_batches() {
 
+        _batches.sort(new BatchComparator());
         return _batches;
     }
 

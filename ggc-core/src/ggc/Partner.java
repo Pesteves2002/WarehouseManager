@@ -34,7 +34,11 @@ public class Partner implements Serializable{
 
      }
 
-     public void addBatch (Batch batch)
+    public String getPartnerID() {
+        return partnerID;
+    }
+
+    public void addBatch (Batch batch)
      {
          // Fix - replacing previous batch if it has the same product
         thisBatches.put(batch.getThisProductID(), batch);
