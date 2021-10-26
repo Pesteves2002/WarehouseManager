@@ -53,6 +53,6 @@ public class Batch implements Serializable  {
 
     @Override
     public String toString() {
-        return _product + "|" + _partner + "|" + (int) Price + "|" + quantity;
+        return _product + "|" + _partner + "|" + Math.round( Price)  + "|" + quantity;
     }
 }
