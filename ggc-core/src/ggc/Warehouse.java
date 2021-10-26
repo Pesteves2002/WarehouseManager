@@ -59,13 +59,13 @@ public class Warehouse<newBatch> implements Serializable {
                 String[] fields = line.split("\\|");
                 switch (fields[0]) {
                     case "PARTNER" -> doRegisterPartner((fields[1]), (fields[2]), (fields[3]));
-                    case "BATCH_S" -> doRegisterBatchS((fields[1]), fields[2], Integer.parseInt(fields[3]), Integer.parseInt(fields[4]));
-                    case "BATCH_M" -> doRegisterBatchM((fields[1]), fields[2], Integer.parseInt(fields[3]), Integer.parseInt(fields[4]), Float.parseFloat(fields[5]), fields[6]);
+                    case "BATCH_S" -> doRegisterBatchS((fields[1]), (fields[2]), Float.parseFloat(fields[3]), Integer.parseInt(fields[4]));
+                    case "BATCH_M" -> doRegisterBatchM((fields[1]), (fields[2]), Float.parseFloat(fields[3]), Integer.parseInt(fields[4]), Float.parseFloat(fields[5]), fields[6]);
                     default -> throw new BadEntryException(fields[0]);
                 }
             }
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            throw new FileNotFoundException(txtfile);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (DuplicateClientCException e) {
@@ -84,12 +84,14 @@ public class Warehouse<newBatch> implements Serializable {
             if (partnerKey.compareToIgnoreCase(p.getPartnerID()) == 0)
                 throw new DuplicateClientCException(partnerKey);
         }
+
         allPartners.put(partnerKey, new Partner(partnerKey, partnerName, partnerAddress));
     }
 
     public Partner doShowPartner(String id) throws UnknownPartnerKeyCException {
+        id.toLowerCase();
         Partner partner = allPartners.get(id);
-        if (partner == null || id.compareTo(partner.getPartnerID()) != 0) throw new UnknownPartnerKeyCException(id);
+        if (partner == null) throw new UnknownPartnerKeyCException(id);
         return allPartners.get(id);
     }
 
@@ -97,7 +99,7 @@ public class Warehouse<newBatch> implements Serializable {
         return Collections.unmodifiableCollection(allPartners.values());
     }
 
-    public void doRegisterBatchS(String product, String partnerKey, int price, int stock) throws UnknownPartnerKeyCException {
+    public void doRegisterBatchS(String product, String partnerKey, float price, int stock) throws UnknownPartnerKeyCException {
 
         if (allPartners.get(partnerKey) == null) {
             throw new UnknownPartnerKeyCException(partnerKey);
@@ -121,7 +123,7 @@ public class Warehouse<newBatch> implements Serializable {
     }
 
 
-    public void doRegisterBatchM(String product, String partnerKey, int price, int stock, float reduction, String recipe) throws UnknownPartnerKeyCException {
+    public void doRegisterBatchM(String product, String partnerKey, float price, int stock, float reduction, String recipe) throws UnknownPartnerKeyCException {
 
         if (allPartners.get(partnerKey) == null) {
             throw new UnknownPartnerKeyCException(partnerKey);
@@ -136,6 +138,8 @@ public class Warehouse<newBatch> implements Serializable {
             Derived newProduct = new Derived(product, price, stock, recipe, reduction);
             allProducts.put(product, newProduct);
         }
+
+
         allProducts.get(product).addBatch(newBatch);
 
 
