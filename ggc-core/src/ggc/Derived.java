@@ -4,6 +4,8 @@ import java.util.*;
 
 public class Derived extends Product {
 
+    private static final long serialVersionUID = 202110262232L;
+
     private List<String> _ingredients = new ArrayList<String>();
 
     private Map<String, Integer> _quantityIngredients = new TreeMap<String, Integer>();

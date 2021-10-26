@@ -5,6 +5,8 @@ import java.util.Comparator;
 
 public class BatchComparator implements Comparator<Batch> {
 
+    private static final long serialVersionUID = 202110262231L;
+
 
     CollatorWrapper c = new CollatorWrapper();
 

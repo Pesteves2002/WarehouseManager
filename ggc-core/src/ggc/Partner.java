@@ -5,6 +5,8 @@ import java.util.*;
 
 public class Partner implements Serializable{
 
+    private static final long serialVersionUID = 202110262229L;
+
     private String partnerID;
 
     private String partnerName;

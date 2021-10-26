@@ -7,6 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Product implements Serializable {
+
+    private static final long serialVersionUID = 202110262228L;
+
     private String productName;
 
     private float maxPrice;

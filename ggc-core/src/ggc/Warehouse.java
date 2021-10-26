@@ -22,7 +22,7 @@ import ggc.exceptions.*;
 /**
  * Class Warehouse implements a warehouse.
  */
-public class Warehouse<newBatch> implements Serializable {
+public class Warehouse implements Serializable {
 
     /**
      * Serial number for serialization.

@@ -125,7 +125,7 @@ public class WarehouseManager {
         return _warehouse.doShowAllProducts();
     }
 
-    public Collection<Product> showAllBatches() {
+    public Collection<Batch> showAllBatches() {
         return _warehouse.doShowAllBatches();
     }
 

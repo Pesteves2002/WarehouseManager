@@ -6,6 +6,8 @@ import ggc.CollatorWrapper;
 
 public class Batch implements Serializable  {
 
+    private static final long serialVersionUID = 202110262232L;
+
     private String _product;
 
     private float Price;
