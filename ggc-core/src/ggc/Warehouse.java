@@ -89,10 +89,14 @@ public class Warehouse<newBatch> implements Serializable {
     }
 
     public Partner doShowPartner(String id) throws UnknownPartnerKeyCException {
-        id.toLowerCase();
-        Partner partner = allPartners.get(id);
-        if (partner == null) throw new UnknownPartnerKeyCException(id);
-        return allPartners.get(id);
+
+        for (Partner p : allPartners.values()) {
+            if (id.compareToIgnoreCase(p.getPartnerID()) == 0)
+                return allPartners.get(p.getPartnerID());
+        }
+
+        throw new UnknownPartnerKeyCException(id);
+
     }
 
     public Collection<Partner> doShowAllPartners() {
