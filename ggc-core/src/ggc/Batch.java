@@ -8,18 +8,18 @@ public class Batch implements Serializable  {
 
     private String _product;
 
-    private int Price;
+    private float Price;
 
     private int quantity;
 
-    private double reduction = 0;
+    private float reduction = 0;
 
     private String _partner;
 
 
 
 
-    public Batch(String thisProduct, int price, int quantity, String partner) {
+    public Batch(String thisProduct, float price, int quantity, String partner) {
         _product = thisProduct;
         Price = price;
         this.quantity = quantity;
@@ -27,7 +27,7 @@ public class Batch implements Serializable  {
 
     }
 
-    public Batch(String thisProduct, int price, int quantity, String partner, double reduction) {
+    public Batch(String thisProduct, float price, int quantity, String partner, float reduction) {
         this(thisProduct, price, quantity, partner);
         this.reduction = reduction;
 
@@ -37,7 +37,7 @@ public class Batch implements Serializable  {
         return _product;
     }
 
-    public int getPrice() {
+    public float getPrice() {
         return Price;
     }
 

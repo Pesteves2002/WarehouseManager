@@ -10,7 +10,7 @@ public class Derived extends Product {
 
     private float reduction;
 
-    public Derived(String productName, int price, int stock, String Recipe, float reduction) {
+    public Derived(String productName, float price, int stock, String Recipe, float reduction) {
         super(productName, price, stock);
         String[] product = Recipe.split("#");
         int i = 0;

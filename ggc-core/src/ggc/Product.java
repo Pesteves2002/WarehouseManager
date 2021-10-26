@@ -9,14 +9,14 @@ import java.util.List;
 public class Product implements Serializable {
     private String productName;
 
-    private int maxPrice;
+    private float maxPrice;
 
     private int actualStock;
 
     private List<Batch> _batches = new LinkedList<Batch>();
 
 
-    public Product(String productName, int maxPrice, int actualStock) {
+    public Product(String productName, float maxPrice, int actualStock) {
 
         this.productName = productName;
         this.maxPrice = maxPrice;
@@ -28,7 +28,7 @@ public class Product implements Serializable {
         actualStock += newStock;
     }
 
-    public void changeMaxPrice(int value) {
+    public void changeMaxPrice(float value) {
         if (maxPrice < value)
             maxPrice = value;
     }
