@@ -33,9 +33,9 @@ public class Warehouse<newBatch> implements Serializable {
     private Map<Integer, Transaction> allTransactions = new TreeMap<Integer, Transaction>();
 
     // Insert by Name
-    private Map<String, Partner> allPartners = new TreeMap<String, Partner>();
+    private Map<String, Partner> allPartners = new TreeMap<String, Partner>(new CollatorWrapper());
 
-    private Map<String, Product> allProducts = new TreeMap<String, Product>();
+    private Map<String, Product> allProducts = new TreeMap<String, Product>(new CollatorWrapper());
 
 
     // FIXME define attributes

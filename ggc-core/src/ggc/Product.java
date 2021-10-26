@@ -21,6 +21,7 @@ public class Product implements Serializable {
         this.actualStock = actualStock;
     }
 
+
     public void addStock(int newStock) {
         actualStock += newStock;
     }
@@ -35,6 +36,7 @@ public class Product implements Serializable {
     }
 
     public List<Batch> get_batches() {
+
         return _batches;
     }
 

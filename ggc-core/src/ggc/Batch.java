@@ -33,6 +33,18 @@ public class Batch implements Serializable {
         return _product;
     }
 
+    public int getPrice() {
+        return Price;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public String get_partner() {
+        return _partner;
+    }
+
     @Override
     public String toString() {
         return _product + "|" + _partner + "|" + Price + "|" + quantity;
