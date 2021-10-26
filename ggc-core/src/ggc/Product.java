@@ -45,7 +45,7 @@ public class Product implements Serializable {
 
     @Override
     public String toString() {
-        return productName + "|" + maxPrice + "|" + actualStock;
+        return productName + "|" +  (int) maxPrice + "|" + actualStock;
     }
 
 
