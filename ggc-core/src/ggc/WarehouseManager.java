@@ -29,106 +29,153 @@ import ggc.exceptions.*;
  */
 public class WarehouseManager {
 
-    /**
-     * Name of file storing current store.
-     */
-    private String _filename = "";
+  /**
+   * Name of file storing current store.
+   */
+  private String _filename = "";
 
-    /**
-     * The warehouse itself.
-     */
-    private Warehouse _warehouse = new Warehouse();
+  /**
+   * The warehouse itself.
+   */
+  private Warehouse _warehouse = new Warehouse();
 
-    private int time = 0;
 
-    //FIXME define other attributes
-    //FIXME define constructor(s)
-    //FIXME define other methods
 
-    /**
-     * @@throws IOException
-     * @@throws FileNotFoundException
-     * @@throws MissingFileAssociationException
-     */
-    public void save() throws IOException, FileNotFoundException, MissingFileAssociationException {
-        //FIXME implement serialization method
-        if (_filename == "") {
-            throw new MissingFileAssociationException();
-        }
-        ObjectOutputStream out = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(_filename)));
-        out.writeObject(_warehouse);
-        out.close();
+  /**
+   * @@throws IOException
+   * @@throws FileNotFoundException
+   * @@throws MissingFileAssociationException
+   */
+  public void save() throws IOException, FileNotFoundException, MissingFileAssociationException {
+    //FIXME implement serialization method
+    if (_filename == "") {
+      throw new MissingFileAssociationException();
+    }
+    try {
+      ObjectOutputStream out = new ObjectOutputStream((new FileOutputStream(_filename)));
+      out.writeObject(_warehouse);
+      out.close();
+
+    } catch (FileNotFoundException e) {
+      throw new FileNotFoundException();
+    }
+  }
+
+  /**
+   * @@param filename
+   * @@throws MissingFileAssociationException
+   * @@throws IOException
+   * @@throws FileNotFoundException
+   */
+  public void saveAs(String filename) throws MissingFileAssociationException, FileNotFoundException, IOException {
+    _filename = filename;
+    save();
+  }
+
+  /**
+   * @@param filename
+   * @@throws UnavailableFileException
+   */
+  public void load(String filename) throws UnavailableFileException, IOException, ClassNotFoundException {
+    //FIXME implement serialization method
+    try (ObjectInputStream in =
+                 new ObjectInputStream((new FileInputStream(filename)))) {
+      _warehouse = (Warehouse) in.readObject();
+      _filename = filename;
+    }
+  }
+
+  /**
+   * @param textfile
+   * @throws ImportFileException
+   */
+  public void importFile(String textfile) throws ImportFileException {
+    try {
+      _warehouse.importFile(textfile);
+    } catch (IOException | BadEntryException /* FIXME maybe other exceptions */ | UnknownPartnerKeyCException | DuplicateClientCException e) {
+
+      try {
+        load(textfile);
+      } catch (ClassNotFoundException f) {
+        throw new ImportFileException(textfile);
+      } catch (IOException f) {
+        throw new ImportFileException(textfile);
+      } catch (UnavailableFileException f) {
+        throw new ImportFileException(textfile);
+      }
     }
 
-    /**
-     * @@param filename
-     * @@throws MissingFileAssociationException
-     * @@throws IOException
-     * @@throws FileNotFoundException
-     */
-    public void saveAs(String filename) throws MissingFileAssociationException, FileNotFoundException, IOException {
-        _filename = filename;
-        save();
-    }
+  }
 
-    /**
-     * @@param filename
-     * @@throws UnavailableFileException
-     */
-    public void load(String filename) throws UnavailableFileException, IOException, ClassNotFoundException {
-        //FIXME implement serialization method
-        ObjectInputStream in =
-                new ObjectInputStream(new BufferedInputStream(new FileInputStream(filename)));
-        Warehouse _warehouse = (Warehouse) in.readObject();
-        in.close();
-    }
+  /**
+   * Returns the time of the warehouse
+   *
+   * @@return time
+   */
+  public int time() {
+    return _warehouse.doShowTime();
+  }
 
-    /**
-     * @param textfile
-     * @throws ImportFileException
-     */
-    public void importFile(String textfile) throws ImportFileException {
-        try {
-            _warehouse.importFile(textfile);
-        } catch (IOException | BadEntryException /* FIXME maybe other exceptions */ |   UnknownPartnerKeyCException | DuplicateClientCException e) {
+  /**
+   * Advances time, if time <= 0 throws Exception
+   *
+   * @@param timeToAdvance
+   * @@throws InvalidDateException
+   */
+  public void AdvanceTime(int timeToAdvance) throws InvalidDateException {
+    _warehouse.doAdvanceTime(timeToAdvance);
+  }
 
-            throw new ImportFileException(textfile);
-        }
+  /**
+   * Gives the Warehouse everything to register a new Partner
+   *
+   * @param key
+   * @param name
+   * @param address
+   * @throws DuplicateClientCException
+   */
 
-    }
+  public void registerPartner(String key, String name, String address) throws DuplicateClientCException {
+    _warehouse.doRegisterPartner(key, name, address);
+  }
 
+  /**
+   * Given an id, it returns the partner with that id
+   *
+   * @param id
+   * @return Partner
+   * @throws UnknownPartnerKeyCException
+   */
+  public Partner showPartner(String id) throws UnknownPartnerKeyCException {
+    return _warehouse.doShowPartner(id);
+  }
 
-    public int time() {
-        return this.time;
-    }
+  /**
+   * Returns a Collection with all the Partners
+   *
+   * @return Collection<Partner>
+   */
+  public Collection<Partner> ShowAllPartners() {
+    return _warehouse.doShowAllPartners();
+  }
 
-    public void AdvanceTime(int timeToAdvance) throws InvalidDateException {
-        if (timeToAdvance <= 0) throw new InvalidDateException(timeToAdvance);
-        {
-            time += timeToAdvance;
-        }
-    }
+  /**
+   * Returns a Collection with all the Products
+   *
+   * @return Collection<Product>
+   */
+  public Collection<Product> showAllProducts() {
+    return _warehouse.doShowAllProducts();
+  }
 
-    public void registerPartner(String key, String name, String address) throws DuplicateClientCException {
-        _warehouse.doRegisterPartner(key, name, address);
-    }
-
-    public Partner showPartner(String id) throws UnknownPartnerKeyCException {
-        return _warehouse.doShowPartner(id);
-    }
-
-    public Collection<Partner> ShowAllPartners() {
-        return _warehouse.doShowAllPartners();
-    }
-
-    public Collection<Product> showAllProducts() {
-        return _warehouse.doShowAllProducts();
-    }
-
-    public Collection<Batch> showAllBatches() {
-        return _warehouse.doShowAllBatches();
-    }
-
+  /**
+   * Returns a Collection with all the Batches
+   *
+   * @return Collection<Batch>
+   */
+  public Collection<Batch> showAllBatches() {
+    return _warehouse.doShowAllBatches();
+  }
 
 
 }

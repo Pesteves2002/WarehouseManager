@@ -29,18 +29,29 @@ public class Warehouse implements Serializable {
    */
   private static final long serialVersionUID = 202109192006L;
 
-  // Insert by ID - Maybe use normal list
-  private Map<Integer, Transaction> allTransactions = new TreeMap<Integer, Transaction>();
+  /**
+   * Time of the Warehouse
+   */
 
-  // Insert by Name
+  private int time = 0;
+
+  // Insert by ID - Maybe use normal list
+  // private Map<Integer, Transaction> allTransactions = new TreeMap<Integer, Transaction>();
+
+  /**
+   * TreeMap of all the Partners,
+   * given a String (partnerKey), it gives you the Partner,
+   * The Comparator used sorts the map alphabetically
+   */
   private Map<String, Partner> allPartners = new TreeMap<String, Partner>(new CollatorWrapper());
 
+  /**
+   * TreeMap of all the Products,
+   * given a String (productName), it gives you the Product,
+   * The Comparator used sorts the map alphabetically
+   */
   private Map<String, Product> allProducts = new TreeMap<String, Product>(new CollatorWrapper());
 
-
-  // FIXME define attributes
-  // FIXME define contructor(s)
-  // FIXME define methods
 
   /**
    * @param txtfile filename to be loaded.
@@ -61,8 +72,9 @@ public class Warehouse implements Serializable {
           case "PARTNER" -> doRegisterPartner((fields[1]), (fields[2]), (fields[3]));
           case "BATCH_S" -> doRegisterBatchS((fields[1]), (fields[2]), Float.parseFloat(fields[3]), Integer.parseInt(fields[4]));
           case "BATCH_M" -> doRegisterBatchM((fields[1]), (fields[2]), Float.parseFloat(fields[3]), Integer.parseInt(fields[4]), Float.parseFloat(fields[5]), fields[6]);
-          default -> throw new BadEntryException(fields[0]);
+          default -> throw new BadEntryException(line);
         }
+
       }
     } catch (FileNotFoundException e) {
       throw new FileNotFoundException(txtfile);
@@ -71,13 +83,39 @@ public class Warehouse implements Serializable {
     } catch (DuplicateClientCException e) {
       throw new DuplicateClientCException(e.get_duplicateID());
     } catch (BadEntryException e) {
-      e.printStackTrace();
+      throw new BadEntryException(e.getEntrySpecification());
     } catch (UnknownPartnerKeyCException e) {
       throw new UnknownPartnerKeyCException(e.get_partnerName());
     }
 
   }
 
+  int doShowTime()
+  {
+    return time;
+  }
+
+  /**
+   * Advances time, if time <= 0 throws Exception
+   *
+   * @@param timeToAdvance
+   * @@throws InvalidDateException
+   */
+  void doAdvanceTime(int timeToAdvance) throws InvalidDateException {
+    if (timeToAdvance <= 0) throw new InvalidDateException(timeToAdvance);
+    {
+      time += timeToAdvance;
+    }
+  }
+
+
+  /**
+   * Registes a new Partner and adds it to the Tree
+   * @param partnerKey
+   * @param partnerName
+   * @param partnerAddress
+   * @throws DuplicateClientCException
+   */
 
   void doRegisterPartner(String partnerKey, String partnerName, String partnerAddress) throws DuplicateClientCException {
     for (Partner p : allPartners.values()) {
@@ -88,20 +126,38 @@ public class Warehouse implements Serializable {
     allPartners.put(partnerKey, new Partner(partnerKey, partnerName, partnerAddress));
   }
 
-  public Partner doShowPartner(String id) throws UnknownPartnerKeyCException {
+  /**
+   * Returns a Partner given its partnerKey
+   * @param partnerKey
+   * @return
+   * @throws UnknownPartnerKeyCException
+   */
+  public Partner doShowPartner(String partnerKey) throws UnknownPartnerKeyCException {
 
     for (Partner p : allPartners.values()) {
-      if (id.compareToIgnoreCase(p.getPartnerID()) == 0)
+      if (partnerKey.compareToIgnoreCase(p.getPartnerID()) == 0)
         return allPartners.get(p.getPartnerID());
     }
 
-    throw new UnknownPartnerKeyCException(id);
-
+    throw new UnknownPartnerKeyCException(partnerKey);
   }
 
+  /**
+   * Returns a Collection with all the Partners
+   * @return Collection<Partner>
+   */
   public Collection<Partner> doShowAllPartners() {
     return Collections.unmodifiableCollection(allPartners.values());
   }
+
+  /**
+   * Registers a new Batch with a simple Product and adds it to the Tree
+   * @param product
+   * @param partnerKey
+   * @param price
+   * @param stock
+   * @throws UnknownPartnerKeyCException
+   */
 
   public void doRegisterBatchS(String product, String partnerKey, float price, int stock) throws UnknownPartnerKeyCException {
 
@@ -125,6 +181,15 @@ public class Warehouse implements Serializable {
     p1.addBatch(newBatch);
 
   }
+
+  /**
+   * Registers a new Batch with a Derived Product and adds it to the Tree
+   * @param product
+   * @param partnerKey
+   * @param price
+   * @param stock
+   * @throws UnknownPartnerKeyCException
+   */
 
 
   public void doRegisterBatchM(String product, String partnerKey, float price, int stock, float reduction, String recipe) throws UnknownPartnerKeyCException {
@@ -151,10 +216,19 @@ public class Warehouse implements Serializable {
     p1.addBatch(newBatch);
   }
 
+
+  /**
+   * Returns a Collection of Products
+    * @return Collection<Product>
+   */
   public Collection<Product> doShowAllProducts() {
     return Collections.unmodifiableCollection(allProducts.values());
   }
 
+  /**
+   * Returns a Collection of Batches
+   * @return Collection<Batch>
+   */
   public Collection<Batch> doShowAllBatches() {
     List<Batch> _allBatches = new LinkedList<Batch>();
     for (Product product : allProducts.values())
