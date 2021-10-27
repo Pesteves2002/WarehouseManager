@@ -1,12 +1,5 @@
 package ggc;
 
-// export CVS_RSH=ssh
-// export CVSROOT=:ext:ist199341@sigma.tecnico.ulisboa.pt:/afs/ist.utl.pt/groups/leic-po/po21/cvs/088
-// export CLASSPATH=$(pwd)/po-uilib/po-uilib.jar:$(pwd)/ggc-core/ggc-core.jar:$(pwd)/ggc-app/ggc-app.jar
-// java ggc.app.App
-
-//FIXME import classes (cannot import from pt.tecnico or ggc.app)
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
@@ -19,7 +12,7 @@ import java.io.ObjectInputStream;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 
-import java.util.*;
+import java.util.Collection;
 
 
 import ggc.exceptions.*;
@@ -46,7 +39,6 @@ public class WarehouseManager {
    * @@throws MissingFileAssociationException
    */
   public void save() throws IOException, FileNotFoundException, MissingFileAssociationException {
-    //FIXME implement serialization method
     if (_filename == "") {
       throw new MissingFileAssociationException();
     }
@@ -76,7 +68,6 @@ public class WarehouseManager {
    * @@throws UnavailableFileException
    */
   public void load(String filename) throws UnavailableFileException, IOException, ClassNotFoundException {
-    //FIXME implement serialization method
     try (ObjectInputStream in =
                  new ObjectInputStream((new FileInputStream(filename)))) {
       _warehouse = (Warehouse) in.readObject();
@@ -91,7 +82,7 @@ public class WarehouseManager {
   public void importFile(String textfile) throws ImportFileException {
     try {
       _warehouse.importFile(textfile);
-    } catch (IOException | BadEntryException /* FIXME maybe other exceptions */ | UnknownPartnerKeyCException | DuplicateClientCException e) {
+    } catch (IOException | BadEntryException | UnknownPartnerKeyCException | DuplicateClientCException e) {
 
       try {
         load(textfile);
@@ -104,7 +95,7 @@ public class WarehouseManager {
   /**
    * Returns the time of the Warehouse
    *
-   * @@return time
+   * @return time
    */
   public int time() {
     return _warehouse.doShowTime();

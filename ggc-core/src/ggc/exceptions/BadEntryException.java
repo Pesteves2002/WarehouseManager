@@ -8,7 +8,7 @@ public class BadEntryException extends Exception {
   /** Class serial number. */
   private static final long serialVersionUID = 201409301048L;
 
-  /** Bad bad entry specification. */
+  /** Bad entry specification. */
   private String _entrySpecification;
 
   /**

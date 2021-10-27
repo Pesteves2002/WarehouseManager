@@ -2,59 +2,94 @@ package ggc;
 
 import java.io.Serializable;
 
-import ggc.CollatorWrapper;
+/**
+ * Class that holds a Product, its price, its quantity, the reduction and the partner
+ */
+public class Batch implements Serializable {
+  /** Serial number for serialization */
+  private static final long serialVersionUID = 202110262232L;
 
-public class Batch implements Serializable  {
+  /** ProductID */
+  private String _product;
 
-    private static final long serialVersionUID = 202110262232L;
+  /** Price of the Product */
+  private float Price;
 
-    private String _product;
+  /** Stock of the Batch */
+  private int stock;
 
-    private float Price;
+  /** Reduction (only applicable to Derived Products */
+  private float reduction = 0;
 
-    private int quantity;
+  /** PartnerID */
+  private String _partner;
 
-    private float reduction = 0;
+  /**
+   * Simple Product
+   *
+   * @param thisProduct
+   * @param price
+   * @param quantity
+   * @param partner
+   */
+  public Batch(String thisProduct, float price, int quantity, String partner) {
+    _product = thisProduct;
+    Price = price;
+    stock = quantity;
+    _partner = partner;
 
-    private String _partner;
+  }
 
+  /**
+   * Derived Product
+   *
+   * @param thisProduct
+   * @param price
+   * @param quantity
+   * @param partner
+   * @param reduction
+   */
+  public Batch(String thisProduct, float price, int quantity, String partner, float reduction) {
+    this(thisProduct, price, quantity, partner);
+    this.reduction = reduction;
 
+  }
 
+  /**
+   * @return ProductID
+   */
+  public String getThisProductID() {
+    return _product;
+  }
 
-    public Batch(String thisProduct, float price, int quantity, String partner) {
-        _product = thisProduct;
-        Price = price;
-        this.quantity = quantity;
-        _partner = partner;
+  /**
+   * @return Price
+   */
+  public float getPrice() {
+    return Price;
+  }
 
-    }
+  /**
+   * @return Stock
+   */
+  public int getStock() {
+    return stock;
+  }
 
-    public Batch(String thisProduct, float price, int quantity, String partner, float reduction) {
-        this(thisProduct, price, quantity, partner);
-        this.reduction = reduction;
+  /**
+   * @return the partnerID
+   */
+  public String get_partner() {
+    return _partner;
+  }
 
-    }
-
-    public String getThisProductID() {
-        return _product;
-    }
-
-    public float getPrice() {
-        return Price;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public String get_partner() {
-        return _partner;
-    }
-
-
-
-    @Override
-    public String toString() {
-        return _product + "|" + _partner + "|" + Math.round( Price)  + "|" + quantity;
-    }
+  /**
+   * String representation of the batch: presents the productID, the partnerID, the price and the stock of the batch
+   *
+   * @return a string representation of the Batch.
+   */
+  @Override
+  public String toString() {
+    return _product + "|" + _partner + "|" + Math.round(Price) + "|" + stock;
+  }
 }

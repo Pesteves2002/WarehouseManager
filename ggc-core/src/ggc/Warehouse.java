@@ -5,7 +5,12 @@ package ggc;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.LinkedList;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -21,6 +26,7 @@ import ggc.exceptions.*;
 
 /**
  * Class Warehouse implements a warehouse.
+ * Contains all the information about partners, products and transactions
  */
 public class Warehouse implements Serializable {
 
@@ -85,13 +91,12 @@ public class Warehouse implements Serializable {
     } catch (BadEntryException e) {
       throw new BadEntryException(e.getEntrySpecification());
     } catch (UnknownPartnerKeyCException e) {
-      throw new UnknownPartnerKeyCException(e.get_partnerName());
+      throw new UnknownPartnerKeyCException(e.getUnknownPartnerKey());
     }
 
   }
 
-  int doShowTime()
-  {
+  int doShowTime() {
     return time;
   }
 
@@ -108,9 +113,9 @@ public class Warehouse implements Serializable {
     }
   }
 
-
   /**
    * Registes a new Partner and adds it to the Tree
+   *
    * @param partnerKey
    * @param partnerName
    * @param partnerAddress
@@ -122,12 +127,12 @@ public class Warehouse implements Serializable {
       if (partnerKey.compareToIgnoreCase(p.getPartnerID()) == 0)
         throw new DuplicateClientCException(partnerKey);
     }
-
     allPartners.put(partnerKey, new Partner(partnerKey, partnerName, partnerAddress));
   }
 
   /**
    * Returns a Partner given its partnerKey
+   *
    * @param partnerKey
    * @return
    * @throws UnknownPartnerKeyCException
@@ -138,12 +143,12 @@ public class Warehouse implements Serializable {
       if (partnerKey.compareToIgnoreCase(p.getPartnerID()) == 0)
         return allPartners.get(p.getPartnerID());
     }
-
     throw new UnknownPartnerKeyCException(partnerKey);
   }
 
   /**
    * Returns a Collection with all the Partners
+   *
    * @return Collection<Partner>
    */
   public Collection<Partner> doShowAllPartners() {
@@ -152,6 +157,7 @@ public class Warehouse implements Serializable {
 
   /**
    * Registers a new Batch with a simple Product and adds it to the Tree
+   *
    * @param product
    * @param partnerKey
    * @param price
@@ -164,9 +170,7 @@ public class Warehouse implements Serializable {
     if (allPartners.get(partnerKey) == null) {
       throw new UnknownPartnerKeyCException(partnerKey);
     }
-
     Batch newBatch = new Batch(product, price, stock, partnerKey);
-
 
     if (allProducts.get(product) != null) {
       allProducts.get(product).addStock(stock);
@@ -184,6 +188,7 @@ public class Warehouse implements Serializable {
 
   /**
    * Registers a new Batch with a Derived Product and adds it to the Tree
+   *
    * @param product
    * @param partnerKey
    * @param price
@@ -197,7 +202,6 @@ public class Warehouse implements Serializable {
     if (allPartners.get(partnerKey) == null) {
       throw new UnknownPartnerKeyCException(partnerKey);
     }
-
     Batch newBatch = new Batch(product, price, stock, partnerKey, reduction);
 
     if (allProducts.get(product) != null) {
@@ -207,10 +211,7 @@ public class Warehouse implements Serializable {
       Derived newProduct = new Derived(product, price, stock, recipe, reduction);
       allProducts.put(product, newProduct);
     }
-
-
     allProducts.get(product).addBatch(newBatch);
-
 
     Partner p1 = allPartners.get(partnerKey);
     p1.addBatch(newBatch);
@@ -219,7 +220,8 @@ public class Warehouse implements Serializable {
 
   /**
    * Returns a Collection of Products
-    * @return Collection<Product>
+   *
+   * @return Collection<Product>
    */
   public Collection<Product> doShowAllProducts() {
     return Collections.unmodifiableCollection(allProducts.values());
@@ -227,6 +229,7 @@ public class Warehouse implements Serializable {
 
   /**
    * Returns a Collection of Batches
+   *
    * @return Collection<Batch>
    */
   public Collection<Batch> doShowAllBatches() {

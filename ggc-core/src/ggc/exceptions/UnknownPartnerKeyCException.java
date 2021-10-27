@@ -1,16 +1,26 @@
 package ggc.exceptions;
 
+/**
+ * Exception for unknown PartnerKey
+ */
 public class UnknownPartnerKeyCException extends Exception {
+  /**
+   * Class serial number.
+   */
+  private static final long serialVersionUID = 202110262235L;
+  /**
+   * bad entry specification
+   */
+  private String unknownPartnerKey;
 
-    private static final long serialVersionUID = 202110262235L;
+  /**
+   * @param unknownPartnerKey
+   */
+  public UnknownPartnerKeyCException(String unknownPartnerKey) {
+    this.unknownPartnerKey = unknownPartnerKey;
+  }
 
-    private String _partnerName;
-
-    public UnknownPartnerKeyCException(String partnerName) {
-        _partnerName = partnerName;
-    }
-
-    public String get_partnerName() {
-        return _partnerName;
-    }
+  public String getUnknownPartnerKey() {
+    return unknownPartnerKey;
+  }
 }

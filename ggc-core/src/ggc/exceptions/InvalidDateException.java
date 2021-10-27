@@ -1,16 +1,29 @@
 package ggc.exceptions;
 
-public class InvalidDateException extends Exception{
+/**
+ * Exception for Invalid Date
+ */
+public class InvalidDateException extends Exception {
+  /**
+   * Class serial number.
+   */
+  private static final long serialVersionUID = 202110262231L;
+  /**
+   * Bad time to advance.
+   */
+  private int timeToAdvance;
 
-    private static final long serialVersionUID = 202110262231L;
+  /**
+   * @param timeToAdvance
+   */
+  public InvalidDateException(int timeToAdvance) {
+    this.timeToAdvance = timeToAdvance;
+  }
 
-    private int timeToAdvance;
-
-    public InvalidDateException(int timeToAdvance) {
-        this.timeToAdvance = timeToAdvance;
-    }
-
-    public int getTimeToAdvance() {
-        return timeToAdvance;
-    }
+  /**
+   * @return the bad time
+   */
+  public int getTimeToAdvance() {
+    return timeToAdvance;
+  }
 }

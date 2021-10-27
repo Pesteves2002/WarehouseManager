@@ -1,13 +1,12 @@
 package ggc;
 
 
-public class Normal extends Status{
+public class Normal extends Status {
+  /** Serial number for serialization. */
+  private static final long serialVersionUID = 202110262230L;
 
-    private static final long serialVersionUID = 202110262230L;
-
-    public String toString()
-    {
-        return "NORMAL";
-    }
-
+  /** String representation of the Normal Status */
+  public String toString() {
+    return "NORMAL";
+  }
 }

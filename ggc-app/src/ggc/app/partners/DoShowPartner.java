@@ -23,7 +23,7 @@ class DoShowPartner extends Command<WarehouseManager> {
       String partnerKey = stringField("partnerKey");
       _display.popup(_receiver.showPartner(partnerKey));
     } catch (UnknownPartnerKeyCException e) {
-      throw new UnknownPartnerKeyException(e.get_partnerName());
+      throw new UnknownPartnerKeyException(e.getUnknownPartnerKey());
     }
   }
 }
