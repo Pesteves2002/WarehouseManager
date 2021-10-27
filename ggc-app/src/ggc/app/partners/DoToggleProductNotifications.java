@@ -3,7 +3,10 @@ package ggc.app.partners;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import ggc.WarehouseManager;
-//FIXME import classes
+import ggc.app.exceptions.DuplicatePartnerKeyException;
+import ggc.exceptions.DuplicateClientCException;
+import ggc.app.exceptions.UnknownProductKeyException;
+// import ggc.exceptions.UnknownProductKeyCException; (TO DO)
 
 /**
  * Toggle product-related notifications.
@@ -12,7 +15,8 @@ class DoToggleProductNotifications extends Command<WarehouseManager> {
 
   DoToggleProductNotifications(WarehouseManager receiver) {
     super(Label.TOGGLE_PRODUCT_NOTIFICATIONS, receiver);
-    //FIXME add command fields
+    addStringField("partnerKey", Prompt.partnerKey());
+    addStringField("productKey", Prompt.productKey());
   }
 
   @Override
