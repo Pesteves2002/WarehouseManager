@@ -40,7 +40,6 @@ public class WarehouseManager {
   private Warehouse _warehouse = new Warehouse();
 
 
-
   /**
    * @@throws IOException
    * @@throws FileNotFoundException
@@ -96,19 +95,14 @@ public class WarehouseManager {
 
       try {
         load(textfile);
-      } catch (ClassNotFoundException f) {
-        throw new ImportFileException(textfile);
-      } catch (IOException f) {
-        throw new ImportFileException(textfile);
-      } catch (UnavailableFileException f) {
+      } catch (ClassNotFoundException | UnavailableFileException | IOException f) {
         throw new ImportFileException(textfile);
       }
     }
-
   }
 
   /**
-   * Returns the time of the warehouse
+   * Returns the time of the Warehouse
    *
    * @@return time
    */
@@ -117,7 +111,7 @@ public class WarehouseManager {
   }
 
   /**
-   * Advances time, if time <= 0 throws Exception
+   * Gives the Warehouse the time to advance
    *
    * @@param timeToAdvance
    * @@throws InvalidDateException
