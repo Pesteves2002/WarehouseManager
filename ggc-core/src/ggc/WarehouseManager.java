@@ -31,6 +31,10 @@ public class WarehouseManager {
    * The warehouse itself.
    */
   private Warehouse _warehouse = new Warehouse();
+  /**
+   * Bit that indicates if changes were made
+   */
+  private boolean dirtyBit = false;
 
 
   /**
@@ -42,13 +46,16 @@ public class WarehouseManager {
     if (_filename == "") {
       throw new MissingFileAssociationException();
     }
-    try {
-      ObjectOutputStream out = new ObjectOutputStream((new FileOutputStream(_filename)));
-      out.writeObject(_warehouse);
-      out.close();
+    if (dirtyBit) {
+      try {
+        ObjectOutputStream out = new ObjectOutputStream((new FileOutputStream(_filename)));
+        out.writeObject(_warehouse);
+        out.close();
+        dirtyBit = false;
 
-    } catch (FileNotFoundException e) {
-      throw new FileNotFoundException();
+      } catch (FileNotFoundException e) {
+        throw new FileNotFoundException();
+      }
     }
   }
 
@@ -72,6 +79,7 @@ public class WarehouseManager {
                  new ObjectInputStream((new FileInputStream(filename)))) {
       _warehouse = (Warehouse) in.readObject();
       _filename = filename;
+      dirtyBit = true;
     }
   }
 
@@ -90,6 +98,7 @@ public class WarehouseManager {
         throw new ImportFileException(textfile);
       }
     }
+    dirtyBit = true;
   }
 
   /**
@@ -109,6 +118,7 @@ public class WarehouseManager {
    */
   public void AdvanceTime(int timeToAdvance) throws InvalidDateException {
     _warehouse.doAdvanceTime(timeToAdvance);
+    dirtyBit = true;
   }
 
   /**
@@ -122,6 +132,7 @@ public class WarehouseManager {
 
   public void registerPartner(String key, String name, String address) throws DuplicateClientCException {
     _warehouse.doRegisterPartner(key, name, address);
+    dirtyBit = true;
   }
 
   /**
