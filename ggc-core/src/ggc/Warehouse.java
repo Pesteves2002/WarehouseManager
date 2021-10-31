@@ -5,12 +5,7 @@ package ggc;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.LinkedList;
+import java.util.*;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -87,7 +82,7 @@ public class Warehouse implements Serializable {
     } catch (IOException e) {
       e.printStackTrace();
     } catch (DuplicateClientCException e) {
-      throw new DuplicateClientCException(e.get_duplicateID());
+      throw new DuplicateClientCException(e.getDuplicateKey());
     } catch (BadEntryException e) {
       throw new BadEntryException(e.getEntrySpecification());
     } catch (UnknownPartnerKeyCException e) {
@@ -114,7 +109,7 @@ public class Warehouse implements Serializable {
   }
 
   /**
-   * Registes a new Partner and adds it to the Tree
+   * Registers a new Partner and adds it to the Tree
    *
    * @param partnerKey
    * @param partnerName
@@ -123,8 +118,8 @@ public class Warehouse implements Serializable {
    */
 
   void doRegisterPartner(String partnerKey, String partnerName, String partnerAddress) throws DuplicateClientCException {
-    for (Partner p : allPartners.values()) {
-      if (partnerKey.compareToIgnoreCase(p.getPartnerID()) == 0)
+    for (Partner partner : allPartners.values()) {
+      if (partnerKey.compareToIgnoreCase(partner.getPartnerKey()) == 0)
         throw new DuplicateClientCException(partnerKey);
     }
     allPartners.put(partnerKey, new Partner(partnerKey, partnerName, partnerAddress));
@@ -139,9 +134,9 @@ public class Warehouse implements Serializable {
    */
   public Partner doShowPartner(String partnerKey) throws UnknownPartnerKeyCException {
 
-    for (Partner p : allPartners.values()) {
-      if (partnerKey.compareToIgnoreCase(p.getPartnerID()) == 0)
-        return allPartners.get(p.getPartnerID());
+    for (Partner partner : allPartners.values()) {
+      if (partnerKey.compareToIgnoreCase(partner.getPartnerKey()) == 0)
+        return allPartners.get(partner.getPartnerKey());
     }
     throw new UnknownPartnerKeyCException(partnerKey);
   }
@@ -181,8 +176,8 @@ public class Warehouse implements Serializable {
     }
     allProducts.get(product).addBatch(newBatch);
 
-    Partner p1 = allPartners.get(partnerKey);
-    p1.addBatch(newBatch);
+    Partner partner = allPartners.get(partnerKey);
+    partner.addBatch(newBatch);
 
   }
 
@@ -213,8 +208,8 @@ public class Warehouse implements Serializable {
     }
     allProducts.get(product).addBatch(newBatch);
 
-    Partner p1 = allPartners.get(partnerKey);
-    p1.addBatch(newBatch);
+    Partner partner = allPartners.get(partnerKey);
+    partner.addBatch(newBatch);
   }
 
 
@@ -233,12 +228,12 @@ public class Warehouse implements Serializable {
    * @return Collection<Batch>
    */
   public Collection<Batch> doShowAllBatches() {
-    List<Batch> _allBatches = new LinkedList<Batch>();
+    List<Batch> allBatches = new ArrayList<Batch>();
     for (Product product : allProducts.values())
       for (Batch batch : product.get_batches())
-        _allBatches.add(batch);
+        allBatches.add(batch);
 
-    return _allBatches;
+    return allBatches;
   }
 
 }

@@ -26,7 +26,7 @@ class DoRegisterPartner extends Command<WarehouseManager> {
       String partnerAddress = stringField("partnerAddress");
       _receiver.registerPartner(partnerKey, partnerName, partnerAddress);
     } catch (DuplicateClientCException e) {
-      throw new DuplicatePartnerKeyException(e.get_duplicateID());
+      throw new DuplicatePartnerKeyException(e.getDuplicateKey());
     }
   }
 }

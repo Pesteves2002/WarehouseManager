@@ -6,5 +6,5 @@ package ggc;
  * @param <Batch>
  */
 public interface Comparator<Batch> {
-  int compare(Batch _this, Batch other);
+  int compare(Batch batch1, Batch batch2);
 }

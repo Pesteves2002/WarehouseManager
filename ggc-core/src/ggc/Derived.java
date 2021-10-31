@@ -14,10 +14,10 @@ public class Derived extends Product {
   private static final long serialVersionUID = 202110262232L;
 
   /** List that contains the ingredients */
-  private List<String> _ingredients = new ArrayList<String>();
+  private List<String> ingredients = new ArrayList<String>();
 
-  /** Map that contains the quantity of the ingridients */
-  private Map<String, Integer> _quantityIngredients = new TreeMap<String, Integer>();
+  /** Map that contains the quantity of the ingredients */
+  private Map<String, Integer> quantityIngredients = new TreeMap<String, Integer>();
 
   /** Reduction of the Derived Product*/
   private float reduction;
@@ -36,8 +36,8 @@ public class Derived extends Product {
     int i = 0;
     for (String s : product) {
       String[] components = s.split(":");
-      _ingredients.add(components[0]);
-      _quantityIngredients.put(components[0], Integer.parseInt(components[1]));
+      ingredients.add(components[0]);
+      quantityIngredients.put(components[0], Integer.parseInt(components[1]));
     }
     this.reduction = reduction;
   }
@@ -47,13 +47,13 @@ public class Derived extends Product {
    * @return
    */
   public String getRecipe() {
-    String s = "|" + reduction + "|";
+    String recipe = "|" + reduction + "|";
 
-    for (String i : _ingredients) {
-      s += i + ":" + _quantityIngredients.get(i) + "#";
+    for (String ingredient : ingredients) {
+      recipe += ingredient + ":" + quantityIngredients.get(ingredient) + "#";
     }
-    s = s.substring(0, s.length() - 1);
-    return s;
+    recipe = recipe.substring(0, recipe.length() - 1);
+    return recipe;
   }
 
   /**

@@ -1,6 +1,7 @@
 package ggc;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -8,7 +9,6 @@ import java.util.LinkedList;
  * Class that represents the product that can be stored in a Batch
  * It has a price, and a Stock
  */
-
 public class Product implements Serializable {
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202110262228L;
@@ -16,7 +16,7 @@ public class Product implements Serializable {
   /** Product Name */
   private String productName;
 
-  /** Max price on the this product */
+  /** Maximum price on this product */
   private float maxPrice;
 
   /** Total stock of the product */
@@ -25,7 +25,7 @@ public class Product implements Serializable {
   /**
    * All the batches that have the product
    */
-  private List<Batch> _batches = new LinkedList<Batch>();
+  private List<Batch> batches = new ArrayList<Batch>();
 
   /**
    * @param productName
@@ -66,7 +66,7 @@ public class Product implements Serializable {
    * @param newBatch
    */
   public void addBatch(Batch newBatch) {
-    _batches.add(newBatch);
+    batches.add(newBatch);
   }
 
   /**
@@ -76,12 +76,12 @@ public class Product implements Serializable {
    */
   public List<Batch> get_batches() {
 
-    _batches.sort(new BatchComparator());
-    return _batches;
+    batches.sort(new BatchComparator());
+    return batches;
   }
 
   /**
-   * String Represenation of the Product class
+   * String Representation of the Product class
    *
    * @return String
    */

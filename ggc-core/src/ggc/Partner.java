@@ -12,8 +12,8 @@ public class Partner implements Serializable {
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202110262229L;
 
-  /** PartnerID */
-  private String partnerID;
+  /** partnerKey */
+  private String partnerKey;
 
   /** PartnerName */
   private String partnerName;
@@ -49,7 +49,7 @@ public class Partner implements Serializable {
    * @param partnerAddress
    */
   public Partner(String partnerKey, String partnerName, String partnerAddress) {
-    this.partnerID = partnerKey;
+    this.partnerKey = partnerKey;
     this.partnerName = partnerName;
     this.partnerAddress = partnerAddress;
   }
@@ -59,8 +59,8 @@ public class Partner implements Serializable {
    *
    * @return partnerID
    */
-  public String getPartnerID() {
-    return partnerID;
+  public String getPartnerKey() {
+    return partnerKey;
   }
 
   /**
@@ -78,7 +78,7 @@ public class Partner implements Serializable {
    * @return
    */
   public String toString() {
-    return partnerID + "|" + partnerName + "|" + partnerAddress + "|" + status + "|" +
+    return partnerKey + "|" + partnerName + "|" + partnerAddress + "|" + status + "|" +
             points + "|" + moneySpentOnPurchases + "|" +
             moneyExpectedToSpendOnPurchases + "|" +
             moneySpentOnSales;

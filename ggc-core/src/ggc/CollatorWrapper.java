@@ -14,7 +14,7 @@ public class CollatorWrapper implements Comparator<String>, Serializable {
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202110251850L;
   /** Collator that sorts by alphabetical order */
-  private transient Collator _collator = Collator.getInstance(Locale.getDefault());
+  private transient Collator collator = Collator.getInstance(Locale.getDefault());
 
   /**
    * @param ois
@@ -23,7 +23,7 @@ public class CollatorWrapper implements Comparator<String>, Serializable {
    */
   private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
     ois.defaultReadObject();
-    _collator = Collator.getInstance(Locale.getDefault());
+    collator = Collator.getInstance(Locale.getDefault());
   }
 
   /**
@@ -33,6 +33,6 @@ public class CollatorWrapper implements Comparator<String>, Serializable {
    */
   @Override
   public int compare(String s1, String s2) {
-    return _collator.compare(s1, s2);
+    return collator.compare(s1, s2);
   }
 }

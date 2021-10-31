@@ -11,21 +11,21 @@ public class DuplicateClientCException extends Exception {
   private static final long serialVersionUID = 202110262234L;
 
   /**
-   * Value of the ID
+   * Value of the Key
    */
-  private String duplicateID;
+  private String duplicateKey;
 
   /**
-   * * @param duplicateID
+   * * @param duplicateKey
    */
-  public DuplicateClientCException(String duplicateID) {
-    this.duplicateID = duplicateID;
+  public DuplicateClientCException(String duplicateKey) {
+    this.duplicateKey = duplicateKey;
   }
 
   /**
    * @return the duplicate ID
    */
-  public String get_duplicateID() {
-    return duplicateID;
+  public String getDuplicateKey() {
+    return duplicateKey;
   }
 }

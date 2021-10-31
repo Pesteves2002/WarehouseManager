@@ -10,10 +10,10 @@ public class Batch implements Serializable {
   private static final long serialVersionUID = 202110262232L;
 
   /** ProductID */
-  private String _product;
+  private String product;
 
   /** Price of the Product */
-  private float Price;
+  private float price;
 
   /** Stock of the Batch */
   private int stock;
@@ -22,51 +22,50 @@ public class Batch implements Serializable {
   private float reduction = 0;
 
   /** PartnerID */
-  private String _partner;
+  private String partner;
 
   /**
    * Simple Product
    *
-   * @param thisProduct
+   * @param product
    * @param price
-   * @param quantity
+   * @param stock
    * @param partner
    */
-  public Batch(String thisProduct, float price, int quantity, String partner) {
-    _product = thisProduct;
-    Price = price;
-    stock = quantity;
-    _partner = partner;
+  public Batch(String product, float price, int stock, String partner) {
+    this.product = product;
+    this.price = price;
+    this.stock = stock;
+    this.partner = partner;
 
   }
 
   /**
    * Derived Product
    *
-   * @param thisProduct
+   * @param product
    * @param price
-   * @param quantity
+   * @param stock
    * @param partner
    * @param reduction
    */
-  public Batch(String thisProduct, float price, int quantity, String partner, float reduction) {
-    this(thisProduct, price, quantity, partner);
+  public Batch(String product, float price, int stock, String partner, float reduction) {
+    this(product, price, stock, partner);
     this.reduction = reduction;
-
   }
 
   /**
    * @return ProductID
    */
   public String getThisProductID() {
-    return _product;
+    return product;
   }
 
   /**
    * @return Price
    */
   public float getPrice() {
-    return Price;
+    return price;
   }
 
   /**
@@ -80,7 +79,7 @@ public class Batch implements Serializable {
    * @return the partnerID
    */
   public String get_partner() {
-    return _partner;
+    return partner;
   }
 
   /**
@@ -90,6 +89,6 @@ public class Batch implements Serializable {
    */
   @Override
   public String toString() {
-    return _product + "|" + _partner + "|" + Math.round(Price) + "|" + stock;
+    return product + "|" + partner + "|" + Math.round(price) + "|" + stock;
   }
 }

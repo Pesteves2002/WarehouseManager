@@ -34,7 +34,7 @@ public class WarehouseManager {
   /**
    * Bit that indicates if changes were made
    */
-  private boolean dirtyBit = false;
+  private boolean dirtyBit = true;
 
 
   /**
