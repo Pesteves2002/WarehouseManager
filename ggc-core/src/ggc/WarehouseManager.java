@@ -90,7 +90,7 @@ public class WarehouseManager {
   public void importFile(String textfile) throws ImportFileException {
     try {
       _warehouse.importFile(textfile);
-    } catch (IOException | BadEntryException | UnknownPartnerKeyCException | DuplicateClientCException e) {
+    } catch (IOException | BadEntryException | UnknownKeyCException | DuplicateClientCException e) {
 
       try {
         load(textfile);
@@ -140,9 +140,9 @@ public class WarehouseManager {
    *
    * @param id
    * @return Partner
-   * @throws UnknownPartnerKeyCException
+   * @throws UnknownKeyCException
    */
-  public Partner showPartner(String id) throws UnknownPartnerKeyCException {
+  public Partner showPartner(String id) throws UnknownKeyCException {
     return _warehouse.doShowPartner(id);
   }
 
@@ -173,5 +173,16 @@ public class WarehouseManager {
     return _warehouse.doShowAllBatches();
   }
 
+  /**
+   * Returns a Collection with all the Batches owned by a Partner
+   *
+   * @return Collection<Batch>
+   */
+  public Collection<Batch> showBatchesByPartner(String partnerKey) throws UnknownKeyCException {
+    return _warehouse.doShowBatchesByPartner(partnerKey);
+  }
 
+  public Collection<Batch> showBatchesByProduct(String productKey) throws UnknownKeyCException {
+    return _warehouse.doShowBatchesByProduct(productKey);
+  }
 }

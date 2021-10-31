@@ -3,7 +3,7 @@ package ggc.app.lookups;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import ggc.WarehouseManager;
-import ggc.exceptions.UnknownPartnerKeyCException;
+import ggc.exceptions.UnknownKeyCException;
 import ggc.app.exceptions.UnknownPartnerKeyException;
 
 /**

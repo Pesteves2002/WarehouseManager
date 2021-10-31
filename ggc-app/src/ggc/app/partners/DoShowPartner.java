@@ -3,7 +3,7 @@ package ggc.app.partners;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import ggc.WarehouseManager;
-import ggc.exceptions.UnknownPartnerKeyCException;
+import ggc.exceptions.UnknownKeyCException;
 import ggc.app.exceptions.UnknownPartnerKeyException;
 
 /**
@@ -22,8 +22,8 @@ class DoShowPartner extends Command<WarehouseManager> {
     try {
       String partnerKey = stringField("partnerKey");
       _display.popup(_receiver.showPartner(partnerKey));
-    } catch (UnknownPartnerKeyCException e) {
-      throw new UnknownPartnerKeyException(e.getUnknownPartnerKey());
+    } catch (UnknownKeyCException e) {
+      throw new UnknownPartnerKeyException(e.getUnknownKey());
     }
   }
 }

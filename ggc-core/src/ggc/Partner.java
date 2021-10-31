@@ -1,6 +1,8 @@
 package ggc;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -61,6 +63,10 @@ public class Partner implements Serializable {
    */
   public String getPartnerKey() {
     return partnerKey;
+  }
+
+  public Collection <Batch> getThisBatches() {
+    return Collections.unmodifiableCollection(thisBatches.values());
   }
 
   /**

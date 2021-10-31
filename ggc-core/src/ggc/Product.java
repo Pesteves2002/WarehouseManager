@@ -14,7 +14,7 @@ public class Product implements Serializable {
   private static final long serialVersionUID = 202110262228L;
 
   /** Product Name */
-  private String productName;
+  private String productKey;
 
   /** Maximum price on this product */
   private float maxPrice;
@@ -28,15 +28,30 @@ public class Product implements Serializable {
   private List<Batch> batches = new ArrayList<Batch>();
 
   /**
-   * @param productName
+   * @param productKey
    * @param maxPrice
    * @param actualStock
    */
-  public Product(String productName, float maxPrice, int actualStock) {
+  public Product(String productKey, float maxPrice, int actualStock) {
 
-    this.productName = productName;
+    this.productKey = productKey;
     this.maxPrice = maxPrice;
     this.actualStock = actualStock;
+  }
+
+  public String getProductKey() {
+    return productKey;
+  }
+
+  /**
+   * Return the batch of a product all sorted
+   *
+   * @return List<Batch>
+   */
+  public List<Batch> get_batches() {
+
+    batches.sort(new BatchComparator());
+    return batches;
   }
 
   /**
@@ -69,16 +84,7 @@ public class Product implements Serializable {
     batches.add(newBatch);
   }
 
-  /**
-   * Return the batch of a product all sorted
-   *
-   * @return List<Batch>
-   */
-  public List<Batch> get_batches() {
 
-    batches.sort(new BatchComparator());
-    return batches;
-  }
 
   /**
    * String Representation of the Product class
@@ -87,7 +93,7 @@ public class Product implements Serializable {
    */
   @Override
   public String toString() {
-    return productName + "|" + Math.round(maxPrice) + "|" + actualStock;
+    return productKey + "|" + Math.round(maxPrice) + "|" + actualStock;
   }
 
 

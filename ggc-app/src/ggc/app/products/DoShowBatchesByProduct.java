@@ -1,10 +1,10 @@
 package ggc.app.products;
 
+import ggc.app.exceptions.UnknownProductKeyException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import ggc.WarehouseManager;
-import ggc.app.exceptions.UnknownProductKeyException;
-// import ggc.exceptions.UnknownProductKeyCException; (TO DO)
+import ggc.exceptions.UnknownKeyCException;
 
 /**
  * Show all products.
@@ -18,7 +18,13 @@ class DoShowBatchesByProduct extends Command<WarehouseManager> {
 
   @Override
   public final void execute() throws CommandException {
-    //FIXME implement command
+    // FIX ME
+    try {
+      String productKey = stringField("productKey");
+      _display.popup( _receiver.showBatchesByProduct(productKey));
+    } catch (UnknownKeyCException e) {
+      throw new UnknownProductKeyException(e.getUnknownKey());
+    }
   }
 
 }

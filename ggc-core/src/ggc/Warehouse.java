@@ -59,7 +59,7 @@ public class Warehouse implements Serializable {
    * @throws IOException
    * @throws BadEntryException
    */
-  void importFile(String txtfile) throws IOException, BadEntryException /* FIXME maybe other exceptions */, UnknownPartnerKeyCException, DuplicateClientCException {
+  void importFile(String txtfile) throws IOException, BadEntryException /* FIXME maybe other exceptions */, UnknownKeyCException, DuplicateClientCException {
     //FIXME implement method
     // super(txtfile);
 
@@ -85,8 +85,8 @@ public class Warehouse implements Serializable {
       throw new DuplicateClientCException(e.getDuplicateKey());
     } catch (BadEntryException e) {
       throw new BadEntryException(e.getEntrySpecification());
-    } catch (UnknownPartnerKeyCException e) {
-      throw new UnknownPartnerKeyCException(e.getUnknownPartnerKey());
+    } catch (UnknownKeyCException e) {
+      throw new UnknownKeyCException(e.getUnknownKey());
     }
 
   }
@@ -130,15 +130,15 @@ public class Warehouse implements Serializable {
    *
    * @param partnerKey
    * @return
-   * @throws UnknownPartnerKeyCException
+   * @throws UnknownKeyCException
    */
-  public Partner doShowPartner(String partnerKey) throws UnknownPartnerKeyCException {
+  public Partner doShowPartner(String partnerKey) throws UnknownKeyCException {
 
     for (Partner partner : allPartners.values()) {
       if (partnerKey.compareToIgnoreCase(partner.getPartnerKey()) == 0)
         return allPartners.get(partner.getPartnerKey());
     }
-    throw new UnknownPartnerKeyCException(partnerKey);
+    throw new UnknownKeyCException(partnerKey);
   }
 
   /**
@@ -157,13 +157,13 @@ public class Warehouse implements Serializable {
    * @param partnerKey
    * @param price
    * @param stock
-   * @throws UnknownPartnerKeyCException
+   * @throws UnknownKeyCException
    */
 
-  public void doRegisterBatchS(String product, String partnerKey, float price, int stock) throws UnknownPartnerKeyCException {
+  public void doRegisterBatchS(String product, String partnerKey, float price, int stock) throws UnknownKeyCException {
 
     if (allPartners.get(partnerKey) == null) {
-      throw new UnknownPartnerKeyCException(partnerKey);
+      throw new UnknownKeyCException(partnerKey);
     }
     Batch newBatch = new Batch(product, price, stock, partnerKey);
 
@@ -188,14 +188,14 @@ public class Warehouse implements Serializable {
    * @param partnerKey
    * @param price
    * @param stock
-   * @throws UnknownPartnerKeyCException
+   * @throws UnknownKeyCException
    */
 
 
-  public void doRegisterBatchM(String product, String partnerKey, float price, int stock, float reduction, String recipe) throws UnknownPartnerKeyCException {
+  public void doRegisterBatchM(String product, String partnerKey, float price, int stock, float reduction, String recipe) throws UnknownKeyCException {
 
     if (allPartners.get(partnerKey) == null) {
-      throw new UnknownPartnerKeyCException(partnerKey);
+      throw new UnknownKeyCException(partnerKey);
     }
     Batch newBatch = new Batch(product, price, stock, partnerKey, reduction);
 
@@ -234,6 +234,25 @@ public class Warehouse implements Serializable {
         allBatches.add(batch);
 
     return allBatches;
+  }
+
+  public Collection<Batch> doShowBatchesByPartner(String partnerKey) throws UnknownKeyCException {
+
+    Partner partner = doShowPartner(partnerKey);
+    return partner.getThisBatches();
+
+  }
+
+  public Collection<Batch> doShowBatchesByProduct(String productKey) throws UnknownKeyCException {
+
+    for (Product product : allProducts.values()) {
+      if (productKey.compareToIgnoreCase(product.getProductKey()) == 0) {
+        return Collections.unmodifiableCollection(product.get_batches());
+      }
+    }
+    throw new UnknownKeyCException(productKey);
+
+
   }
 
 }
