@@ -251,8 +251,20 @@ public class Warehouse implements Serializable {
       }
     }
     throw new UnknownKeyCException(productKey);
+  }
 
-
+  public  Collection<Batch> doLookupProductBatchesUnderGivenPrice(int priceLimit)
+  {
+    List<Batch> batchesUnderGivenPrice = new ArrayList<>();
+    for (Product product : allProducts.values())
+    {
+      for (Batch batch: product.get_batches())
+      {
+        if (batch.getPrice() < priceLimit)
+          batchesUnderGivenPrice.add(batch);
+      }
+    }
+    return Collections.unmodifiableCollection(batchesUnderGivenPrice);
   }
 
 }

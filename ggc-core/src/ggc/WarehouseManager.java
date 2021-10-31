@@ -185,4 +185,9 @@ public class WarehouseManager {
   public Collection<Batch> showBatchesByProduct(String productKey) throws UnknownKeyCException {
     return _warehouse.doShowBatchesByProduct(productKey);
   }
+
+  public Collection<Batch> lookupProductBatchesUnderGivenPrice(int priceLimit)
+  {
+    return _warehouse.doLookupProductBatchesUnderGivenPrice(priceLimit);
+  }
 }
