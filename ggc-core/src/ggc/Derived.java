@@ -59,7 +59,7 @@ public class Derived extends Product {
     if (ingredients == null){
       return "";
     }
-    String recipe = "|" + reduction + "|";
+    String recipe = "|" + Math.round(reduction) + "|";
 
     for (String ingredient : ingredients) {
       recipe += ingredient + ":" + quantityIngredients.get(ingredient) + "#";
