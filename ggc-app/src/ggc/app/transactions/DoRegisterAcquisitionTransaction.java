@@ -42,7 +42,8 @@ public class DoRegisterAcquisitionTransaction extends Command<WarehouseManager> 
         }
         else {
           int numberOfComponents = Form.requestInteger(Prompt.numberOfComponents());
-          double reduction = (double) Form.requestReal(Prompt.alpha());
+          double reduction =  Form.requestReal(Prompt.alpha());
+
           String recipe = "";
           for (int i = 0; i < numberOfComponents; i++)
           {
@@ -52,7 +53,7 @@ public class DoRegisterAcquisitionTransaction extends Command<WarehouseManager> 
             recipe += "#";
           }
           recipe = recipe.substring(0,recipe.length() - 1);
-          _receiver.registerNewProduct(productKey, partnerKey, price, amount, reduction, recipe);
+          _receiver.registerNewProduct(productKey, partnerKey, price, amount, (float) reduction, recipe);
           // mudar preco
         }
       }

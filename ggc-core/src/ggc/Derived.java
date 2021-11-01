@@ -17,7 +17,7 @@ public class Derived extends Product {
   private Map<String, Integer> quantityIngredients = new TreeMap<String, Integer>();
 
   /** Reduction of the Derived Product */
-  private double reduction;
+  private float reduction;
 
   /**
    * Create a new Derived Product
@@ -28,7 +28,7 @@ public class Derived extends Product {
    * @param recipe
    * @param reduction
    */
-  public Derived(String productName, double price, int stock, String recipe, double reduction) {
+  public Derived(String productName, double price, int stock, String recipe, float reduction) {
     super(productName, price, stock);
     if (recipe != "") {
       String[] product = recipe.split("#");
@@ -46,7 +46,7 @@ public class Derived extends Product {
     this.reduction = reduction;
   }
 
-  public double getReduction() {
+  public float getReduction() {
     return reduction;
   }
 
@@ -59,7 +59,7 @@ public class Derived extends Product {
     if (ingredients == null){
       return "";
     }
-    String recipe = "|" + Math.round(reduction) + "|";
+    String recipe = "|" + reduction + "|";
 
     for (String ingredient : ingredients) {
       recipe += ingredient + ":" + quantityIngredients.get(ingredient) + "#";

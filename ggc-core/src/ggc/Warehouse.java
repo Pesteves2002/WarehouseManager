@@ -171,7 +171,7 @@ public class Warehouse implements Serializable {
    */
 
 
-  public void doRegisterBatch(String product, String partnerKey, double price, int stock, double reduction, String recipe) throws UnknownKeyCException {
+  public void doRegisterBatch(String product, String partnerKey, double price, int stock, float reduction, String recipe) throws UnknownKeyCException {
 
     Partner partner = doShowPartner(partnerKey);
 

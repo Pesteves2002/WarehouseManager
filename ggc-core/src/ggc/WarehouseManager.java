@@ -195,7 +195,7 @@ public class WarehouseManager {
     return  _warehouse.doRegisterAcquisitionTransaction(partnerKey,productKey,price,amount);
   }
 
-  public void registerNewProduct(String product, String partnerKey, double price, int stock, double reduction, String recipe ) throws UnknownKeyCException
+  public void registerNewProduct(String product, String partnerKey, double price, int stock, float reduction, String recipe ) throws UnknownKeyCException
   {
     _warehouse.doRegisterBatch(product, partnerKey, price, stock, reduction, recipe);
   }
