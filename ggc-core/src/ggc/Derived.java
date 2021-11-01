@@ -39,6 +39,10 @@ public class Derived extends Product {
     this.reduction = reduction;
   }
 
+  public float getReduction() {
+    return reduction;
+  }
+
   /**
    * Get the String representation of the recipe
    * @return

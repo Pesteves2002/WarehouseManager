@@ -36,6 +36,8 @@ public class Warehouse implements Serializable {
 
   private int time = 0;
 
+  private double warehouseGlobalBalance = 0;
+
   // Insert by ID - Maybe use normal list
   // private Map<Integer, Transaction> allTransactions = new TreeMap<Integer, Transaction>();
 
@@ -259,6 +261,19 @@ public class Warehouse implements Serializable {
       }
     }
     return Collections.unmodifiableCollection(batchesUnderGivenPrice);
+  }
+
+
+  public void doRegisterAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws UnknownKeyCException {
+  }
+  public double doShowGlobalBalance()
+  {
+    return warehouseGlobalBalance;
+  }
+
+  public void changeGlobalBalance(double amount)
+  {
+    this.warehouseGlobalBalance += amount;
   }
 
 }

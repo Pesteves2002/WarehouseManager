@@ -6,7 +6,10 @@ public class Transaction implements Serializable {
 
     private static final long serialVersionUID = 202110262226L;
 
-    private int transactionID;
+    private int transactionKey;
+
+    private int TransactionDate;
+
 
     private Partner partnerID;
 
@@ -14,7 +17,6 @@ public class Transaction implements Serializable {
 
     private int quantity;
 
-    private int TransactionDate;
 
     private int limitDate;
 

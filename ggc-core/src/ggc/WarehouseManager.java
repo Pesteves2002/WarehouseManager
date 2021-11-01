@@ -189,4 +189,10 @@ public class WarehouseManager {
   {
     return _warehouse.doLookupProductBatchesUnderGivenPrice(priceLimit);
   }
+
+  public double showGlobalBalance()
+  {
+    // Fix me
+    return _warehouse.doShowGlobalBalance();
+  }
 }
