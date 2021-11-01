@@ -59,9 +59,7 @@ public class Warehouse implements Serializable {
    * @throws IOException
    * @throws BadEntryException
    */
-  void importFile(String txtfile) throws IOException, BadEntryException /* FIXME maybe other exceptions */, UnknownKeyCException, DuplicateClientCException {
-    //FIXME implement method
-    // super(txtfile);
+  void importFile(String txtfile) throws IOException, BadEntryException, UnknownKeyCException, DuplicateClientCException {
 
     try (BufferedReader in = new BufferedReader(new FileReader(txtfile))) {
       String s;
@@ -88,7 +86,6 @@ public class Warehouse implements Serializable {
     } catch (UnknownKeyCException e) {
       throw new UnknownKeyCException(e.getUnknownKey());
     }
-
   }
 
   int doShowTime() {
@@ -253,13 +250,10 @@ public class Warehouse implements Serializable {
     throw new UnknownKeyCException(productKey);
   }
 
-  public  Collection<Batch> doLookupProductBatchesUnderGivenPrice(int priceLimit)
-  {
+  public Collection<Batch> doLookupProductBatchesUnderGivenPrice(int priceLimit) {
     List<Batch> batchesUnderGivenPrice = new ArrayList<>();
-    for (Product product : allProducts.values())
-    {
-      for (Batch batch: product.get_batches())
-      {
+    for (Product product : allProducts.values()) {
+      for (Batch batch : product.get_batches()) {
         if (batch.getPrice() < priceLimit)
           batchesUnderGivenPrice.add(batch);
       }

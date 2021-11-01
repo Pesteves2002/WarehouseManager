@@ -1,11 +1,12 @@
 package ggc;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  * Class that implements a comparator to the class Batch
  */
-public class BatchComparator implements Comparator<Batch> {
+public class BatchComparator implements Comparator<Batch>, Serializable {
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202110262231L;
   /** Create a Wrapper that sorts by alphabetical order */

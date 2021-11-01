@@ -1,9 +1,6 @@
 package ggc;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Class that extends Product
@@ -14,7 +11,7 @@ public class Derived extends Product {
   private static final long serialVersionUID = 202110262232L;
 
   /** List that contains the ingredients */
-  private List<String> ingredients = new ArrayList<String>();
+  private Set<String> ingredients = new TreeSet<>(new CollatorWrapper());
 
   /** Map that contains the quantity of the ingredients */
   private Map<String, Integer> quantityIngredients = new TreeMap<String, Integer>();
