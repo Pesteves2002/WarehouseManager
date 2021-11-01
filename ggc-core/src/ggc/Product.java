@@ -1,9 +1,7 @@
 package ggc;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * Class that represents the product that can be stored in a Batch
@@ -25,7 +23,7 @@ public class Product implements Serializable {
   /**
    * All the batches that have the product
    */
-  private List<Batch> batches = new ArrayList<Batch>();
+  private TreeSet<Batch> batches = new TreeSet<Batch>(new BatchComparator());
 
   /**
    * @param productKey
@@ -46,11 +44,9 @@ public class Product implements Serializable {
   /**
    * Return the batch of a product all sorted
    *
-   * @return List<Batch>
+   * @return Tree<Batch>
    */
-  public List<Batch> get_batches() {
-
-    batches.sort(new BatchComparator());
+  public TreeSet<Batch> get_batches() {
     return batches;
   }
 
@@ -83,7 +79,6 @@ public class Product implements Serializable {
   public void addBatch(Batch newBatch) {
     batches.add(newBatch);
   }
-
 
 
   /**
