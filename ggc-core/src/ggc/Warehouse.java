@@ -53,7 +53,7 @@ public class Warehouse implements Serializable {
    * given a String (productName), it gives you the Product,
    * The Comparator used sorts the map alphabetically
    */
-  private Map<String, Product> allProducts = new TreeMap<String, Product>(new CollatorWrapper());
+  private Map<String, Derived> allProducts = new TreeMap<String, Derived>(new CollatorWrapper());
 
 
   /**
@@ -170,7 +170,7 @@ public class Warehouse implements Serializable {
       allProducts.get(product).addStock(stock);
       allProducts.get(product).changeMaxPrice(price);
     } else {
-      Product newProduct = new Product(product, price, stock);
+      Derived newProduct = new Derived(product, price, stock, "",0);
       allProducts.put(product, newProduct);
     }
     allProducts.get(product).addBatch(newBatch);

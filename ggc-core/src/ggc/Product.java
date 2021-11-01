@@ -7,7 +7,7 @@ import java.util.*;
  * Class that represents the product that can be stored in a Batch
  * It has a price, and a Stock
  */
-public class Product implements Serializable {
+public class  Product implements Serializable {
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202110262228L;
 
