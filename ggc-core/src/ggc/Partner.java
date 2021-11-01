@@ -41,7 +41,7 @@ public class Partner implements Serializable {
 // private map of notifications
 
   /** Map with all the Batches owned by the Partner */
-  private Map<String, Batch> thisBatches = new TreeMap<String, Batch>();
+  private Map<String, Batch> thisBatches = new TreeMap<String, Batch>(new CollatorWrapper());
   /** Map with all the Transactions made by the Partner */
   private Map<Integer, Transaction> thisTransactions = new TreeMap<Integer, Transaction>();
 

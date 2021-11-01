@@ -13,13 +13,13 @@ public class Batch implements Serializable {
   private String product;
 
   /** Price of the Product */
-  private float price;
+  private double price;
 
   /** Stock of the Batch */
   private int stock;
 
   /** Reduction (only applicable to Derived Products */
-  private float reduction = 0;
+  private double reduction = 0;
 
   /** PartnerID */
   private String partner;
@@ -32,7 +32,7 @@ public class Batch implements Serializable {
    * @param stock
    * @param partner
    */
-  public Batch(String product, float price, int stock, String partner) {
+  public Batch(String product, double price, int stock, String partner) {
     this.product = product;
     this.price = price;
     this.stock = stock;
@@ -49,7 +49,7 @@ public class Batch implements Serializable {
    * @param partner
    * @param reduction
    */
-  public Batch(String product, float price, int stock, String partner, float reduction) {
+  public Batch(String product, double price, int stock, String partner, double reduction) {
     this(product, price, stock, partner);
     this.reduction = reduction;
   }
@@ -64,7 +64,7 @@ public class Batch implements Serializable {
   /**
    * @return Price
    */
-  public float getPrice() {
+  public double getPrice() {
     return price;
   }
 

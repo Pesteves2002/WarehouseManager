@@ -15,7 +15,7 @@ public class  Product implements Serializable {
   private String productKey;
 
   /** Maximum price on this product */
-  private float maxPrice;
+  private double maxPrice;
 
   /** Total stock of the product */
   private int actualStock;
@@ -30,7 +30,7 @@ public class  Product implements Serializable {
    * @param maxPrice
    * @param actualStock
    */
-  public Product(String productKey, float maxPrice, int actualStock) {
+  public Product(String productKey, double maxPrice, int actualStock) {
 
     this.productKey = productKey;
     this.maxPrice = maxPrice;
@@ -40,6 +40,8 @@ public class  Product implements Serializable {
   public String getProductKey() {
     return productKey;
   }
+
+
 
   /**
    * Return the batch of a product all sorted
@@ -66,7 +68,7 @@ public class  Product implements Serializable {
    *
    * @param value
    */
-  public void changeMaxPrice(float value) {
+  public void changeMaxPrice(double value) {
     if (maxPrice < value)
       maxPrice = value;
   }

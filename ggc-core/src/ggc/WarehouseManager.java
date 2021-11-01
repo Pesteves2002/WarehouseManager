@@ -13,6 +13,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import ggc.exceptions.*;
 
@@ -188,6 +189,19 @@ public class WarehouseManager {
   public Collection<Batch> lookupProductBatchesUnderGivenPrice(int priceLimit)
   {
     return _warehouse.doLookupProductBatchesUnderGivenPrice(priceLimit);
+  }
+
+  public boolean registerAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws UnknownKeyCException{
+    return  _warehouse.doRegisterAcquisitionTransaction(partnerKey,productKey,price,amount);
+  }
+
+  public void registerNewProduct(String product, String partnerKey, double price, int stock, double reduction, String recipe ) throws UnknownKeyCException
+  {
+    _warehouse.doRegisterBatch(product, partnerKey, price, stock, reduction, recipe);
+  }
+
+  public Transaction showTransaction(int index) throws UnknownTransactionKeyCException{
+    return _warehouse.doShowTransaction(index);
   }
 
   public double showGlobalBalance()

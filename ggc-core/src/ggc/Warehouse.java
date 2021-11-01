@@ -38,8 +38,9 @@ public class Warehouse implements Serializable {
 
   private double warehouseGlobalBalance = 0;
 
-  // Insert by ID - Maybe use normal list
-  // private Map<Integer, Transaction> allTransactions = new TreeMap<Integer, Transaction>();
+  private int transactionKey = 0;
+
+  List<Transaction> allTransactions= new ArrayList<>();
 
   /**
    * TreeMap of all the Partners,
@@ -71,8 +72,8 @@ public class Warehouse implements Serializable {
         String[] fields = line.split("\\|");
         switch (fields[0]) {
           case "PARTNER" -> doRegisterPartner((fields[1]), (fields[2]), (fields[3]));
-          case "BATCH_S" -> doRegisterBatchS((fields[1]), (fields[2]), Float.parseFloat(fields[3]), Integer.parseInt(fields[4]));
-          case "BATCH_M" -> doRegisterBatchM((fields[1]), (fields[2]), Float.parseFloat(fields[3]), Integer.parseInt(fields[4]), Float.parseFloat(fields[5]), fields[6]);
+          case "BATCH_S" -> doRegisterBatch((fields[1]), (fields[2]), Float.parseFloat(fields[3]), Integer.parseInt(fields[4]), 0, "");
+          case "BATCH_M" -> doRegisterBatch((fields[1]), (fields[2]), Float.parseFloat(fields[3]), Integer.parseInt(fields[4]), Float.parseFloat(fields[5]), fields[6]);
           default -> throw new BadEntryException(line);
         }
 
@@ -140,6 +141,15 @@ public class Warehouse implements Serializable {
     throw new UnknownKeyCException(partnerKey);
   }
 
+  public Derived doFindProduct(String productKey) {
+
+    for (Derived product : allProducts.values()) {
+      if (productKey.compareToIgnoreCase(product.getProductKey()) == 0)
+        return product;
+    }
+    return null;
+  }
+
   /**
    * Returns a Collection with all the Partners
    *
@@ -149,39 +159,9 @@ public class Warehouse implements Serializable {
     return Collections.unmodifiableCollection(allPartners.values());
   }
 
-  /**
-   * Registers a new Batch with a simple Product and adds it to the Tree
-   *
-   * @param product
-   * @param partnerKey
-   * @param price
-   * @param stock
-   * @throws UnknownKeyCException
-   */
-
-  public void doRegisterBatchS(String product, String partnerKey, float price, int stock) throws UnknownKeyCException {
-
-    if (allPartners.get(partnerKey) == null) {
-      throw new UnknownKeyCException(partnerKey);
-    }
-    Batch newBatch = new Batch(product, price, stock, partnerKey);
-
-    if (allProducts.get(product) != null) {
-      allProducts.get(product).addStock(stock);
-      allProducts.get(product).changeMaxPrice(price);
-    } else {
-      Derived newProduct = new Derived(product, price, stock, "",0);
-      allProducts.put(product, newProduct);
-    }
-    allProducts.get(product).addBatch(newBatch);
-
-    Partner partner = allPartners.get(partnerKey);
-    partner.addBatch(newBatch);
-
-  }
 
   /**
-   * Registers a new Batch with a Derived Product and adds it to the Tree
+   * Registers a new Batch with a Product and adds it to the Tree
    *
    * @param product
    * @param partnerKey
@@ -191,12 +171,11 @@ public class Warehouse implements Serializable {
    */
 
 
-  public void doRegisterBatchM(String product, String partnerKey, float price, int stock, float reduction, String recipe) throws UnknownKeyCException {
+  public void doRegisterBatch(String product, String partnerKey, double price, int stock, double reduction, String recipe) throws UnknownKeyCException {
 
-    if (allPartners.get(partnerKey) == null) {
-      throw new UnknownKeyCException(partnerKey);
-    }
-    Batch newBatch = new Batch(product, price, stock, partnerKey, reduction);
+    Partner partner = doShowPartner(partnerKey);
+
+    Batch newBatch = new Batch(product, price, stock, partner.getPartnerKey(), reduction);
 
     if (allProducts.get(product) != null) {
       allProducts.get(product).addStock(stock);
@@ -207,7 +186,6 @@ public class Warehouse implements Serializable {
     }
     allProducts.get(product).addBatch(newBatch);
 
-    Partner partner = allPartners.get(partnerKey);
     partner.addBatch(newBatch);
   }
 
@@ -219,6 +197,11 @@ public class Warehouse implements Serializable {
    */
   public Collection<Product> doShowAllProducts() {
     return Collections.unmodifiableCollection(allProducts.values());
+  }
+
+  public Transaction doShowTransaction(int index) throws UnknownTransactionKeyCException{
+    if (index > transactionKey) {throw new UnknownTransactionKeyCException(((Integer) index).toString());}
+    return allTransactions.get(index);
   }
 
   /**
@@ -236,7 +219,6 @@ public class Warehouse implements Serializable {
   }
 
   public Collection<Batch> doShowBatchesByPartner(String partnerKey) throws UnknownKeyCException {
-
     Partner partner = doShowPartner(partnerKey);
     return partner.getThisBatches();
 
@@ -249,7 +231,7 @@ public class Warehouse implements Serializable {
         return Collections.unmodifiableCollection(product.get_batches());
       }
     }
-    throw new UnknownKeyCException(productKey);
+    throw new UnknownProductKeyCException(productKey);
   }
 
   public Collection<Batch> doLookupProductBatchesUnderGivenPrice(int priceLimit) {
@@ -264,15 +246,31 @@ public class Warehouse implements Serializable {
   }
 
 
-  public void doRegisterAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws UnknownKeyCException {
+  public boolean doRegisterAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws UnknownKeyCException {
+
+    try {
+      Partner partner = doShowPartner(partnerKey);
+      Derived product = doFindProduct(productKey);
+      if (product != null) {
+        doRegisterBatch(product.getProductKey(), partner.getPartnerKey(), price, amount, product.getReduction(), product.getRecipe());
+        price = -price;
+        changeGlobalBalance(price);
+        Acquisition acquisition = new Acquisition(transactionKey++, time, partner.getPartnerKey(),product.getProductKey(),amount,price);
+        allTransactions.add(acquisition);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (UnknownPartnerKeyCException e) {
+      throw new UnknownPartnerKeyCException(e.getUnknownKey());
+    }
   }
-  public double doShowGlobalBalance()
-  {
+
+  public double doShowGlobalBalance() {
     return warehouseGlobalBalance;
   }
 
-  public void changeGlobalBalance(double amount)
-  {
+  public void changeGlobalBalance(double amount) {
     this.warehouseGlobalBalance += amount;
   }
 

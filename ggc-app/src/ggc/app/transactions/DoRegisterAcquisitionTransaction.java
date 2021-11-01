@@ -1,5 +1,7 @@
 package ggc.app.transactions;
 
+import ggc.exceptions.UnknownKeyCException;
+import pt.tecnico.uilib.forms.Form;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import ggc.WarehouseManager;
@@ -25,6 +27,38 @@ public class DoRegisterAcquisitionTransaction extends Command<WarehouseManager> 
   @Override
   public final void execute() throws CommandException {
     //FIXME implement command
+    // FIXME implement exceptions
+    try {
+
+
+      String partnerKey = stringField("partnerKey");
+      String productKey = stringField("productKey");
+      int price = integerField("price");
+      int amount = integerField("amount");
+      if (! _receiver.registerAcquisitionTransaction(partnerKey, productKey, price, amount)){
+        String hasRecipe = Form.requestString(Prompt.addRecipe());
+        if (hasRecipe.equals("n")){
+          _receiver.registerNewProduct(productKey, partnerKey, price, amount, 0, "");
+        }
+        else {
+          int numberOfComponents = Form.requestInteger(Prompt.numberOfComponents());
+          double reduction = (double) Form.requestReal(Prompt.alpha());
+          String recipe = "";
+          for (int i = 0; i < numberOfComponents; i++)
+          {
+            recipe += Form.requestString(Prompt.productKey());
+            recipe += ":";
+            recipe += Form.requestString(Prompt.amount());
+            recipe += "#";
+          }
+          recipe = recipe.substring(0,recipe.length() - 1);
+          _receiver.registerNewProduct(productKey, partnerKey, price, amount, reduction, recipe);
+          // mudar preco
+        }
+      }
+
+    }
+    catch (UnknownKeyCException e) {throw  new UnknownPartnerKeyException(e.getUnknownKey()); }
   }
 
 }
