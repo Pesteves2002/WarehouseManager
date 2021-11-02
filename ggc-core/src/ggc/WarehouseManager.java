@@ -191,13 +191,14 @@ public class WarehouseManager {
     return _warehouse.doLookupProductBatchesUnderGivenPrice(priceLimit);
   }
 
-  public boolean registerAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws UnknownKeyCException{
+  public boolean registerAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws UnknownPartnerKeyCException, UnknownProductKeyCException{
     return  _warehouse.doRegisterAcquisitionTransaction(partnerKey,productKey,price,amount);
   }
 
-  public void registerNewProduct(String product, String partnerKey, double price, int stock, float reduction, String recipe ) throws UnknownKeyCException
+  public void registerNewProduct(String product, String partnerKey, double price, int stock, float reduction, String recipe ) throws UnknownPartnerKeyCException, UnknownProductKeyCException
   {
     _warehouse.doRegisterBatch(product, partnerKey, price, stock, reduction, recipe);
+    _warehouse.doRegisterTransaction(product, partnerKey, price, stock, reduction, recipe);
   }
 
   public Transaction showTransaction(int index) throws UnknownTransactionKeyCException{
@@ -208,5 +209,10 @@ public class WarehouseManager {
   {
     // Fix me
     return _warehouse.doShowGlobalBalance();
+  }
+
+  public void changePrice(int amount)
+  {
+    _warehouse.changeGlobalBalance(amount);
   }
 }

@@ -12,7 +12,7 @@ public class Acquisition extends Transaction{
   }
 
   @Override
-  public String toString() {
-    return "COMPRA" +  "|" + super.toString();
+  public String accept(TransactionVisitor tv) {
+    return tv.visitAcquisition(this);
   }
 }

@@ -35,6 +35,7 @@ public class Derived extends Product {
       int i = 0;
       for (String s : product) {
         String[] components = s.split(":");
+
         ingredients.add(components[0]);
         quantityIngredients.put(components[0], Integer.parseInt(components[1]));
       }

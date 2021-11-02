@@ -40,7 +40,7 @@ public class Warehouse implements Serializable {
 
   private int transactionKey = 0;
 
-  List<Transaction> allTransactions= new ArrayList<>();
+  List<Transaction> allTransactions = new ArrayList<>();
 
   /**
    * TreeMap of all the Partners,
@@ -132,22 +132,22 @@ public class Warehouse implements Serializable {
    * @return
    * @throws UnknownKeyCException
    */
-  public Partner doShowPartner(String partnerKey) throws UnknownKeyCException {
+  public Partner doShowPartner(String partnerKey) throws UnknownPartnerKeyCException {
 
     for (Partner partner : allPartners.values()) {
       if (partnerKey.compareToIgnoreCase(partner.getPartnerKey()) == 0)
         return allPartners.get(partner.getPartnerKey());
     }
-    throw new UnknownKeyCException(partnerKey);
+    throw new UnknownPartnerKeyCException(partnerKey);
   }
 
-  public Derived doFindProduct(String productKey) {
+  public Derived doFindProduct(String productKey) throws UnknownProductKeyCException {
 
     for (Derived product : allProducts.values()) {
       if (productKey.compareToIgnoreCase(product.getProductKey()) == 0)
         return product;
     }
-    return null;
+    throw new UnknownProductKeyCException(productKey);
   }
 
   /**
@@ -171,7 +171,7 @@ public class Warehouse implements Serializable {
    */
 
 
-  public void doRegisterBatch(String product, String partnerKey, double price, int stock, float reduction, String recipe) throws UnknownKeyCException {
+  public void doRegisterBatch(String product, String partnerKey, double price, int stock, float reduction, String recipe) throws UnknownPartnerKeyCException {
 
     Partner partner = doShowPartner(partnerKey);
 
@@ -199,9 +199,11 @@ public class Warehouse implements Serializable {
     return Collections.unmodifiableCollection(allProducts.values());
   }
 
-  public Transaction doShowTransaction(int index) throws UnknownTransactionKeyCException{
-    if (index > transactionKey) {throw new UnknownTransactionKeyCException(((Integer) index).toString());}
-    return allTransactions.get(index);
+  public Transaction doShowTransaction(int index) throws UnknownTransactionKeyCException {
+    if (index > transactionKey) {
+      throw new UnknownTransactionKeyCException(((Integer) index).toString());
+    }
+    return allTransactions.get(index - 1);
   }
 
   /**
@@ -246,25 +248,46 @@ public class Warehouse implements Serializable {
   }
 
 
-  public boolean doRegisterAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws UnknownKeyCException {
+  public boolean doRegisterAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws UnknownPartnerKeyCException {
 
     try {
       Partner partner = doShowPartner(partnerKey);
       Derived product = doFindProduct(productKey);
       if (product != null) {
         doRegisterBatch(product.getProductKey(), partner.getPartnerKey(), price, amount, product.getReduction(), product.getRecipe());
+        Acquisition acquisition = new Acquisition(transactionKey++, time, partner.getPartnerKey(), product.getProductKey(), amount, price);
+        allTransactions.add(acquisition);
+        partner.addTransaction(acquisition);
         price = -price;
         changeGlobalBalance(price);
-        Acquisition acquisition = new Acquisition(transactionKey++, time, partner.getPartnerKey(),product.getProductKey(),amount,price);
-        allTransactions.add(acquisition);
         return true;
       } else {
         return false;
       }
-    } catch (UnknownPartnerKeyCException e) {
+    }
+    catch (UnknownPartnerKeyCException e) {
       throw new UnknownPartnerKeyCException(e.getUnknownKey());
     }
+    catch (UnknownProductKeyCException e) {return false;
+    }
   }
+
+  public void doRegisterTransaction(String productKey, String partnerKey, double price, int amount, float reduction, String recipe) throws UnknownPartnerKeyCException
+  {
+    try {
+      Partner partner = doShowPartner(partnerKey);
+      Acquisition acquisition = new Acquisition(transactionKey++, time, partner.getPartnerKey(), productKey, amount, price);
+      allTransactions.add(acquisition);
+      partner.addTransaction(acquisition);
+
+    }catch (UnknownPartnerKeyCException e) {
+      throw new UnknownPartnerKeyCException(e.getUnknownKey());
+    }
+
+  }
+
+
+
 
   public double doShowGlobalBalance() {
     return warehouseGlobalBalance;

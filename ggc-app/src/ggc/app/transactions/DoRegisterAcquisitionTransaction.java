@@ -1,6 +1,8 @@
 package ggc.app.transactions;
 
 import ggc.exceptions.UnknownKeyCException;
+import ggc.exceptions.UnknownPartnerKeyCException;
+import ggc.exceptions.UnknownProductKeyCException;
 import pt.tecnico.uilib.forms.Form;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
@@ -29,8 +31,6 @@ public class DoRegisterAcquisitionTransaction extends Command<WarehouseManager> 
     //FIXME implement command
     // FIXME implement exceptions
     try {
-
-
       String partnerKey = stringField("partnerKey");
       String productKey = stringField("productKey");
       int price = integerField("price");
@@ -54,12 +54,14 @@ public class DoRegisterAcquisitionTransaction extends Command<WarehouseManager> 
           }
           recipe = recipe.substring(0,recipe.length() - 1);
           _receiver.registerNewProduct(productKey, partnerKey, price, amount, (float) reduction, recipe);
-          // mudar preco
+          _receiver.changePrice(-price); // FIXME change name
+
         }
       }
 
     }
-    catch (UnknownKeyCException e) {throw  new UnknownPartnerKeyException(e.getUnknownKey()); }
+    catch (UnknownPartnerKeyCException e) {throw  new UnknownPartnerKeyException(e.getUnknownKey()); }
+    catch (UnknownProductKeyCException e) {throw new UnknownProductKeyException(e.getUnknownKey());}
   }
 
 }

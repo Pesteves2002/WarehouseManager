@@ -1,10 +1,7 @@
 package ggc;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * This class represents the owner of some batches,
@@ -38,7 +35,7 @@ public class Partner implements Serializable {
   /** money spent on Sales by the partner */
   private int moneySpentOnSales;
 
-// private map of notifications
+  private List<Transaction> transactionList = new ArrayList<Transaction>();
 
   /** Map with all the Batches owned by the Partner */
   private Map<String, Batch> thisBatches = new TreeMap<String, Batch>(new CollatorWrapper());
@@ -65,8 +62,13 @@ public class Partner implements Serializable {
     return partnerKey;
   }
 
-  public Collection <Batch> getThisBatches() {
+  public Collection<Batch> getThisBatches() {
     return Collections.unmodifiableCollection(thisBatches.values());
+  }
+
+  public void addTransaction(Transaction transaction) {
+    transactionList.add(transaction);
+
   }
 
   /**
