@@ -82,6 +82,16 @@ public class Batch implements Serializable {
     return partner;
   }
 
+  public void decreaseStock(int amount) {
+    stock -= amount;
+  }
+
+  public int emptyStock() {
+    int aux = stock;
+    stock = 0;
+    return aux;
+  }
+
   /**
    * String representation of the batch: presents the productID, the partnerID, the price and the stock of the batch
    *

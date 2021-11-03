@@ -52,6 +52,10 @@ public class  Product implements Serializable {
     return batches;
   }
 
+  public int getActualStock() {
+    return actualStock;
+  }
+
   /**
    * Adds stock when a new batch is created
    *

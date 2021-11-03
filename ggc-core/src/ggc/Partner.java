@@ -21,7 +21,7 @@ public class Partner implements Serializable {
   private String partnerAddress;
 
   /** Partner Status (TO BE IMPROVED) */
-  private Status status = new Normal();
+  private Status status = new Normal(this);
 
   /** points of the partner */
   private int points;
@@ -35,7 +35,7 @@ public class Partner implements Serializable {
   /** money spent on Sales by the partner */
   private int moneySpentOnSales;
 
-  private List<Transaction> transactionList = new ArrayList<Transaction>();
+  private List<Transaction> transactionList = new LinkedList<>();
 
   /** Map with all the Batches owned by the Partner */
   private Map<String, Batch> thisBatches = new TreeMap<String, Batch>(new CollatorWrapper());
@@ -71,6 +71,10 @@ public class Partner implements Serializable {
 
   }
 
+  public Map<Integer, Transaction> getThisTransactions() {
+    return thisTransactions;
+  }
+
   /**
    * Add a batch to the Tree Map
    *
@@ -79,6 +83,13 @@ public class Partner implements Serializable {
   public void addBatch(Batch batch) {
     thisBatches.put(batch.getThisProductID(), batch);
   }
+
+  public List<Transaction> getTransactionList() {
+    return transactionList;
+  }
+
+  protected void setStatus(Status status) { this.status = status; }
+
 
   /**
    * String representation of the Class Partner

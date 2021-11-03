@@ -264,29 +264,99 @@ public class Warehouse implements Serializable {
       } else {
         return false;
       }
-    }
-    catch (UnknownPartnerKeyCException e) {
+    } catch (UnknownPartnerKeyCException e) {
       throw new UnknownPartnerKeyCException(e.getUnknownKey());
-    }
-    catch (UnknownProductKeyCException e) {return false;
+    } catch (UnknownProductKeyCException e) {
+      return false;
     }
   }
 
-  public void doRegisterTransaction(String productKey, String partnerKey, double price, int amount, float reduction, String recipe) throws UnknownPartnerKeyCException
-  {
+  public void doRegisterTransaction(String productKey, String partnerKey, double price, int amount, float reduction, String recipe) throws UnknownPartnerKeyCException {
     try {
       Partner partner = doShowPartner(partnerKey);
       Acquisition acquisition = new Acquisition(transactionKey++, time, partner.getPartnerKey(), productKey, amount, price);
       allTransactions.add(acquisition);
       partner.addTransaction(acquisition);
 
-    }catch (UnknownPartnerKeyCException e) {
+    } catch (UnknownPartnerKeyCException e) {
       throw new UnknownPartnerKeyCException(e.getUnknownKey());
     }
 
   }
 
+  public void doRegisterSaleTransaction(String partnerKey, String productKey, int amount, int deadline) throws UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
+    try {
+      Partner partner = doShowPartner(partnerKey);
+      Derived product = doFindProduct(productKey);
 
+      if (product.getRecipe().equals("")) {
+        if (product.getActualStock() < amount)
+          throw new UnavailableProductCException(productKey, amount, product.getActualStock());
+        // Metodo para retirar produtos
+        int price = 0;
+        for (Batch batch : product.get_batches()) {
+          if (amount < batch.getStock()) {
+            batch.decreaseStock(amount);
+            price += batch.getPrice() * amount;
+            break;
+          } else {
+            int numberProducts = batch.emptyStock();
+            amount -= numberProducts;
+            price += batch.getPrice() * numberProducts;
+          }
+        }
+        Sale sale = new Sale(transactionKey++, time, partner.getPartnerKey(), product.getProductKey(), amount, price, deadline);
+        partner.addTransaction(sale);
+
+        allTransactions.add(sale);
+      } else {
+        int price = 0;
+        if (product.getActualStock() > amount) { // Se existir produto suficiente
+
+          for (Batch batch : product.get_batches()) {
+            if (amount < batch.getStock()) {
+              batch.decreaseStock(amount);
+              price += batch.getPrice() * amount;
+              break;
+            } else {
+              int numberProducts = batch.emptyStock();
+              amount -= numberProducts;
+              price += batch.getPrice() * numberProducts;
+            }
+          }
+          Sale sale = new Sale(transactionKey++, time, partner.getPartnerKey(), product.getProductKey(), amount, price, deadline);
+          partner.addTransaction(sale);
+          allTransactions.add(sale);
+
+        } else {
+
+          // se nao existir produto suficiente
+          // Recursivo (?)
+
+        }
+      }
+      // add transaction
+
+
+    } catch (UnknownPartnerKeyCException e) {
+      throw new UnknownProductKeyCException(e.getUnknownKey());
+    } catch (UnknownProductKeyCException e) {
+      throw new UnknownProductKeyCException(e.getUnknownKey());
+    }
+
+  }
+
+/*
+  public String doShowPartnerAccquisition(String partnerkey) throws UnknownPartnerKeyCException
+  {
+    Partner partner = doShowPartner(partnerkey);
+
+    for (Transaction transaction: partner.getTransactionList())
+    {
+      transaction.accept();
+    }
+  }
+  */
 
 
   public double doShowGlobalBalance() {
@@ -295,6 +365,19 @@ public class Warehouse implements Serializable {
 
   public void changeGlobalBalance(double amount) {
     this.warehouseGlobalBalance += amount;
+  }
+
+  public void doReceivePayment(int transactionKey) {
+    // Fix for purchase and desaggregations
+    Sale sale = (Sale) allTransactions.get(transactionKey);
+    sale.setPaymentDate(time);
+  }
+
+  public Collection<Transaction> doLookupPaymentsByPartner(String partnerKey) throws UnknownPartnerKeyCException {
+    Partner partner = doShowPartner(partnerKey);
+    return Collections.unmodifiableCollection(partner.getThisTransactions().values());
+
+
   }
 
 }

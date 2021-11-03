@@ -2,6 +2,9 @@ package ggc;
 
 public class Breakdown extends Transaction{
 
+  /** Serial number for serialization. */
+  private static final long serialVersionUID = 202110262228L;
+
   @Override
   public String accept(TransactionVisitor tv) {
     return tv.visitBreakdown(this);

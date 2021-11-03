@@ -186,33 +186,42 @@ public class WarehouseManager {
     return _warehouse.doShowBatchesByProduct(productKey);
   }
 
-  public Collection<Batch> lookupProductBatchesUnderGivenPrice(int priceLimit)
-  {
+  public Collection<Batch> lookupProductBatchesUnderGivenPrice(int priceLimit) {
     return _warehouse.doLookupProductBatchesUnderGivenPrice(priceLimit);
   }
 
-  public boolean registerAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws UnknownPartnerKeyCException, UnknownProductKeyCException{
-    return  _warehouse.doRegisterAcquisitionTransaction(partnerKey,productKey,price,amount);
+  public boolean registerAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws UnknownPartnerKeyCException, UnknownProductKeyCException {
+    return _warehouse.doRegisterAcquisitionTransaction(partnerKey, productKey, price, amount);
   }
 
-  public void registerNewProduct(String product, String partnerKey, double price, int stock, float reduction, String recipe ) throws UnknownPartnerKeyCException, UnknownProductKeyCException
-  {
+  public void registerNewProduct(String product, String partnerKey, double price, int stock, float reduction, String recipe) throws UnknownPartnerKeyCException, UnknownProductKeyCException {
     _warehouse.doRegisterBatch(product, partnerKey, price, stock, reduction, recipe);
     _warehouse.doRegisterTransaction(product, partnerKey, price, stock, reduction, recipe);
   }
 
-  public Transaction showTransaction(int index) throws UnknownTransactionKeyCException{
+  public Transaction showTransaction(int index) throws UnknownTransactionKeyCException {
     return _warehouse.doShowTransaction(index);
   }
 
-  public double showGlobalBalance()
-  {
+  public double showGlobalBalance() {
     // Fix me
     return _warehouse.doShowGlobalBalance();
   }
 
-  public void changePrice(int amount)
-  {
+  public void registerSaleTransaction(String partnerKey, String productKey, int amount, int deadline) throws UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
+    _warehouse.doRegisterSaleTransaction(partnerKey, productKey, amount, deadline);
+  }
+
+  public void receivePayment(int transactionKey) {
+    _warehouse.doReceivePayment(transactionKey);
+  }
+
+  public void changePrice(int amount) {
     _warehouse.changeGlobalBalance(amount);
+  }
+
+
+  public Collection<Transaction> lookupPaymentsByPartner(String partnerKey) throws UnknownPartnerKeyCException {
+    return _warehouse.doLookupPaymentsByPartner(partnerKey);
   }
 }

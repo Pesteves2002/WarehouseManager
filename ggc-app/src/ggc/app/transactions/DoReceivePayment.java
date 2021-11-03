@@ -13,12 +13,14 @@ public class DoReceivePayment extends Command<WarehouseManager> {
 
   public DoReceivePayment(WarehouseManager receiver) {
     super(Label.RECEIVE_PAYMENT, receiver);
-    addIntegerField("transactionID", Prompt.transactionKey());
+    addIntegerField("transactionKey", Prompt.transactionKey());
   }
 
   @Override
   public final void execute() throws CommandException {
     //FIXME implement command
+    int transactionKey = integerField("transactionKey");
+    _receiver.receivePayment(transactionKey);
   }
 
 }
