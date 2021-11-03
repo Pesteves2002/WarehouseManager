@@ -208,6 +208,16 @@ public class WarehouseManager {
     return _warehouse.doShowGlobalBalance();
   }
 
+  public Collection<String> showPartnerAcquisitions(String partnerKey) throws UnknownPartnerKeyCException
+  {
+    return _warehouse.doShowPartnerAcquisition(partnerKey);
+  }
+
+  public Collection<String> showPartnerSales(String partnerKey) throws UnknownPartnerKeyCException
+  {
+    return _warehouse.doShowPartnerSales(partnerKey);
+  }
+
   public void registerSaleTransaction(String partnerKey, String productKey, int amount, int deadline) throws UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
     _warehouse.doRegisterSaleTransaction(partnerKey, productKey, amount, deadline);
   }

@@ -200,10 +200,10 @@ public class Warehouse implements Serializable {
   }
 
   public Transaction doShowTransaction(int index) throws UnknownTransactionKeyCException {
-    if (index > transactionKey) {
+    if (index >= transactionKey) {
       throw new UnknownTransactionKeyCException(((Integer) index).toString());
     }
-    return allTransactions.get(index - 1);
+    return allTransactions.get(index);
   }
 
   /**
@@ -346,17 +346,31 @@ public class Warehouse implements Serializable {
 
   }
 
-/*
-  public String doShowPartnerAccquisition(String partnerkey) throws UnknownPartnerKeyCException
+
+  public Collection<String> doShowPartnerAcquisition(String partnerkey) throws UnknownPartnerKeyCException
   {
     Partner partner = doShowPartner(partnerkey);
+    List<String> allAcquisitions = new LinkedList<>();
 
     for (Transaction transaction: partner.getTransactionList())
     {
-      transaction.accept();
+      allAcquisitions.add(transaction.accept(new ShowAcquisition()));
     }
+    return Collections.unmodifiableCollection(allAcquisitions);
   }
-  */
+
+  public Collection<String> doShowPartnerSales(String partnerKey) throws UnknownPartnerKeyCException
+  {
+    Partner partner = doShowPartner(partnerKey);
+    List<String> allAcquisitions = new LinkedList<>();
+
+    for (Transaction transaction: partner.getTransactionList())
+    {
+      allAcquisitions.add(transaction.accept(new ShowSaleBreakdown()));
+    }
+    return Collections.unmodifiableCollection(allAcquisitions);
+  }
+
 
 
   public double doShowGlobalBalance() {
