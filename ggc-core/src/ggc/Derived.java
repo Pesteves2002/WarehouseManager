@@ -51,13 +51,21 @@ public class Derived extends Product {
     return reduction;
   }
 
+  public Set<String> getIngredients() {
+    return ingredients;
+  }
+
+  public Integer getQuantityIngredient(String ingredient) {
+    return quantityIngredients.get(ingredient);
+  }
+
   /**
    * Get the String representation of the recipe
    *
    * @return
    */
   public String getRecipe() {
-    if (ingredients == null){
+    if (ingredients == null) {
       return "";
     }
     String recipe = "|" + reduction + "|";
@@ -67,6 +75,14 @@ public class Derived extends Product {
     }
     recipe = recipe.substring(0, recipe.length() - 1);
     return recipe;
+  }
+
+  public void clearAllStock (){
+    for (Batch batch : this.get_batches())
+    {
+      batch.emptyStock();
+    }
+  this.setActualStock(0);
   }
 
   /**

@@ -5,17 +5,20 @@ public class Sale extends Transaction{
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202110262228L;
 
-  public double currentValue ;
+  private double currentValue ;
 
-  public int deadLine;
+  private int deadLine;
 
-  public int paymentDate  = 0;
+  private int paymentDate  = 0;
+
+  private boolean salePayed;
 
 
-  public Sale(int transactionKey, int transactionDate, String partnerKey, String productKey, int amount, double baseValue , int deadLine) {
+  public Sale(int transactionKey, int transactionDate, String partnerKey, String productKey, int amount, double baseValue , int deadLine , boolean salePayed) {
     super(transactionKey, transactionDate, partnerKey, productKey, amount, baseValue);
     this.deadLine = deadLine;
     this.currentValue = baseValue;
+    this.salePayed = salePayed;
   }
 
   public double getCurrentValue() {
@@ -33,6 +36,10 @@ public class Sale extends Transaction{
 
   public void setPaymentDate(int paymentDate) {
     this.paymentDate = paymentDate;
+  }
+
+  public boolean isSalePayed() {
+    return salePayed;
   }
 
   public String accept (TransactionVisitor tv)

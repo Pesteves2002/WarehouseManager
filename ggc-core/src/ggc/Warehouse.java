@@ -292,50 +292,101 @@ public class Warehouse implements Serializable {
       if (product.getRecipe().equals("")) {
         if (product.getActualStock() < amount)
           throw new UnavailableProductCException(productKey, amount, product.getActualStock());
-        // Metodo para retirar produtos
+        // Metodo para retirar produtos simples
         int price = 0;
+        int initialAmount = amount;
         for (Batch batch : product.get_batches()) {
-          if (amount < batch.getStock()) {
+          // produto suficiente numa batch
+          if (amount <= batch.getStock()) {
             batch.decreaseStock(amount);
+            product.reduceStock(amount);
             price += batch.getPrice() * amount;
             break;
-          } else {
+          }
+          // produto nao suficiente numa batch
+          else {
             int numberProducts = batch.emptyStock();
             amount -= numberProducts;
+            product.reduceStock(numberProducts);
             price += batch.getPrice() * numberProducts;
           }
         }
-        Sale sale = new Sale(transactionKey++, time, partner.getPartnerKey(), product.getProductKey(), amount, price, deadline);
+        Sale sale = new Sale(transactionKey++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false);
         partner.addTransaction(sale);
-
         allTransactions.add(sale);
+
       } else {
         int price = 0;
-        if (product.getActualStock() > amount) { // Se existir produto suficiente
+        int initialAmount = amount;
+        if (product.getActualStock() > amount) { // Se existir derivado suficiente
 
           for (Batch batch : product.get_batches()) {
-            if (amount < batch.getStock()) {
+            // produto suficiente numa batch
+            if (amount <= batch.getStock()) {
               batch.decreaseStock(amount);
+              product.reduceStock(amount);
               price += batch.getPrice() * amount;
               break;
-            } else {
+            } // produto nao suficiente numa batch
+            else {
               int numberProducts = batch.emptyStock();
               amount -= numberProducts;
+              product.reduceStock(numberProducts);
               price += batch.getPrice() * numberProducts;
             }
           }
-          Sale sale = new Sale(transactionKey++, time, partner.getPartnerKey(), product.getProductKey(), amount, price, deadline);
+          Sale sale = new Sale(transactionKey++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false);
           partner.addTransaction(sale);
           allTransactions.add(sale);
 
-        } else {
+        } else { // se for preciso criar derivado
 
-          // se nao existir produto suficiente
-          // Recursivo (?)
+          int amountNeeded = amount - product.getActualStock();
+          // check if there's enough components
+          for (String ingredient : product.getIngredients()) {
+            if (product.getQuantityIngredient(ingredient) * amountNeeded > doFindProduct(ingredient).getActualStock()) {
+              // Excecao de qual (?)
+              throw new UnavailableProductCException(ingredient, amount, product.getActualStock());
+            }
+          }
+          product.clearAllStock();
+
+
+          while (amountNeeded > 0) {
+
+            for (String ingredient : product.getIngredients()) {
+              int amountIngredient = doFindProduct(productKey).getQuantityIngredient(ingredient);
+
+              while (amountIngredient > 0) {
+                for (Batch batch : doFindProduct(ingredient).get_batches()) {
+                  // produto suficiente numa batch
+                  if (amountIngredient <= batch.getStock()) {
+                    batch.decreaseStock(amountIngredient);
+                    doFindProduct(ingredient).addStock(-amountIngredient);
+                    price += batch.getPrice() * amountIngredient;
+                    amountIngredient = 0;
+                    break;
+                  } // produto nao suficiente numa batch
+                  else {
+                    int numberProducts = batch.emptyStock();
+                    batch.decreaseStock(numberProducts);
+                    doFindProduct(ingredient).addStock(-numberProducts);
+                    amountIngredient -= numberProducts;
+                    price += batch.getPrice() * numberProducts;
+                  }
+                }
+              }
+            }
+            price *= product.getReduction();
+            amountNeeded--;
+
+          }
 
         }
+        Sale sale = new Sale(transactionKey++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false);
+        partner.addTransaction(sale);
+        allTransactions.add(sale);
       }
-      // add transaction
 
 
     } catch (UnknownPartnerKeyCException e) {
@@ -347,30 +398,25 @@ public class Warehouse implements Serializable {
   }
 
 
-  public Collection<String> doShowPartnerAcquisition(String partnerkey) throws UnknownPartnerKeyCException
-  {
+  public Collection<String> doShowPartnerAcquisition(String partnerkey) throws UnknownPartnerKeyCException {
     Partner partner = doShowPartner(partnerkey);
     List<String> allAcquisitions = new LinkedList<>();
 
-    for (Transaction transaction: partner.getTransactionList())
-    {
+    for (Transaction transaction : partner.getTransactionList()) {
       allAcquisitions.add(transaction.accept(new ShowAcquisition()));
     }
     return Collections.unmodifiableCollection(allAcquisitions);
   }
 
-  public Collection<String> doShowPartnerSales(String partnerKey) throws UnknownPartnerKeyCException
-  {
+  public Collection<String> doShowPartnerSales(String partnerKey) throws UnknownPartnerKeyCException {
     Partner partner = doShowPartner(partnerKey);
     List<String> allAcquisitions = new LinkedList<>();
 
-    for (Transaction transaction: partner.getTransactionList())
-    {
+    for (Transaction transaction : partner.getTransactionList()) {
       allAcquisitions.add(transaction.accept(new ShowSaleBreakdown()));
     }
     return Collections.unmodifiableCollection(allAcquisitions);
   }
-
 
 
   public double doShowGlobalBalance() {

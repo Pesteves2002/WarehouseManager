@@ -9,6 +9,7 @@ public class ShowSaleBreakdown implements TransactionVisitor {
 
   @Override
   public String visitSale(Sale sale) {
+    if (!sale.isSalePayed()){return "";}
     return "VENDA" + "|" +
             sale.getTransactionKey() + "|" +
             sale.getPartnerKey() + "|" +

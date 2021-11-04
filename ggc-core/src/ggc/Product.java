@@ -56,11 +56,17 @@ public class  Product implements Serializable {
     return actualStock;
   }
 
+  public void setActualStock(int actualStock) {
+    this.actualStock = actualStock;
+  }
+
   /**
    * Adds stock when a new batch is created
    *
    * @param newStock
    */
+
+
 
   public void addStock(int newStock) {
     actualStock += newStock;
@@ -85,6 +91,12 @@ public class  Product implements Serializable {
   public void addBatch(Batch newBatch) {
     batches.add(newBatch);
   }
+
+
+  public void reduceStock(int amount) {
+    this.actualStock -= amount;
+  }
+
 
 
   /**
