@@ -1,5 +1,8 @@
 package ggc.app.transactions;
 
+import ggc.exceptions.UnavailableProductCException;
+import ggc.exceptions.UnknownPartnerKeyCException;
+import ggc.exceptions.UnknownProductKeyCException;
 import pt.tecnico.uilib.forms.Field;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
@@ -25,11 +28,17 @@ public class DoRegisterBreakdownTransaction extends Command<WarehouseManager> {
   @Override
   public final void execute() throws CommandException {
     //FIXME implement command
-
-    String partnerKey = stringField("partnerKey");
-    String productKey = stringField("productKey");
-    int amount = integerField("amount");
-
+    try {
+      String partnerKey = stringField("partnerKey");
+      String productKey = stringField("productKey");
+      int amount = integerField("amount");
+      _receiver.registerBreakdownTransaction(partnerKey, productKey, amount);
+    } catch (UnknownPartnerKeyCException e) {
+      throw new UnknownPartnerKeyException(e.getUnknownKey());
+    } catch (UnknownProductKeyCException e) {
+      throw new UnknownProductKeyException(e.getUnknownKey());
+    } catch (UnavailableProductCException e) {
+      throw new UnavailableProductException(e.getProductKey(), e.getAmountRequested(), e.getAmountAvailable());
+    }
   }
-
 }

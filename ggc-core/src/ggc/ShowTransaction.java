@@ -28,6 +28,16 @@ public class ShowTransaction implements TransactionVisitor {
 
   @Override
   public String visitBreakdown(Breakdown breakdown) {
-    return null;
+
+    return "DESAGREGAÇÃO" + "|"+
+            breakdown.getTransactionKey() + "|" +
+            breakdown.getPartnerKey() + "|" +
+            breakdown.getProductKey() + "|" +
+            breakdown.getAmount() + "|" +
+            (int) breakdown.getBaseValue() + "|" +
+            breakdown.getPaymentValue()+ "|" +
+            breakdown.getPaymentDate() + "|" +
+             breakdown.getComponents();
+
   }
 }

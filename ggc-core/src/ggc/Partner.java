@@ -70,7 +70,7 @@ public class Partner implements Serializable {
   }
 
   public Collection<Batch> getThisBatches() {
-    TreeSet<Batch>  batches = new TreeSet<>( new BatchComparator());
+    List<Batch>  batches = new LinkedList<>();
     for ( Set<Batch> set : thisBatches.values())
     {
       batches.addAll(set);

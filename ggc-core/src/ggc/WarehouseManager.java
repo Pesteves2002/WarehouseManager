@@ -234,4 +234,9 @@ public class WarehouseManager {
   public Collection<Transaction> lookupPaymentsByPartner(String partnerKey) throws UnknownPartnerKeyCException {
     return _warehouse.doLookupPaymentsByPartner(partnerKey);
   }
+
+  public void registerBreakdownTransaction (String partnerKey, String productKey, int amout) throws UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException
+  {
+    _warehouse.doRegisterBreakdown(partnerKey,productKey,amout);
+  }
 }

@@ -223,12 +223,11 @@ public class Warehouse implements Serializable {
 
   public Collection<Batch> doShowBatchesByPartner(String partnerKey) throws UnknownKeyCException {
     Partner partner = doShowPartner(partnerKey);
-    List <Batch> batches =  new LinkedList<>();
-    for (Batch batch : partner.getThisBatches())
-    {
+    List<Batch> batches = new LinkedList<>();
+    for (Batch batch : partner.getThisBatches()) {
       batches.add(batch);
     }
-    return  Collections.unmodifiableCollection(batches);
+    return Collections.unmodifiableCollection(batches);
 
   }
 
@@ -261,10 +260,10 @@ public class Warehouse implements Serializable {
       Derived product = doFindProduct(productKey);
       if (product != null) {
         doRegisterBatch(product.getProductKey(), partner.getPartnerKey(), price, amount, product.getReduction(), product.getRecipe());
-        Acquisition acquisition = new Acquisition(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), amount, amount*price);
+        Acquisition acquisition = new Acquisition(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), amount, amount * price);
         allTransactions.add(acquisition);
         partner.addTransaction(acquisition);
-        price = -price *amount;
+        price = -price * amount;
         changeGlobalBalance(price);
         return true;
       } else {
@@ -312,7 +311,7 @@ public class Warehouse implements Serializable {
           // produto nao suficiente numa batch
           else {
             int numberProducts = batch.getStock();
-             price += batch.emptyStock();
+            price += batch.emptyStock();
             amount -= numberProducts;
             product.reduceStock(numberProducts);
 
@@ -361,7 +360,7 @@ public class Warehouse implements Serializable {
           int price = product.clearAllStock();
 
           while (amountNeeded > 0) {
-              int aggregationPrice = 0;
+            int aggregationPrice = 0;
             for (String ingredient : product.getIngredients()) {
               int amountIngredient = doFindProduct(productKey).getQuantityIngredient(ingredient);
 
@@ -385,7 +384,7 @@ public class Warehouse implements Serializable {
                 }
               }
             }
-            aggregationPrice *= (1+ product.getReduction());
+            aggregationPrice *= (1 + product.getReduction());
             price += aggregationPrice;
             amountNeeded--;
 
@@ -437,9 +436,11 @@ public class Warehouse implements Serializable {
     this.warehouseGlobalBalance += amount;
   }
 
-  public void doReceivePayment(int transactionKey)throws UnknownTransactionKeyCException {
+  public void doReceivePayment(int transactionKey) throws UnknownTransactionKeyCException {
     // Fix for purchase and desaggregations
-    if (transactionKey >= transactionNumber || transactionKey < 0) {throw new UnknownTransactionKeyCException(((Integer) transactionKey).toString());}
+    if (transactionKey >= transactionNumber || transactionKey < 0) {
+      throw new UnknownTransactionKeyCException(((Integer) transactionKey).toString());
+    }
     Sale sale = (Sale) allTransactions.get(transactionKey);
     sale.setPaymentDate(time);
   }
@@ -450,29 +451,56 @@ public class Warehouse implements Serializable {
 
   }
 
-  public void doRegisterBreakdown(String partnerKey , String productKey, int amount) throws UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException
-  {
-    Partner partner = allPartners.get(partnerKey);
-    Derived product = allProducts.get(doFindProduct(productKey));
+  public void doRegisterBreakdown(String partnerKey, String productKey, int amount) throws UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
+    Partner partner = doShowPartner(partnerKey);
+    Derived product = doFindProduct(productKey);
 
-    if (product.getActualStock() < amount) {throw new UnavailableProductCException(productKey,amount, product.getActualStock());}
+    if (product.getActualStock() < amount) {
+      throw new UnavailableProductCException(productKey, amount, product.getActualStock());
+    }
     if (product.getRecipe().equals("")) return;
 
-    for (String ingredient :product.getIngredients())
-    {
-      if (doFindProduct(ingredient).getActualStock() == 0)
-      {
-        // receita might break
-        doRegisterBatch(ingredient,partner.getPartnerKey(),doFindProduct(ingredient).getMaxPrice(),product.getQuantityIngredient(ingredient),doFindProduct(ingredient).getReduction(),doFindProduct(ingredient).getRecipe());
+    int initialValue = 0;
+    int finalValue = 0;
+    int auxAmount = amount;
+
+
+    for (Batch batch : product.get_batches()) {
+      if (auxAmount > batch.getStock()) {
+        auxAmount -= batch.getStock();
+        initialValue += batch.emptyStock();
+      } else {
+        initialValue += batch.getPrice() * auxAmount;
+        batch.decreaseStock(auxAmount);
+        auxAmount = 0;
+        break;
       }
-      else
-      {
-        int price =  (int) doFindProduct(ingredient).get_batches().first().getPrice();
-        doRegisterBatch(ingredient,partner.getPartnerKey(),price,product.getQuantityIngredient(ingredient),doFindProduct(ingredient).getReduction(),doFindProduct(ingredient).getRecipe());
+    }
+    String components = "";
+
+
+    for (String ingredient : product.getIngredients()) {
+      if (doFindProduct(ingredient).getActualStock() == 0) {
+        doRegisterBatch(ingredient, partner.getPartnerKey(), doFindProduct(ingredient).getMaxPrice(), product.getQuantityIngredient(ingredient), doFindProduct(ingredient).getReduction(), doFindProduct(ingredient).getRecipe());
+        finalValue += doFindProduct(ingredient).getMaxPrice() * product.getQuantityIngredient(ingredient)* amount;
+        components += ingredient + ":" + product.getQuantityIngredient(ingredient)* amount + ":" + doFindProduct(ingredient).getMaxPrice() * product.getQuantityIngredient(ingredient)* amount + "#";
+      } else {
+        int price = (int) doFindProduct(ingredient).get_batches().first().getPrice();
+        doRegisterBatch(ingredient, partner.getPartnerKey(), price, product.getQuantityIngredient(ingredient), doFindProduct(ingredient).getReduction(), doFindProduct(ingredient).getRecipe());
+        finalValue += price * product.getQuantityIngredient(ingredient)* amount;
+        components += ingredient + ":" + product.getQuantityIngredient(ingredient)* amount + ":" + price + "#";
       }
 
     }
-
+    components.substring(0, components.length() -1);
+    int payment = initialValue - finalValue;
+    if (payment > 0)
+    {
+      changeGlobalBalance(payment);
+    }
+     Breakdown breakdown = new Breakdown(transactionNumber++,time,partnerKey,productKey,amount,payment,components);
+    allTransactions.add(breakdown);
+    partner.addTransaction(breakdown);
 
   }
 
