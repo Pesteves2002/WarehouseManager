@@ -1,5 +1,6 @@
 package ggc.app.transactions;
 
+import ggc.exceptions.UnknownTransactionKeyCException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import ggc.WarehouseManager;
@@ -19,8 +20,11 @@ public class DoReceivePayment extends Command<WarehouseManager> {
   @Override
   public final void execute() throws CommandException {
     //FIXME implement command
-    int transactionKey = integerField("transactionKey");
-    _receiver.receivePayment(transactionKey);
+    try {
+      int transactionKey = integerField("transactionKey");
+      _receiver.receivePayment(transactionKey);
+    }
+    catch (UnknownTransactionKeyCException e ) {throw new UnknownTransactionKeyException( Integer.parseInt(e.getUnknownKey()));}
   }
 
 }

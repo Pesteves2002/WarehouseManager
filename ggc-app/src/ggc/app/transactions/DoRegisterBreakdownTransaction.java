@@ -1,5 +1,6 @@
 package ggc.app.transactions;
 
+import pt.tecnico.uilib.forms.Field;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import ggc.WarehouseManager;
@@ -24,6 +25,11 @@ public class DoRegisterBreakdownTransaction extends Command<WarehouseManager> {
   @Override
   public final void execute() throws CommandException {
     //FIXME implement command
+
+    String partnerKey = stringField("partnerKey");
+    String productKey = stringField("productKey");
+    int amount = integerField("amount");
+
   }
 
 }

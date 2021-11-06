@@ -222,7 +222,7 @@ public class WarehouseManager {
     _warehouse.doRegisterSaleTransaction(partnerKey, productKey, amount, deadline);
   }
 
-  public void receivePayment(int transactionKey) {
+  public void receivePayment(int transactionKey) throws UnknownTransactionKeyCException {
     _warehouse.doReceivePayment(transactionKey);
   }
 

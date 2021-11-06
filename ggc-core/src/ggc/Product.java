@@ -41,7 +41,9 @@ public class  Product implements Serializable {
     return productKey;
   }
 
-
+  public double getMaxPrice() {
+    return maxPrice;
+  }
 
   /**
    * Return the batch of a product all sorted

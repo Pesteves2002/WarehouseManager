@@ -1,7 +1,14 @@
 package ggc;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.TreeSet;
+import java.util.Set;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Collections;
+import java.util.Collection;
 
 /**
  * This class represents the owner of some batches,
@@ -38,7 +45,7 @@ public class Partner implements Serializable {
   private List<Transaction> transactionList = new LinkedList<>();
 
   /** Map with all the Batches owned by the Partner */
-  private TreeSet<Batch> thisBatches = new TreeSet<> (new BatchComparator());
+    private TreeMap<String, Set<Batch>> thisBatches = new TreeMap<>(new CollatorWrapper());
   /** Map with all the Transactions made by the Partner */
   private Map<Integer, Transaction> thisTransactions = new TreeMap<Integer, Transaction>();
 
@@ -63,7 +70,12 @@ public class Partner implements Serializable {
   }
 
   public Collection<Batch> getThisBatches() {
-    return Collections.unmodifiableCollection(thisBatches);
+    TreeSet<Batch>  batches = new TreeSet<>( new BatchComparator());
+    for ( Set<Batch> set : thisBatches.values())
+    {
+      batches.addAll(set);
+    }
+    return Collections.unmodifiableCollection(batches);
   }
 
   public void addTransaction(Transaction transaction) {
@@ -80,8 +92,14 @@ public class Partner implements Serializable {
    *
    * @param batch
    */
-  public void addBatch(Batch batch) {
-    thisBatches.add(batch);
+  public void addBatch(String productKey,Batch batch) {
+    if (thisBatches.get(productKey) == null)
+    {
+      TreeSet<Batch> batches = new TreeSet<>(new BatchComparator());
+      batches.add(batch);
+      thisBatches.put(productKey,batches);
+    }
+    thisBatches.get(productKey).add(batch);
   }
 
   public List<Transaction> getTransactionList() {
