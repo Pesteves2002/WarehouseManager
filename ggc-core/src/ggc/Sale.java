@@ -13,12 +13,15 @@ public class Sale extends Transaction{
 
   private boolean salePayed;
 
+  private boolean derivedProduct;
 
-  public Sale(int transactionKey, int transactionDate, String partnerKey, String productKey, int amount, double baseValue , int deadLine , boolean salePayed) {
+
+  public Sale(int transactionKey, int transactionDate, String partnerKey, String productKey, int amount, double baseValue , int deadLine , boolean salePayed , boolean derivedProduct) {
     super(transactionKey, transactionDate, partnerKey, productKey, amount, baseValue);
     this.deadLine = deadLine;
     this.currentValue = baseValue;
     this.salePayed = salePayed;
+    this.derivedProduct = derivedProduct;
   }
 
   public double getCurrentValue() {
@@ -36,10 +39,15 @@ public class Sale extends Transaction{
 
   public void setPaymentDate(int paymentDate) {
     this.paymentDate = paymentDate;
+    this.salePayed = true;
   }
 
   public boolean isSalePayed() {
     return salePayed;
+  }
+
+  public boolean isDerivedProduct() {
+    return derivedProduct;
   }
 
   public String accept (TransactionVisitor tv)

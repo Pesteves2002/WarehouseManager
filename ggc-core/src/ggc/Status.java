@@ -12,13 +12,20 @@ public abstract class Status implements Serializable {
 
   protected Partner partner;
 
-  public Status(Partner partner) {
+  protected int points;
+
+  public Status(Partner partner, int points) {
     this.partner = partner;
+    this.points = points;
   }
 
-  public void normalToSelection() {}
-  public void selectionToElite() {}
-  public void eliteToSelection() {}
-  public void selectionToNormal() {}
+  public int getPoints() {
+    return points;
+  }
+
+  public abstract double p1(int baseValue) ;
+  public abstract double p2(int baseValue, int differenceOfDays) ;
+  public abstract double p3(int baseValue, int differenceOfDays) ;
+  public abstract double p4(int baseValue, int differenceOfDays) ;
 
 }

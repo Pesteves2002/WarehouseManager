@@ -15,15 +15,17 @@ public class ShowTransaction implements TransactionVisitor {
 
   @Override
   public String visitSale(Sale sale) {
-    return  "VENDA" + "|"+
+    String s = "VENDA" + "|"+
             sale.getTransactionKey() + "|" +
             sale.getPartnerKey() + "|" +
             sale.getProductKey() + "|" +
             sale.getAmount() + "|" +
             (int) sale.getBaseValue() + "|" +
-            sale.getCurrentValue()+ "|" +
-            sale.getDeadLine() + "|" +
-            sale.getPaymentDate();
+            (int) sale.getCurrentValue()+ "|" +
+            sale.getDeadLine() ;
+    if (sale.isSalePayed())
+      return  s + "|" + sale.getPaymentDate();
+    return s;
   }
 
   @Override

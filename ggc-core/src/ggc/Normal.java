@@ -5,11 +5,44 @@ public class Normal extends Status {
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202110262230L;
 
-  public Normal(Partner partner) {
-    super(partner);
+
+
+  public Normal(Partner partner, int points) {
+    super(partner, points);
   }
 
-  public void normalToSelection() {partner.setStatus(new Selection(partner));}
+  public void normalToSelection() {partner.setStatus(new Selection(partner, points));}
+
+  public double p1 (int baseValue)
+  {
+    points += baseValue *10;
+    if (points > 2000)
+    {
+      partner.setStatus(new Selection(partner,points));
+    }
+      return -0.1;
+  }
+
+  public double p2 (int baseValue, int differenceOfDays)
+  {
+    points += baseValue *10;
+    if (points > 2000)
+    {
+      partner.setStatus(new Selection(partner,points));
+    }
+    return 0;
+  }
+
+  public double p3(int baseValue, int differenceOfDays) {
+    points = 0;
+    return - differenceOfDays * 0.05;
+  }
+
+  public double p4(int baseValue, int differenceOfDays)
+  {
+    points = 0;
+    return - differenceOfDays * 0.1;
+  }
 
   /** String representation of the Normal Status */
   public String toString() {

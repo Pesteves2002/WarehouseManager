@@ -317,7 +317,7 @@ public class Warehouse implements Serializable {
 
           }
         }
-        Sale sale = new Sale(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false);
+        Sale sale = new Sale(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false, false);
         partner.addTransaction(sale);
         allTransactions.add(sale);
 
@@ -342,7 +342,7 @@ public class Warehouse implements Serializable {
               price += batch.getPrice() * numberProducts;
             }
           }
-          Sale sale = new Sale(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false);
+          Sale sale = new Sale(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false, true);
           partner.addTransaction(sale);
           allTransactions.add(sale);
 
@@ -390,7 +390,7 @@ public class Warehouse implements Serializable {
 
           }
 
-          Sale sale = new Sale(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false);
+          Sale sale = new Sale(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false, true);
           partner.addTransaction(sale);
           allTransactions.add(sale);
         }
@@ -441,9 +441,20 @@ public class Warehouse implements Serializable {
     if (transactionKey >= transactionNumber || transactionKey < 0) {
       throw new UnknownTransactionKeyCException(((Integer) transactionKey).toString());
     }
+    try{
     Sale sale = (Sale) allTransactions.get(transactionKey);
+
+     Partner partner =  doShowPartner(sale.getPartnerKey());
+     int differenceOfDays = sale.getDeadLine() - time;
+    double partnerBonus = partner.pay(differenceOfDays,sale.isDerivedProduct(), (int) sale.getBaseValue());
+    double value = sale.getBaseValue()*(1 + partnerBonus);
     sale.setPaymentDate(time);
+    partner.addMoneySpentOnSales((int)value);
+    partner.addMoneyExpectedToSpendOnPurchases((int)value);
   }
+  catch (UnknownPartnerKeyCException e ) {e.printStackTrace();}
+  }
+
 
   public Collection<Transaction> doLookupPaymentsByPartner(String partnerKey) throws UnknownPartnerKeyCException {
     Partner partner = doShowPartner(partnerKey);

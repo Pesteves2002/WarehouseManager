@@ -5,12 +5,37 @@ public class Elite extends Status {
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202110262231L;
 
-  public Elite(Partner partner) {
-    super(partner);
+  public Elite(Partner partner , int points) {
+    super(partner , points);
   }
 
-  @Override
-  public void eliteToSelection() {partner.setStatus(new Selection(partner));  }
+  public void eliteToSelection() {partner.setStatus(new Selection(partner, points));  }
+
+  public double p1 (int baseValue)
+  {
+    points += baseValue *10;
+    return -0.1;
+  }
+
+  public double p2 (int baseValue, int differenceOfDays)
+  {
+    points += baseValue *10;
+    return 0.1;
+  }
+
+  public double p3(int baseValue, int differenceOfDays) {
+    return 0.05;
+  }
+
+  public double p4(int baseValue, int differenceOfDays)
+  {
+    if (differenceOfDays > 15) {
+      eliteToSelection();
+      points *= 0.25;
+    }
+    return  0;
+  }
+
 
   /** String representation of the Elite Status */
   public String toString() {
