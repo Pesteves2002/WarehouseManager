@@ -38,7 +38,7 @@ public class Partner implements Serializable {
   private List<Transaction> transactionList = new LinkedList<>();
 
   /** Map with all the Batches owned by the Partner */
-  private TreeMap<String, Batch> thisBatches = new TreeMap<String, Batch> (new CollatorWrapper());
+  private TreeSet<Batch> thisBatches = new TreeSet<> (new BatchComparator());
   /** Map with all the Transactions made by the Partner */
   private Map<Integer, Transaction> thisTransactions = new TreeMap<Integer, Transaction>();
 
@@ -63,7 +63,7 @@ public class Partner implements Serializable {
   }
 
   public Collection<Batch> getThisBatches() {
-    return Collections.unmodifiableCollection(thisBatches.values());
+    return Collections.unmodifiableCollection(thisBatches);
   }
 
   public void addTransaction(Transaction transaction) {
@@ -81,7 +81,7 @@ public class Partner implements Serializable {
    * @param batch
    */
   public void addBatch(Batch batch) {
-    thisBatches.put(batch.getThisProductID(), batch);
+    thisBatches.add(batch);
   }
 
   public List<Transaction> getTransactionList() {
