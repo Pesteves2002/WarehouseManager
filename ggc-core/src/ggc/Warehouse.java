@@ -199,11 +199,12 @@ public class Warehouse implements Serializable {
     return Collections.unmodifiableCollection(allProducts.values());
   }
 
-  public Transaction doShowTransaction(int index) throws UnknownTransactionKeyCException {
+  public String doShowTransaction(int index) throws UnknownTransactionKeyCException {
     if (index >= transactionKey) {
       throw new UnknownTransactionKeyCException(((Integer) index).toString());
     }
-    return allTransactions.get(index);
+
+    return allTransactions.get(index).accept(new ShowTransaction());
   }
 
   /**
@@ -222,7 +223,12 @@ public class Warehouse implements Serializable {
 
   public Collection<Batch> doShowBatchesByPartner(String partnerKey) throws UnknownKeyCException {
     Partner partner = doShowPartner(partnerKey);
-    return partner.getThisBatches();
+    List <Batch> batches =  new LinkedList<>();
+    for (Batch batch : partner.getThisBatches())
+    {
+      batches.add(batch);
+    }
+    return  Collections.unmodifiableCollection(batches);
 
   }
 
@@ -305,10 +311,11 @@ public class Warehouse implements Serializable {
           }
           // produto nao suficiente numa batch
           else {
-            int numberProducts = batch.emptyStock();
+            int numberProducts = batch.getStock();
+             price += batch.emptyStock();
             amount -= numberProducts;
             product.reduceStock(numberProducts);
-            price += batch.getPrice() * numberProducts;
+
           }
         }
         Sale sale = new Sale(transactionKey++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false);
@@ -316,10 +323,10 @@ public class Warehouse implements Serializable {
         allTransactions.add(sale);
 
       } else {
-        int price = 0;
+
         int initialAmount = amount;
         if (product.getActualStock() > amount) { // Se existir derivado suficiente
-
+          int price = 0;
           for (Batch batch : product.get_batches()) {
             // produto suficiente numa batch
             if (amount <= batch.getStock()) {
@@ -329,7 +336,8 @@ public class Warehouse implements Serializable {
               break;
             } // produto nao suficiente numa batch
             else {
-              int numberProducts = batch.emptyStock();
+              int numberProducts = batch.getStock();
+              price += batch.emptyStock();
               amount -= numberProducts;
               product.reduceStock(numberProducts);
               price += batch.getPrice() * numberProducts;
@@ -349,11 +357,11 @@ public class Warehouse implements Serializable {
               throw new UnavailableProductCException(ingredient, amount, product.getActualStock());
             }
           }
-          product.clearAllStock();
 
+          int price = product.clearAllStock();
 
           while (amountNeeded > 0) {
-
+              int aggregationPrice = 0;
             for (String ingredient : product.getIngredients()) {
               int amountIngredient = doFindProduct(productKey).getQuantityIngredient(ingredient);
 
@@ -363,7 +371,7 @@ public class Warehouse implements Serializable {
                   if (amountIngredient <= batch.getStock()) {
                     batch.decreaseStock(amountIngredient);
                     doFindProduct(ingredient).addStock(-amountIngredient);
-                    price += batch.getPrice() * amountIngredient;
+                    aggregationPrice += batch.getPrice() * amountIngredient;
                     amountIngredient = 0;
                     break;
                   } // produto nao suficiente numa batch
@@ -372,20 +380,22 @@ public class Warehouse implements Serializable {
                     batch.decreaseStock(numberProducts);
                     doFindProduct(ingredient).addStock(-numberProducts);
                     amountIngredient -= numberProducts;
-                    price += batch.getPrice() * numberProducts;
+                    aggregationPrice += batch.getPrice() * numberProducts;
                   }
                 }
               }
             }
-            price *= product.getReduction();
+            aggregationPrice *= (1+ product.getReduction());
+            price += aggregationPrice;
             amountNeeded--;
 
           }
 
+          Sale sale = new Sale(transactionKey++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false);
+          partner.addTransaction(sale);
+          allTransactions.add(sale);
         }
-        Sale sale = new Sale(transactionKey++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false);
-        partner.addTransaction(sale);
-        allTransactions.add(sale);
+
       }
 
 
@@ -436,6 +446,8 @@ public class Warehouse implements Serializable {
   public Collection<Transaction> doLookupPaymentsByPartner(String partnerKey) throws UnknownPartnerKeyCException {
     Partner partner = doShowPartner(partnerKey);
     return Collections.unmodifiableCollection(partner.getThisTransactions().values());
+
+
 
 
   }

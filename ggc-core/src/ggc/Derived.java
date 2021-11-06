@@ -77,13 +77,7 @@ public class Derived extends Product {
     return recipe;
   }
 
-  public void clearAllStock (){
-    for (Batch batch : this.get_batches())
-    {
-      batch.emptyStock();
-    }
-  this.setActualStock(0);
-  }
+
 
   /**
    * Get the String representation of the Derived Product

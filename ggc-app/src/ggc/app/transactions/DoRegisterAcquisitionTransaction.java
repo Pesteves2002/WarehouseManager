@@ -36,8 +36,9 @@ public class DoRegisterAcquisitionTransaction extends Command<WarehouseManager> 
       int price = integerField("price");
       int amount = integerField("amount");
       if (! _receiver.registerAcquisitionTransaction(partnerKey, productKey, price, amount)){
-        String hasRecipe = Form.requestString(Prompt.addRecipe());
-        if (hasRecipe.equals("n")){
+
+       boolean hasRecipe = Form.confirm(Prompt.addRecipe());
+        if (! hasRecipe){
           _receiver.registerNewProduct(productKey, partnerKey, price, amount, 0, "");
         }
         else {

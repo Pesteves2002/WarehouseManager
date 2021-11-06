@@ -38,7 +38,7 @@ public class Partner implements Serializable {
   private List<Transaction> transactionList = new LinkedList<>();
 
   /** Map with all the Batches owned by the Partner */
-  private Map<String, Batch> thisBatches = new TreeMap<String, Batch>(new CollatorWrapper());
+  private TreeMap<String, Batch> thisBatches = new TreeMap<String, Batch> (new CollatorWrapper());
   /** Map with all the Transactions made by the Partner */
   private Map<Integer, Transaction> thisTransactions = new TreeMap<Integer, Transaction>();
 
@@ -88,7 +88,9 @@ public class Partner implements Serializable {
     return transactionList;
   }
 
-  protected void setStatus(Status status) { this.status = status; }
+  protected void setStatus(Status status) {
+    this.status = status;
+  }
 
 
   /**

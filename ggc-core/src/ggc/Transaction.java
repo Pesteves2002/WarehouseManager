@@ -60,8 +60,4 @@ public abstract class Transaction implements Serializable {
 
   public  abstract String accept(TransactionVisitor tv) ;
 
-  @Override
-  public String toString() {
-    return transactionKey + "|" + partnerKey + "|" + productKey + "|" + amount + "|" + baseValue + "|" + paymentDate;
-  }
 }

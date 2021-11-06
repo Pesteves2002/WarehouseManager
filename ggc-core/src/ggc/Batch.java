@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Class that holds a Product, its price, its quantity, the reduction and the partner
  */
-public class Batch implements Serializable {
+public class Batch implements Serializable, Comparable<Batch> {
   /** Serial number for serialization */
   private static final long serialVersionUID = 202110262232L;
 
@@ -87,7 +87,7 @@ public class Batch implements Serializable {
   }
 
   public int emptyStock() {
-    int aux = stock;
+    int aux = (int) (stock*price);
     stock = 0;
     return aux;
   }
@@ -100,5 +100,19 @@ public class Batch implements Serializable {
   @Override
   public String toString() {
     return product + "|" + partner + "|" + Math.round(price) + "|" + stock;
+  }
+
+  public int compareTo (Batch other)
+  {
+    CollatorWrapper collator = new CollatorWrapper();
+    if (collator.compare(this.getThisProductID(), other.getThisProductID()) == 0) {
+      if (collator.compare(this.get_partner(), other.get_partner()) == 0) {
+        if (this.getPrice() - other.getPrice() == 0)
+          return this.getStock() - other.getStock();
+        return (int) this.getPrice() - (int) other.getPrice();
+      }
+      return collator.compare(this.get_partner(), other.get_partner());
+    }
+    return collator.compare(this.getThisProductID(), other.getThisProductID());
   }
 }

@@ -199,7 +199,7 @@ public class WarehouseManager {
     _warehouse.doRegisterTransaction(product, partnerKey, price, stock, reduction, recipe);
   }
 
-  public Transaction showTransaction(int index) throws UnknownTransactionKeyCException {
+  public String showTransaction(int index) throws UnknownTransactionKeyCException {
     return _warehouse.doShowTransaction(index);
   }
 

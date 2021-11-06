@@ -60,6 +60,17 @@ public class  Product implements Serializable {
     this.actualStock = actualStock;
   }
 
+  public int clearAllStock ()
+  {
+    int price = 0;
+    for (Batch batch : batches)
+    {
+      price += batch.emptyStock();
+    }
+    this.setActualStock(0);
+    return price;
+  }
+
   /**
    * Adds stock when a new batch is created
    *
