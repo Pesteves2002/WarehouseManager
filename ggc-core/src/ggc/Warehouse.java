@@ -223,11 +223,8 @@ public class Warehouse implements Serializable {
 
   public Collection<Batch> doShowBatchesByPartner(String partnerKey) throws UnknownKeyCException {
     Partner partner = doShowPartner(partnerKey);
-    List<Batch> batches = new LinkedList<>();
-    for (Batch batch : partner.getThisBatches()) {
-      batches.add(batch);
-    }
-    return Collections.unmodifiableCollection(batches);
+
+    return Collections.unmodifiableCollection(partner.getThisBatches());
 
   }
 

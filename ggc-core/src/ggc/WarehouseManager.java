@@ -14,6 +14,7 @@ import java.io.FileInputStream;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.TreeSet;
 
 import ggc.exceptions.*;
 
@@ -178,7 +179,7 @@ public class WarehouseManager {
    *
    * @return Collection<Batch>
    */
-  public Collection<Batch> showBatchesByPartner(String partnerKey) throws UnknownKeyCException {
+  public Collection<Batch>  showBatchesByPartner(String partnerKey) throws UnknownKeyCException {
     return _warehouse.doShowBatchesByPartner(partnerKey);
   }
 
