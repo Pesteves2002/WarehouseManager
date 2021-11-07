@@ -184,11 +184,12 @@ public class Warehouse implements Serializable {
       Derived newProduct = new Derived(product, price, stock, recipe, reduction);
       allProducts.put(product, newProduct);
     }
-    allProducts.get(product).addBatch(newBatch);
 
-    partner.addBatch(newBatch.getThisProductID(), newBatch);
+      allProducts.get(product).addBatch(newBatch);
+
+      partner.addBatch(newBatch.getThisProductID(), newBatch);
+
   }
-
 
   /**
    * Returns a Collection of Products
@@ -228,15 +229,14 @@ public class Warehouse implements Serializable {
 
   }
 
-  public Collection<Batch> doShowBatchesByProduct(String productKey) throws UnknownKeyCException {
+  public Collection<Batch> doShowBatchesByProduct(String productKey) throws UnknownProductKeyCException {
 
-    for (Product product : allProducts.values()) {
-      if (productKey.compareToIgnoreCase(product.getProductKey()) == 0) {
-        return Collections.unmodifiableCollection(product.get_batches());
-      }
+    Product product = doFindProduct(productKey);
+    {
+      return Collections.unmodifiableCollection(product.get_batches());
     }
-    throw new UnknownProductKeyCException(productKey);
   }
+
 
   public Collection<Batch> doLookupProductBatchesUnderGivenPrice(int priceLimit) {
     List<Batch> batchesUnderGivenPrice = new ArrayList<>();
@@ -276,6 +276,7 @@ public class Warehouse implements Serializable {
   public void doRegisterTransaction(String productKey, String partnerKey, double price, int amount, float reduction, String recipe) throws UnknownPartnerKeyCException {
     try {
       Partner partner = doShowPartner(partnerKey);
+      price *= amount;
       Acquisition acquisition = new Acquisition(transactionNumber++, time, partner.getPartnerKey(), productKey, amount, price);
       allTransactions.add(acquisition);
       partner.addTransaction(acquisition);
@@ -438,18 +439,19 @@ public class Warehouse implements Serializable {
     if (transactionKey >= transactionNumber || transactionKey < 0) {
       throw new UnknownTransactionKeyCException(((Integer) transactionKey).toString());
     }
-    try{
-    Sale sale = (Sale) allTransactions.get(transactionKey);
+    try {
+      Sale sale = (Sale) allTransactions.get(transactionKey);
 
-     Partner partner =  doShowPartner(sale.getPartnerKey());
-     int differenceOfDays = sale.getDeadLine() - time;
-    double partnerBonus = partner.pay(differenceOfDays,sale.isDerivedProduct(), (int) sale.getBaseValue());
-    double value = sale.getBaseValue()*(1 + partnerBonus);
-    sale.setPaymentDate(time);
-    partner.addMoneySpentOnSales((int)value);
-    partner.addMoneyExpectedToSpendOnPurchases((int)value);
-  }
-  catch (UnknownPartnerKeyCException e ) {e.printStackTrace();}
+      Partner partner = doShowPartner(sale.getPartnerKey());
+      int differenceOfDays = sale.getDeadLine() - time;
+      double partnerBonus = partner.pay(differenceOfDays, sale.isDerivedProduct(), (int) sale.getBaseValue());
+      double value = sale.getBaseValue() * (1 + partnerBonus);
+      sale.setPaymentDate(time);
+      partner.addMoneySpentOnSales((int) value);
+      partner.addMoneyExpectedToSpendOnPurchases((int) value);
+    } catch (UnknownPartnerKeyCException e) {
+      e.printStackTrace();
+    }
   }
 
 
@@ -490,23 +492,22 @@ public class Warehouse implements Serializable {
     for (String ingredient : product.getIngredients()) {
       if (doFindProduct(ingredient).getActualStock() == 0) {
         doRegisterBatch(ingredient, partner.getPartnerKey(), doFindProduct(ingredient).getMaxPrice(), product.getQuantityIngredient(ingredient), doFindProduct(ingredient).getReduction(), doFindProduct(ingredient).getRecipe());
-        finalValue += doFindProduct(ingredient).getMaxPrice() * product.getQuantityIngredient(ingredient)* amount;
-        components += ingredient + ":" + product.getQuantityIngredient(ingredient)* amount + ":" + doFindProduct(ingredient).getMaxPrice() * product.getQuantityIngredient(ingredient)* amount + "#";
+        finalValue += doFindProduct(ingredient).getMaxPrice() * product.getQuantityIngredient(ingredient) * amount;
+        components += ingredient + ":" + product.getQuantityIngredient(ingredient) * amount + ":" + doFindProduct(ingredient).getMaxPrice() * product.getQuantityIngredient(ingredient) * amount + "#";
       } else {
         int price = (int) doFindProduct(ingredient).get_batches().first().getPrice();
         doRegisterBatch(ingredient, partner.getPartnerKey(), price, product.getQuantityIngredient(ingredient), doFindProduct(ingredient).getReduction(), doFindProduct(ingredient).getRecipe());
-        finalValue += price * product.getQuantityIngredient(ingredient)* amount;
-        components += ingredient + ":" + product.getQuantityIngredient(ingredient)* amount + ":" + price + "#";
+        finalValue += price * product.getQuantityIngredient(ingredient) * amount;
+        components += ingredient + ":" + product.getQuantityIngredient(ingredient) * amount + ":" + price + "#";
       }
 
     }
-    components.substring(0, components.length() -1);
+    components.substring(0, components.length() - 1);
     int payment = initialValue - finalValue;
-    if (payment > 0)
-    {
+    if (payment > 0) {
       changeGlobalBalance(payment);
     }
-     Breakdown breakdown = new Breakdown(transactionNumber++,time,partnerKey,productKey,amount,payment,components);
+    Breakdown breakdown = new Breakdown(transactionNumber++, time, partnerKey, productKey, amount, payment, components);
     allTransactions.add(breakdown);
     partner.addTransaction(breakdown);
 

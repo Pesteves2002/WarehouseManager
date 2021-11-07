@@ -11,7 +11,7 @@ public class Derived extends Product {
   private static final long serialVersionUID = 202110262232L;
 
   /** List that contains the ingredients */
-  private Set<String> ingredients = new TreeSet<>(new CollatorWrapper());
+  private List<String> ingredients = new LinkedList<>();
 
   /** Map that contains the quantity of the ingredients */
   private Map<String, Integer> quantityIngredients = new TreeMap<String, Integer>();
@@ -51,7 +51,7 @@ public class Derived extends Product {
     return reduction;
   }
 
-  public Set<String> getIngredients() {
+  public List<String> getIngredients() {
     return ingredients;
   }
 

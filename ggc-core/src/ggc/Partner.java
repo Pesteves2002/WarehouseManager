@@ -36,11 +36,13 @@ public class Partner implements Serializable {
 
   private List<Transaction> transactionList = new LinkedList<>();
 
-
   private Set<Batch> thisBatches = new TreeSet<>(new BatchComparator());
 
   /** Map with all the Transactions made by the Partner */
   private Map<Integer, Transaction> thisTransactions = new TreeMap<Integer, Transaction>();
+
+  private List<Notification> notificationList = new LinkedList<>();
+
 
   /**
    * @param partnerKey
@@ -75,13 +77,17 @@ public class Partner implements Serializable {
   }
 
 
-  public Collection<Batch> getThisBatches() {
-return thisBatches;
+  public Set<Batch> getThisBatches() {
+    return thisBatches;
   }
 
 
   public void addTransaction(Transaction transaction) {
     transactionList.add(transaction);
+    // FIX ME
+    if (transaction instanceof Acquisition) {
+      addMoneySpentOnPurchases((int) transaction.getBaseValue());
+    }
 
   }
 
@@ -95,7 +101,7 @@ return thisBatches;
    * @param batch
    */
   public void addBatch(String productKey, Batch batch) {
-   thisBatches.add(batch);
+    thisBatches.add(batch);
   }
 
   public List<Transaction> getTransactionList() {
