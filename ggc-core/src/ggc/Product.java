@@ -7,7 +7,7 @@ import java.util.*;
  * Class that represents the product that can be stored in a Batch
  * It has a price, and a Stock
  */
-public class  Product implements Serializable {
+public class Product implements Serializable, Subject {
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202110262228L;
 
@@ -19,6 +19,10 @@ public class  Product implements Serializable {
 
   /** Total stock of the product */
   private int actualStock;
+
+  private double minPrice;
+
+  private ArrayList<Observer> observers = new ArrayList<>();
 
   /**
    * All the batches that have the product
@@ -35,6 +39,24 @@ public class  Product implements Serializable {
     this.productKey = productKey;
     this.maxPrice = maxPrice;
     this.actualStock = actualStock;
+    this.minPrice = maxPrice;
+  }
+
+  public void registerObserver(Observer o) {
+    observers.add(o);
+  }
+
+  public void removeObserver(Observer o) {
+    int i = observers.indexOf(o);
+    if (i >= 0) {
+      observers.remove(i);
+    }
+  }
+
+  public void notifyObservers(Notification notification) {
+    for (Observer observer : observers) {
+      observer.update(notification);
+    }
   }
 
   public String getProductKey() {
@@ -62,11 +84,9 @@ public class  Product implements Serializable {
     this.actualStock = actualStock;
   }
 
-  public int clearAllStock ()
-  {
+  public int clearAllStock() {
     int price = 0;
-    for (Batch batch : batches)
-    {
+    for (Batch batch : batches) {
       price += batch.emptyStock();
     }
     this.setActualStock(0);
@@ -80,8 +100,11 @@ public class  Product implements Serializable {
    */
 
 
-
   public void addStock(int newStock) {
+    if (actualStock == 0) {
+      notifyObservers(new New(this.productKey, (int) batches.first().getPrice()));
+    }
+
     actualStock += newStock;
   }
 
@@ -91,9 +114,11 @@ public class  Product implements Serializable {
    *
    * @param value
    */
-  public void changeMaxPrice(double value) {
+  public void changeMinMaxPrice(double value) {
     if (maxPrice < value)
       maxPrice = value;
+    if (minPrice > value)
+      minPrice = value;
   }
 
   /**
@@ -102,14 +127,19 @@ public class  Product implements Serializable {
    * @param newBatch
    */
   public void addBatch(Batch newBatch) {
+
+    if (newBatch.getPrice() <= minPrice && !batches.isEmpty()) {
+      notifyObservers(new Bargain(this.productKey,  (int) newBatch.getPrice()));
+    }
     batches.add(newBatch);
+    changeMinMaxPrice(newBatch.getPrice());
+
   }
 
 
   public void reduceStock(int amount) {
     this.actualStock -= amount;
   }
-
 
 
   /**

@@ -9,7 +9,7 @@ import java.util.stream.Stream;
  * This class represents the owner of some batches,
  * it can buy or sell some products
  */
-public class Partner implements Serializable {
+public class Partner implements Serializable, Observer {
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202110262229L;
 
@@ -36,12 +36,14 @@ public class Partner implements Serializable {
 
   private List<Transaction> transactionList = new LinkedList<>();
 
+  private List<Notification> notificationList = new LinkedList<>();
+
   private Set<Batch> thisBatches = new TreeSet<>(new BatchComparator());
 
   /** Map with all the Transactions made by the Partner */
   private Map<Integer, Transaction> thisTransactions = new TreeMap<Integer, Transaction>();
 
-  private List<Notification> notificationList = new LinkedList<>();
+  private Map<String, Product> thisNotifications = new TreeMap<>();
 
 
   /**
@@ -54,6 +56,42 @@ public class Partner implements Serializable {
     this.partnerName = partnerName;
     this.partnerAddress = partnerAddress;
   }
+
+  public void addProductNotification(Product product) {
+    String productKey = product.getProductKey();
+    thisNotifications.put(productKey, product);
+    thisNotifications.get(productKey).registerObserver(this);
+  }
+
+  public void toggleProductNotification(Product product)
+  {
+
+    if (thisNotifications.get(product.getProductKey()) == null)
+    {
+      addProductNotification(product);
+    }
+    thisNotifications.remove(product.getProductKey());
+  }
+
+  public void update(Notification notification) {
+    notificationList.add(notification);
+  }
+
+  public String showAndClearNotifications() {
+    String s = "\n";
+    for (Notification notification: notificationList)
+    {
+      s += notification.toString() + "\n";
+    }
+    if (!s.equals("\n"))
+    s.substring(0, s.length()-1);
+    else {
+      s = "";
+    }
+    notificationList.clear();
+    return this.toString() + s;
+  }
+
 
   public void addMoneySpentOnSales(int moneySpentOnSales) {
     this.moneySpentOnSales += moneySpentOnSales;
@@ -135,6 +173,7 @@ public class Partner implements Serializable {
    * @return
    */
   public String toString() {
+
     return partnerKey + "|" + partnerName + "|" + partnerAddress + "|" + status + "|" +
             status.getPoints() + "|" + moneySpentOnPurchases + "|" +
             moneyExpectedToSpendOnPurchases + "|" +

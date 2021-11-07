@@ -143,8 +143,8 @@ public class WarehouseManager {
    * @return Partner
    * @throws UnknownKeyCException
    */
-  public Partner showPartner(String id) throws UnknownKeyCException {
-    return _warehouse.doShowPartner(id);
+  public String showPartner(String id) throws UnknownKeyCException {
+    return _warehouse.doRShowPartner(id);
   }
 
   /**
@@ -193,6 +193,11 @@ public class WarehouseManager {
 
   public boolean registerAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws UnknownPartnerKeyCException, UnknownProductKeyCException {
     return _warehouse.doRegisterAcquisitionTransaction(partnerKey, productKey, price, amount);
+  }
+
+  public void toggleProductNotifications(String partnerKey, String productKey) throws UnknownPartnerKeyCException, UnknownProductKeyCException
+  {
+    _warehouse.doToggleProductNotifications(partnerKey,productKey);
   }
 
   public void registerNewProduct(String product, String partnerKey, double price, int stock, float reduction, String recipe) throws UnknownPartnerKeyCException, UnknownProductKeyCException {

@@ -125,6 +125,11 @@ public class Warehouse implements Serializable {
     allPartners.put(partnerKey, new Partner(partnerKey, partnerName, partnerAddress));
   }
 
+  public String doRShowPartner (String partnerkey) throws UnknownPartnerKeyCException
+  {
+    return doShowPartner(partnerkey).showAndClearNotifications();
+  }
+
   /**
    * Returns a Partner given its partnerKey
    *
@@ -132,7 +137,7 @@ public class Warehouse implements Serializable {
    * @return
    * @throws UnknownKeyCException
    */
-  public Partner doShowPartner(String partnerKey) throws UnknownPartnerKeyCException {
+  public Partner  doShowPartner(String partnerKey) throws UnknownPartnerKeyCException {
 
     for (Partner partner : allPartners.values()) {
       if (partnerKey.compareToIgnoreCase(partner.getPartnerKey()) == 0)
@@ -179,13 +184,17 @@ public class Warehouse implements Serializable {
 
     if (allProducts.get(product) != null) {
       allProducts.get(product).addStock(stock);
-      allProducts.get(product).changeMaxPrice(price);
+      allProducts.get(product).changeMinMaxPrice(price);
     } else {
       Derived newProduct = new Derived(product, price, stock, recipe, reduction);
       allProducts.put(product, newProduct);
+      for (Partner partners : allPartners.values()) {
+        partners.addProductNotification(allProducts.get(product));
+      }
     }
-
       allProducts.get(product).addBatch(newBatch);
+
+
 
       partner.addBatch(newBatch.getThisProductID(), newBatch);
 
@@ -235,6 +244,14 @@ public class Warehouse implements Serializable {
     {
       return Collections.unmodifiableCollection(product.get_batches());
     }
+  }
+
+  public void doToggleProductNotifications(String partnerKey, String productKey) throws UnknownPartnerKeyCException, UnknownProductKeyCException
+  {
+    Partner partner = doShowPartner(partnerKey);
+    Product product = doFindProduct(productKey);
+    partner.toggleProductNotification(product);
+
   }
 
 
