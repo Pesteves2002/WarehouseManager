@@ -109,6 +109,105 @@ public class Warehouse implements Serializable {
   }
 
   /**
+   * Finds a Product given it productKey
+   *
+   * @param productKey
+   * @return
+   * @throws UnknownProductKeyCException
+   */
+
+  public Derived doFindProduct(String productKey) throws UnknownProductKeyCException {
+    for (Derived product : allProducts.values()) {
+      if (productKey.compareToIgnoreCase(product.getProductKey()) == 0)
+        return product;
+    }
+    throw new UnknownProductKeyCException(productKey);
+  }
+
+  /**
+   * Returns a Collection of Products
+   *
+   * @return Collection<Product>
+   */
+  public Collection<Product> doShowAllProducts() {
+    return Collections.unmodifiableCollection(allProducts.values());
+  }
+
+  /**
+   * Returns a Collection of Batches
+   *
+   * @return Collection<Batch>
+   */
+  public Collection<Batch> doShowAllBatches() {
+    List<Batch> allBatches = new ArrayList<Batch>();
+    for (Product product : allProducts.values())
+      for (Batch batch : product.get_batches())
+        allBatches.add(batch);
+    return allBatches;
+  }
+
+  /**
+   * Given a partner, it will return all the batches by the partner
+   *
+   * @param partnerKey
+   * @return
+   * @throws UnknownKeyCException
+   */
+
+  public Collection<Batch> doShowBatchesByPartner(String partnerKey) throws UnknownKeyCException {
+    Partner partner = doShowPartner(partnerKey);
+    return Collections.unmodifiableCollection(partner.getThisBatches());
+  }
+
+  /**
+   * Given a product, it will return all the batches with the product
+   *
+   * @param productKey
+   * @return
+   * @throws UnknownProductKeyCException
+   */
+  public Collection<Batch> doShowBatchesByProduct(String productKey) throws UnknownProductKeyCException {
+    Product product = doFindProduct(productKey);
+    return Collections.unmodifiableCollection(product.get_batches());
+  }
+
+  /**
+   * Shows partner with notifications
+   * @param partnerKey
+   * @return
+   * @throws UnknownPartnerKeyCException
+   */
+
+  public String doRShowPartner(String partnerKey) throws UnknownPartnerKeyCException {
+    return doShowPartner(partnerKey).showAndClearNotifications();
+  }
+
+  /**
+   * Returns a Partner given its partnerKey
+   *
+   * @param partnerKey
+   * @return
+   * @throws UnknownKeyCException
+   */
+  public Partner doShowPartner(String partnerKey) throws UnknownPartnerKeyCException {
+    for (Partner partner : allPartners.values()) {
+      if (partnerKey.compareToIgnoreCase(partner.getPartnerKey()) == 0)
+        return allPartners.get(partner.getPartnerKey());
+    }
+    throw new UnknownPartnerKeyCException(partnerKey);
+  }
+
+
+  /**
+   * Returns a Collection with all the Partners
+   *
+   * @return Collection<Partner>
+   */
+  public Collection<Partner> doShowAllPartners() {
+    return Collections.unmodifiableCollection(allPartners.values());
+  }
+
+  /**
    * Registers a new Partner and adds it to the Tree
    *
    * @param partnerKey
@@ -125,45 +224,53 @@ public class Warehouse implements Serializable {
     allPartners.put(partnerKey, new Partner(partnerKey, partnerName, partnerAddress));
   }
 
-  public String doRShowPartner (String partnerkey) throws UnknownPartnerKeyCException
-  {
-    return doShowPartner(partnerkey).showAndClearNotifications();
+  /**
+   * Given a partnerKey and a productKey, it will enable/disable the notifications of the partner for that product
+   * @param partnerKey
+   * @param productKey
+   * @throws UnknownPartnerKeyCException
+   * @throws UnknownProductKeyCException
+   */
+
+  public void doToggleProductNotifications(String partnerKey, String productKey) throws UnknownPartnerKeyCException, UnknownProductKeyCException {
+    Partner partner = doShowPartner(partnerKey);
+    Product product = doFindProduct(productKey);
+    partner.toggleProductNotification(product);
   }
 
   /**
-   * Returns a Partner given its partnerKey
-   *
+   * Shows all the Acquisition transactions for the partner
    * @param partnerKey
    * @return
-   * @throws UnknownKeyCException
+   * @throws UnknownPartnerKeyCException
    */
-  public Partner  doShowPartner(String partnerKey) throws UnknownPartnerKeyCException {
 
-    for (Partner partner : allPartners.values()) {
-      if (partnerKey.compareToIgnoreCase(partner.getPartnerKey()) == 0)
-        return allPartners.get(partner.getPartnerKey());
+  public Collection<String> doShowPartnerAcquisition(String partnerKey) throws UnknownPartnerKeyCException {
+    Partner partner = doShowPartner(partnerKey);
+    List<String> allAcquisitions = new LinkedList<>();
+
+    for (Transaction transaction : partner.getTransactionList()) {
+      allAcquisitions.add(transaction.accept(new ShowAcquisition()));
     }
-    throw new UnknownPartnerKeyCException(partnerKey);
-  }
-
-  public Derived doFindProduct(String productKey) throws UnknownProductKeyCException {
-
-    for (Derived product : allProducts.values()) {
-      if (productKey.compareToIgnoreCase(product.getProductKey()) == 0)
-        return product;
-    }
-    throw new UnknownProductKeyCException(productKey);
+    return Collections.unmodifiableCollection(allAcquisitions);
   }
 
   /**
-   * Returns a Collection with all the Partners
-   *
-   * @return Collection<Partner>
+   * Shows all the sales and breakdowns paid of the partner
+   * @param partnerKey
+   * @return
+   * @throws UnknownPartnerKeyCException
    */
-  public Collection<Partner> doShowAllPartners() {
-    return Collections.unmodifiableCollection(allPartners.values());
-  }
 
+  public Collection<String> doShowPartnerSales(String partnerKey) throws UnknownPartnerKeyCException {
+    Partner partner = doShowPartner(partnerKey);
+    List<String> allAcquisitions = new LinkedList<>();
+
+    for (Transaction transaction : partner.getTransactionList()) {
+      allAcquisitions.add(transaction.accept(new ShowSaleBreakdown()));
+    }
+    return Collections.unmodifiableCollection(allAcquisitions);
+  }
 
   /**
    * Registers a new Batch with a Product and adds it to the Tree
@@ -172,10 +279,8 @@ public class Warehouse implements Serializable {
    * @param partnerKey
    * @param price
    * @param stock
-   * @throws UnknownKeyCException
+   * @throws UnknownPartnerKeyCException
    */
-
-
   public void doRegisterBatch(String product, String partnerKey, double price, int stock, float reduction, String recipe) throws UnknownPartnerKeyCException {
 
     Partner partner = doShowPartner(partnerKey);
@@ -192,291 +297,24 @@ public class Warehouse implements Serializable {
         partners.addProductNotification(allProducts.get(product));
       }
     }
-      allProducts.get(product).addBatch(newBatch);
-
-
-
-      partner.addBatch(newBatch.getThisProductID(), newBatch);
-
+    allProducts.get(product).addBatch(newBatch);
+    partner.addBatch(newBatch.getThisProductID(), newBatch);
   }
 
   /**
-   * Returns a Collection of Products
-   *
-   * @return Collection<Product>
+   * Shows the transaction with the id index
+   * @param index
+   * @return
+   * @throws UnknownTransactionKeyCException
    */
-  public Collection<Product> doShowAllProducts() {
-    return Collections.unmodifiableCollection(allProducts.values());
-  }
 
   public String doShowTransaction(int index) throws UnknownTransactionKeyCException {
     if (index >= transactionNumber) {
       throw new UnknownTransactionKeyCException(((Integer) index).toString());
     }
-
     return allTransactions.get(index).accept(new ShowTransaction());
   }
 
-  /**
-   * Returns a Collection of Batches
-   *
-   * @return Collection<Batch>
-   */
-  public Collection<Batch> doShowAllBatches() {
-    List<Batch> allBatches = new ArrayList<Batch>();
-    for (Product product : allProducts.values())
-      for (Batch batch : product.get_batches())
-        allBatches.add(batch);
-
-    return allBatches;
-  }
-
-  public Collection<Batch> doShowBatchesByPartner(String partnerKey) throws UnknownKeyCException {
-    Partner partner = doShowPartner(partnerKey);
-
-    return Collections.unmodifiableCollection(partner.getThisBatches());
-
-  }
-
-  public Collection<Batch> doShowBatchesByProduct(String productKey) throws UnknownProductKeyCException {
-
-    Product product = doFindProduct(productKey);
-    {
-      return Collections.unmodifiableCollection(product.get_batches());
-    }
-  }
-
-  public void doToggleProductNotifications(String partnerKey, String productKey) throws UnknownPartnerKeyCException, UnknownProductKeyCException
-  {
-    Partner partner = doShowPartner(partnerKey);
-    Product product = doFindProduct(productKey);
-    partner.toggleProductNotification(product);
-
-  }
-
-
-  public Collection<Batch> doLookupProductBatchesUnderGivenPrice(int priceLimit) {
-    List<Batch> batchesUnderGivenPrice = new ArrayList<>();
-    for (Product product : allProducts.values()) {
-      for (Batch batch : product.get_batches()) {
-        if (batch.getPrice() < priceLimit)
-          batchesUnderGivenPrice.add(batch);
-      }
-    }
-    return Collections.unmodifiableCollection(batchesUnderGivenPrice);
-  }
-
-
-  public boolean doRegisterAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws UnknownPartnerKeyCException {
-
-    try {
-      Partner partner = doShowPartner(partnerKey);
-      Derived product = doFindProduct(productKey);
-      if (product != null) {
-        doRegisterBatch(product.getProductKey(), partner.getPartnerKey(), price, amount, product.getReduction(), product.getRecipe());
-        Acquisition acquisition = new Acquisition(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), amount, amount * price);
-        allTransactions.add(acquisition);
-        partner.addTransaction(acquisition);
-        price = -price * amount;
-        changeGlobalBalance(price);
-        return true;
-      } else {
-        return false;
-      }
-    } catch (UnknownPartnerKeyCException e) {
-      throw new UnknownPartnerKeyCException(e.getUnknownKey());
-    } catch (UnknownProductKeyCException e) {
-      return false;
-    }
-  }
-
-  public void doRegisterTransaction(String productKey, String partnerKey, double price, int amount, float reduction, String recipe) throws UnknownPartnerKeyCException {
-    try {
-      Partner partner = doShowPartner(partnerKey);
-      price *= amount;
-      Acquisition acquisition = new Acquisition(transactionNumber++, time, partner.getPartnerKey(), productKey, amount, price);
-      allTransactions.add(acquisition);
-      partner.addTransaction(acquisition);
-
-    } catch (UnknownPartnerKeyCException e) {
-      throw new UnknownPartnerKeyCException(e.getUnknownKey());
-    }
-
-  }
-
-  public void doRegisterSaleTransaction(String partnerKey, String productKey, int amount, int deadline) throws UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
-    try {
-      Partner partner = doShowPartner(partnerKey);
-      Derived product = doFindProduct(productKey);
-
-      if (product.getRecipe().equals("")) {
-        if (product.getActualStock() < amount)
-          throw new UnavailableProductCException(productKey, amount, product.getActualStock());
-        // Metodo para retirar produtos simples
-        int price = 0;
-        int initialAmount = amount;
-        for (Batch batch : product.get_batches()) {
-          // produto suficiente numa batch
-          if (amount <= batch.getStock()) {
-            batch.decreaseStock(amount);
-            product.reduceStock(amount);
-            price += batch.getPrice() * amount;
-            break;
-          }
-          // produto nao suficiente numa batch
-          else {
-            int numberProducts = batch.getStock();
-            price += batch.emptyStock();
-            amount -= numberProducts;
-            product.reduceStock(numberProducts);
-
-          }
-        }
-        Sale sale = new Sale(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false, false);
-        partner.addTransaction(sale);
-        allTransactions.add(sale);
-
-      } else {
-
-        int initialAmount = amount;
-        if (product.getActualStock() > amount) { // Se existir derivado suficiente
-          int price = 0;
-          for (Batch batch : product.get_batches()) {
-            // produto suficiente numa batch
-            if (amount <= batch.getStock()) {
-              batch.decreaseStock(amount);
-              product.reduceStock(amount);
-              price += batch.getPrice() * amount;
-              break;
-            } // produto nao suficiente numa batch
-            else {
-              int numberProducts = batch.getStock();
-              price += batch.emptyStock();
-              amount -= numberProducts;
-              product.reduceStock(numberProducts);
-              price += batch.getPrice() * numberProducts;
-            }
-          }
-          Sale sale = new Sale(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false, true);
-          partner.addTransaction(sale);
-          allTransactions.add(sale);
-
-        } else { // se for preciso criar derivado
-
-          int amountNeeded = amount - product.getActualStock();
-          // check if there's enough components
-          for (String ingredient : product.getIngredients()) {
-            if (product.getQuantityIngredient(ingredient) * amountNeeded > doFindProduct(ingredient).getActualStock()) {
-              // Excecao de qual (?)
-              throw new UnavailableProductCException(ingredient, amount, product.getActualStock());
-            }
-          }
-
-          int price = product.clearAllStock();
-
-          while (amountNeeded > 0) {
-            int aggregationPrice = 0;
-            for (String ingredient : product.getIngredients()) {
-              int amountIngredient = doFindProduct(productKey).getQuantityIngredient(ingredient);
-
-              while (amountIngredient > 0) {
-                for (Batch batch : doFindProduct(ingredient).get_batches()) {
-                  // produto suficiente numa batch
-                  if (amountIngredient <= batch.getStock()) {
-                    batch.decreaseStock(amountIngredient);
-                    doFindProduct(ingredient).addStock(-amountIngredient);
-                    aggregationPrice += batch.getPrice() * amountIngredient;
-                    amountIngredient = 0;
-                    break;
-                  } // produto nao suficiente numa batch
-                  else {
-                    int numberProducts = batch.emptyStock();
-                    batch.decreaseStock(numberProducts);
-                    doFindProduct(ingredient).addStock(-numberProducts);
-                    amountIngredient -= numberProducts;
-                    aggregationPrice += batch.getPrice() * numberProducts;
-                  }
-                }
-              }
-            }
-            aggregationPrice *= (1 + product.getReduction());
-            price += aggregationPrice;
-            amountNeeded--;
-
-          }
-
-          Sale sale = new Sale(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false, true);
-          partner.addTransaction(sale);
-          allTransactions.add(sale);
-        }
-
-      }
-
-
-    } catch (UnknownPartnerKeyCException e) {
-      throw new UnknownProductKeyCException(e.getUnknownKey());
-    } catch (UnknownProductKeyCException e) {
-      throw new UnknownProductKeyCException(e.getUnknownKey());
-    }
-
-  }
-
-
-  public Collection<String> doShowPartnerAcquisition(String partnerkey) throws UnknownPartnerKeyCException {
-    Partner partner = doShowPartner(partnerkey);
-    List<String> allAcquisitions = new LinkedList<>();
-
-    for (Transaction transaction : partner.getTransactionList()) {
-      allAcquisitions.add(transaction.accept(new ShowAcquisition()));
-    }
-    return Collections.unmodifiableCollection(allAcquisitions);
-  }
-
-  public Collection<String> doShowPartnerSales(String partnerKey) throws UnknownPartnerKeyCException {
-    Partner partner = doShowPartner(partnerKey);
-    List<String> allAcquisitions = new LinkedList<>();
-
-    for (Transaction transaction : partner.getTransactionList()) {
-      allAcquisitions.add(transaction.accept(new ShowSaleBreakdown()));
-    }
-    return Collections.unmodifiableCollection(allAcquisitions);
-  }
-
-
-  public double doShowGlobalBalance() {
-    return warehouseGlobalBalance;
-  }
-
-  public void changeGlobalBalance(double amount) {
-    this.warehouseGlobalBalance += amount;
-  }
-
-  public void doReceivePayment(int transactionKey) throws UnknownTransactionKeyCException {
-    // Fix for purchase and desaggregations
-    if (transactionKey >= transactionNumber || transactionKey < 0) {
-      throw new UnknownTransactionKeyCException(((Integer) transactionKey).toString());
-    }
-    try {
-      Sale sale = (Sale) allTransactions.get(transactionKey);
-
-      Partner partner = doShowPartner(sale.getPartnerKey());
-      int differenceOfDays = sale.getDeadLine() - time;
-      double partnerBonus = partner.pay(differenceOfDays, sale.isDerivedProduct(), (int) sale.getBaseValue());
-      double value = sale.getBaseValue() * (1 + partnerBonus);
-      sale.setPaymentDate(time);
-      partner.addMoneySpentOnSales((int) value);
-      partner.addMoneyExpectedToSpendOnPurchases((int) value);
-    } catch (UnknownPartnerKeyCException e) {
-      e.printStackTrace();
-    }
-  }
-
-
-  public Collection<Transaction> doLookupPaymentsByPartner(String partnerKey) throws UnknownPartnerKeyCException {
-    Partner partner = doShowPartner(partnerKey);
-    return Collections.unmodifiableCollection(partner.getThisTransactions().values());
-
-  }
 
   public void doRegisterBreakdown(String partnerKey, String productKey, int amount) throws UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
     Partner partner = doShowPartner(partnerKey);
@@ -529,6 +367,216 @@ public class Warehouse implements Serializable {
     partner.addTransaction(breakdown);
 
   }
+
+  public void doRegisterSaleTransaction(String partnerKey, String productKey, int amount, int deadline) throws UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
+    try {
+      Partner partner = doShowPartner(partnerKey);
+      Derived product = doFindProduct(productKey);
+
+      if (product.getRecipe().equals("")) {
+        if (product.getActualStock() < amount)
+          throw new UnavailableProductCException(productKey, amount, product.getActualStock());
+        // Metodo para retirar produtos simples
+        int price = 0;
+        int initialAmount = amount;
+        for (Batch batch : product.get_batches()) {
+          // produto suficiente numa batch
+          if (amount <= batch.getStock()) {
+            batch.decreaseStock(amount);
+            product.reduceStock(amount);
+            price += batch.getPrice() * amount;
+            break;
+          }
+          // produto nao suficiente numa batch
+          else {
+            int numberProducts = batch.getStock();
+            price += batch.emptyStock();
+            product.get_batches().remove(batch);
+            amount -= numberProducts;
+            product.reduceStock(numberProducts);
+
+          }
+        }
+        Sale sale = new Sale(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false, false);
+        partner.addTransaction(sale);
+        allTransactions.add(sale);
+
+      } else {
+
+        int initialAmount = amount;
+        if (product.getActualStock() > amount) { // Se existir derivado suficiente
+          int price = 0;
+          for (Batch batch : product.get_batches()) {
+            // produto suficiente numa batch
+            if (amount <= batch.getStock()) {
+              batch.decreaseStock(amount);
+              product.reduceStock(amount);
+              price += batch.getPrice() * amount;
+              break;
+            } // produto nao suficiente numa batch
+            else {
+              int numberProducts = batch.getStock();
+              price += batch.emptyStock();
+              amount -= numberProducts;
+              product.reduceStock(numberProducts);
+              price += batch.getPrice() * numberProducts;
+              product.get_batches().remove(batch);
+            }
+          }
+          Sale sale = new Sale(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false, true);
+          partner.addTransaction(sale);
+          allTransactions.add(sale);
+
+        } else { // se for preciso criar derivado
+
+          int amountNeeded = amount - product.getActualStock();
+          // check if there's enough components
+          for (String ingredient : product.getIngredients()) {
+            if (product.getQuantityIngredient(ingredient) * amountNeeded > doFindProduct(ingredient).getActualStock()) {
+              // Excecao de qual (?)
+              throw new UnavailableProductCException(ingredient, amount, product.getActualStock());
+            }
+          }
+
+          int price = product.clearAllStock();
+
+          while (amountNeeded > 0) {
+            int aggregationPrice = 0;
+            for (String ingredient : product.getIngredients()) {
+              int amountIngredient = doFindProduct(productKey).getQuantityIngredient(ingredient);
+
+              while (amountIngredient > 0) {
+                for (Batch batch : doFindProduct(ingredient).get_batches()) {
+                  // produto suficiente numa batch
+                  if (amountIngredient <= batch.getStock()) {
+                    batch.decreaseStock(amountIngredient);
+                    doFindProduct(ingredient).addStock(-amountIngredient);
+                    aggregationPrice += batch.getPrice() * amountIngredient;
+                    amountIngredient = 0;
+                    break;
+                  } // produto nao suficiente numa batch
+                  else {
+                    int numberProducts = batch.emptyStock();
+                    batch.decreaseStock(numberProducts);
+                    doFindProduct(ingredient).addStock(-numberProducts);
+                    amountIngredient -= numberProducts;
+                    aggregationPrice += batch.getPrice() * numberProducts;
+                    product.get_batches().remove(batch);
+                  }
+                }
+              }
+            }
+            aggregationPrice *= (1 + product.getReduction());
+            price += aggregationPrice;
+            amountNeeded--;
+
+          }
+
+          Sale sale = new Sale(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false, true);
+          partner.addTransaction(sale);
+          allTransactions.add(sale);
+        }
+
+      }
+
+
+    } catch (UnknownPartnerKeyCException e) {
+      throw new UnknownProductKeyCException(e.getUnknownKey());
+    } catch (UnknownProductKeyCException e) {
+      throw new UnknownProductKeyCException(e.getUnknownKey());
+    }
+
+  }
+
+  public boolean doRegisterAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws UnknownPartnerKeyCException {
+
+    try {
+      Partner partner = doShowPartner(partnerKey);
+      Derived product = doFindProduct(productKey);
+      if (product != null) {
+        doRegisterBatch(product.getProductKey(), partner.getPartnerKey(), price, amount, product.getReduction(), product.getRecipe());
+        Acquisition acquisition = new Acquisition(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), amount, amount * price);
+        allTransactions.add(acquisition);
+        partner.addTransaction(acquisition);
+        price = -price * amount;
+        changeGlobalBalance(price);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (UnknownPartnerKeyCException e) {
+      throw new UnknownPartnerKeyCException(e.getUnknownKey());
+    } catch (UnknownProductKeyCException e) {
+      return false;
+    }
+  }
+
+  public void doRegisterTransaction(String productKey, String partnerKey, double price, int amount, float reduction, String recipe) throws UnknownPartnerKeyCException {
+    try {
+      Partner partner = doShowPartner(partnerKey);
+      price *= amount;
+      Acquisition acquisition = new Acquisition(transactionNumber++, time, partner.getPartnerKey(), productKey, amount, price);
+      allTransactions.add(acquisition);
+      partner.addTransaction(acquisition);
+
+    } catch (UnknownPartnerKeyCException e) {
+      throw new UnknownPartnerKeyCException(e.getUnknownKey());
+    }
+
+  }
+
+
+  public void doReceivePayment(int transactionKey) throws UnknownTransactionKeyCException {
+    // Fix for purchase and desaggregations
+    if (transactionKey >= transactionNumber || transactionKey < 0) {
+      throw new UnknownTransactionKeyCException(((Integer) transactionKey).toString());
+    }
+    try {
+      Sale sale = (Sale) allTransactions.get(transactionKey);
+
+      Partner partner = doShowPartner(sale.getPartnerKey());
+      int differenceOfDays = sale.getDeadLine() - time;
+      double partnerBonus = partner.pay(differenceOfDays, sale.isDerivedProduct(), (int) sale.getBaseValue());
+      double value = sale.getBaseValue() * (1 + partnerBonus);
+      sale.setPaymentDate(time);
+      partner.addMoneySpentOnSales((int) value);
+      partner.addMoneyExpectedToSpendOnPurchases((int) value);
+    } catch (UnknownPartnerKeyCException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public Collection<Batch> doLookupProductBatchesUnderGivenPrice(int priceLimit) {
+    List<Batch> batchesUnderGivenPrice = new ArrayList<>();
+    for (Product product : allProducts.values()) {
+      for (Batch batch : product.get_batches()) {
+        if (batch.getPrice() < priceLimit)
+          batchesUnderGivenPrice.add(batch);
+      }
+    }
+    return Collections.unmodifiableCollection(batchesUnderGivenPrice);
+  }
+
+  public Collection<Transaction> doLookupPaymentsByPartner(String partnerKey) throws UnknownPartnerKeyCException {
+    Partner partner = doShowPartner(partnerKey);
+    return Collections.unmodifiableCollection(partner.getThisTransactions().values());
+
+  }
+
+  public double doShowGlobalBalance() {
+    return warehouseGlobalBalance;
+  }
+
+  public void changeGlobalBalance(double amount) {
+    this.warehouseGlobalBalance += amount;
+  }
+
+
+
+
+
+
+
 
 }
 

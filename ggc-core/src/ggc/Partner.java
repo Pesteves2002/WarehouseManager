@@ -119,6 +119,11 @@ public class Partner implements Serializable, Observer {
     return thisBatches;
   }
 
+  public void removeBatch(Batch batch)
+  {
+    thisBatches.remove(batch);
+  }
+
 
   public void addTransaction(Transaction transaction) {
     transactionList.add(transaction);
