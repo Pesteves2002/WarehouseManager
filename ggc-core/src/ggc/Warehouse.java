@@ -173,6 +173,7 @@ public class Warehouse implements Serializable {
 
   /**
    * Shows partner with notifications
+   *
    * @param partnerKey
    * @return
    * @throws UnknownPartnerKeyCException
@@ -226,6 +227,7 @@ public class Warehouse implements Serializable {
 
   /**
    * Given a partnerKey and a productKey, it will enable/disable the notifications of the partner for that product
+   *
    * @param partnerKey
    * @param productKey
    * @throws UnknownPartnerKeyCException
@@ -240,6 +242,7 @@ public class Warehouse implements Serializable {
 
   /**
    * Shows all the Acquisition transactions for the partner
+   *
    * @param partnerKey
    * @return
    * @throws UnknownPartnerKeyCException
@@ -257,6 +260,7 @@ public class Warehouse implements Serializable {
 
   /**
    * Shows all the sales and breakdowns paid of the partner
+   *
    * @param partnerKey
    * @return
    * @throws UnknownPartnerKeyCException
@@ -303,6 +307,7 @@ public class Warehouse implements Serializable {
 
   /**
    * Shows the transaction with the id index
+   *
    * @param index
    * @return
    * @throws UnknownTransactionKeyCException
@@ -323,41 +328,33 @@ public class Warehouse implements Serializable {
     if (product.getActualStock() < amount) {
       throw new UnavailableProductCException(productKey, amount, product.getActualStock());
     }
+    // if product is not derived
     if (product.getRecipe().equals("")) return;
 
     int initialValue = 0;
     int finalValue = 0;
-    int auxAmount = amount;
 
+    // purchase part
+    initialValue = auxSale(product, amount);
 
-    for (Batch batch : product.get_batches()) {
-      if (auxAmount > batch.getStock()) {
-        auxAmount -= batch.getStock();
-        initialValue += batch.emptyStock();
-      } else {
-        initialValue += batch.getPrice() * auxAmount;
-        batch.decreaseStock(auxAmount);
-        auxAmount = 0;
-        break;
-      }
-    }
     String components = "";
 
-
     for (String ingredient : product.getIngredients()) {
+      int price;
       if (doFindProduct(ingredient).getActualStock() == 0) {
-        doRegisterBatch(ingredient, partner.getPartnerKey(), doFindProduct(ingredient).getMaxPrice(), product.getQuantityIngredient(ingredient), doFindProduct(ingredient).getReduction(), doFindProduct(ingredient).getRecipe());
-        finalValue += doFindProduct(ingredient).getMaxPrice() * product.getQuantityIngredient(ingredient) * amount;
-        components += ingredient + ":" + product.getQuantityIngredient(ingredient) * amount + ":" + doFindProduct(ingredient).getMaxPrice() * product.getQuantityIngredient(ingredient) * amount + "#";
+        // gets the biggest price
+        price = (int) doFindProduct(ingredient).getMaxPrice();
       } else {
-        int price = (int) doFindProduct(ingredient).get_batches().first().getPrice();
-        doRegisterBatch(ingredient, partner.getPartnerKey(), price, product.getQuantityIngredient(ingredient), doFindProduct(ingredient).getReduction(), doFindProduct(ingredient).getRecipe());
-        finalValue += price * product.getQuantityIngredient(ingredient) * amount;
-        components += ingredient + ":" + product.getQuantityIngredient(ingredient) * amount + ":" + price + "#";
+        // gets the lowest price
+        price = (int) doFindProduct(ingredient).get_batches().first().getPrice();
       }
+      doRegisterBatch(ingredient, partner.getPartnerKey(), price, product.getQuantityIngredient(ingredient), doFindProduct(ingredient).getReduction(), doFindProduct(ingredient).getRecipe());
+      finalValue += price * product.getQuantityIngredient(ingredient) * amount;
+      components += ingredient + ":" + product.getQuantityIngredient(ingredient) * amount + ":" + price + "#";
 
     }
     components.substring(0, components.length() - 1);
+
     int payment = initialValue - finalValue;
     if (payment > 0) {
       changeGlobalBalance(payment);
@@ -368,77 +365,57 @@ public class Warehouse implements Serializable {
 
   }
 
+  public int auxSale(Derived product, int amount) {
+    int price = 0;
+
+    for (Batch batch : product.get_batches()) {
+      // produto suficiente numa batch
+      if (amount <= batch.getStock()) {
+        batch.decreaseStock(amount);
+        product.reduceStock(amount);
+        price += batch.getPrice() * amount;
+        break;
+      }
+      // produto nao suficiente numa batch
+      else {
+        int numberProducts = batch.getStock();
+        price += batch.emptyStock();
+        product.get_batches().remove(batch);
+        amount -= numberProducts;
+        product.reduceStock(numberProducts);
+
+      }
+    }
+    return price;
+
+  }
+
   public void doRegisterSaleTransaction(String partnerKey, String productKey, int amount, int deadline) throws UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
     try {
       Partner partner = doShowPartner(partnerKey);
       Derived product = doFindProduct(productKey);
+      int price = 0;
 
       if (product.getRecipe().equals("")) {
         if (product.getActualStock() < amount)
           throw new UnavailableProductCException(productKey, amount, product.getActualStock());
         // Metodo para retirar produtos simples
-        int price = 0;
-        int initialAmount = amount;
-        for (Batch batch : product.get_batches()) {
-          // produto suficiente numa batch
-          if (amount <= batch.getStock()) {
-            batch.decreaseStock(amount);
-            product.reduceStock(amount);
-            price += batch.getPrice() * amount;
-            break;
-          }
-          // produto nao suficiente numa batch
-          else {
-            int numberProducts = batch.getStock();
-            price += batch.emptyStock();
-            product.get_batches().remove(batch);
-            amount -= numberProducts;
-            product.reduceStock(numberProducts);
+        price = auxSale(product, amount);
 
-          }
-        }
-        Sale sale = new Sale(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false, false);
-        partner.addTransaction(sale);
-        allTransactions.add(sale);
-
-      } else {
-
-        int initialAmount = amount;
-        if (product.getActualStock() > amount) { // Se existir derivado suficiente
-          int price = 0;
-          for (Batch batch : product.get_batches()) {
-            // produto suficiente numa batch
-            if (amount <= batch.getStock()) {
-              batch.decreaseStock(amount);
-              product.reduceStock(amount);
-              price += batch.getPrice() * amount;
-              break;
-            } // produto nao suficiente numa batch
-            else {
-              int numberProducts = batch.getStock();
-              price += batch.emptyStock();
-              amount -= numberProducts;
-              product.reduceStock(numberProducts);
-              price += batch.getPrice() * numberProducts;
-              product.get_batches().remove(batch);
-            }
-          }
-          Sale sale = new Sale(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false, true);
-          partner.addTransaction(sale);
-          allTransactions.add(sale);
-
+      } else { // derived products
+        if (product.getActualStock() > amount) {
+          // if there's enough derived products
+          price = auxSale(product, amount);
         } else { // se for preciso criar derivado
 
           int amountNeeded = amount - product.getActualStock();
           // check if there's enough components
           for (String ingredient : product.getIngredients()) {
             if (product.getQuantityIngredient(ingredient) * amountNeeded > doFindProduct(ingredient).getActualStock()) {
-              // Excecao de qual (?)
               throw new UnavailableProductCException(ingredient, amount, product.getActualStock());
             }
           }
-
-          int price = product.clearAllStock();
+          price = product.clearAllStock();
 
           while (amountNeeded > 0) {
             int aggregationPrice = 0;
@@ -469,15 +446,13 @@ public class Warehouse implements Serializable {
             aggregationPrice *= (1 + product.getReduction());
             price += aggregationPrice;
             amountNeeded--;
-
           }
-
-          Sale sale = new Sale(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), initialAmount, price, deadline, false, true);
-          partner.addTransaction(sale);
-          allTransactions.add(sale);
         }
 
       }
+      Sale sale = new Sale(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), amount, price, deadline, false, true);
+      partner.addTransaction(sale);
+      allTransactions.add(sale);
 
 
     } catch (UnknownPartnerKeyCException e) {
@@ -542,6 +517,7 @@ public class Warehouse implements Serializable {
       partner.addMoneySpentOnSales((int) value);
       partner.addMoneyExpectedToSpendOnPurchases((int) value);
     } catch (UnknownPartnerKeyCException e) {
+      // shouldn't happen
       e.printStackTrace();
     }
   }
@@ -570,12 +546,6 @@ public class Warehouse implements Serializable {
   public void changeGlobalBalance(double amount) {
     this.warehouseGlobalBalance += amount;
   }
-
-
-
-
-
-
 
 
 }
