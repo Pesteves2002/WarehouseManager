@@ -421,27 +421,7 @@ public class Warehouse implements Serializable {
             int aggregationPrice = 0;
             for (String ingredient : product.getIngredients()) {
               int amountIngredient = doFindProduct(productKey).getQuantityIngredient(ingredient);
-
-              while (amountIngredient > 0) {
-                for (Batch batch : doFindProduct(ingredient).get_batches()) {
-                  // produto suficiente numa batch
-                  if (amountIngredient <= batch.getStock()) {
-                    batch.decreaseStock(amountIngredient);
-                    doFindProduct(ingredient).addStock(-amountIngredient);
-                    aggregationPrice += batch.getPrice() * amountIngredient;
-                    amountIngredient = 0;
-                    break;
-                  } // produto nao suficiente numa batch
-                  else {
-                    int numberProducts = batch.emptyStock();
-                    batch.decreaseStock(numberProducts);
-                    doFindProduct(ingredient).addStock(-numberProducts);
-                    amountIngredient -= numberProducts;
-                    aggregationPrice += batch.getPrice() * numberProducts;
-                    product.get_batches().remove(batch);
-                  }
-                }
-              }
+              aggregationPrice += auxSale(doFindProduct(ingredient),amountIngredient);
             }
             aggregationPrice *= (1 + product.getReduction());
             price += aggregationPrice;
