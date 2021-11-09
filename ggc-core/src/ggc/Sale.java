@@ -60,4 +60,7 @@ public class Sale extends Transaction{
   {
     return tv.getPriceSale(this,time);
   }
+
+
+
 }

@@ -173,6 +173,12 @@ public class Warehouse implements Serializable {
     return Collections.unmodifiableCollection(product.get_batches());
   }
 
+  public void updatePartnerSaleValues(Partner partner) {
+    double price = updateSaleTransactions(partner.getTransactionList());
+    if (price >= 0)
+    partner.setMoneyExpectedToSpendOnSales(price);
+  }
+
   /**
    * Shows partner with notifications
    *
@@ -182,7 +188,8 @@ public class Warehouse implements Serializable {
    */
 
   public String doRShowPartner(String partnerKey) throws UnknownPartnerKeyCException {
-    return doShowPartner(partnerKey).showAndClearNotifications();
+    updatePartnerSaleValues(doShowPartner(partnerKey));
+    return doShowPartner(partnerKey).deliver();
   }
 
   /**
@@ -194,8 +201,10 @@ public class Warehouse implements Serializable {
    */
   public Partner doShowPartner(String partnerKey) throws UnknownPartnerKeyCException {
     for (Partner partner : allPartners.values()) {
-      if (partnerKey.compareToIgnoreCase(partner.getPartnerKey()) == 0)
+      if (partnerKey.compareToIgnoreCase(partner.getPartnerKey()) == 0) {
+        updatePartnerSaleValues(partner);
         return allPartners.get(partner.getPartnerKey());
+      }
     }
     throw new UnknownPartnerKeyCException(partnerKey);
   }
@@ -207,6 +216,8 @@ public class Warehouse implements Serializable {
    * @return Collection<Partner>
    */
   public Collection<Partner> doShowAllPartners() {
+    for (Partner partner : allPartners.values())
+      updatePartnerSaleValues(partner);
     return Collections.unmodifiableCollection(allPartners.values());
   }
 
@@ -219,7 +230,8 @@ public class Warehouse implements Serializable {
    * @throws DuplicateClientCException
    */
 
-  void doRegisterPartner(String partnerKey, String partnerName, String partnerAddress) throws DuplicateClientCException {
+  void doRegisterPartner(String partnerKey, String partnerName, String partnerAddress) throws
+          DuplicateClientCException {
     for (Partner partner : allPartners.values()) {
       if (partnerKey.compareToIgnoreCase(partner.getPartnerKey()) == 0)
         throw new DuplicateClientCException(partnerKey);
@@ -236,7 +248,8 @@ public class Warehouse implements Serializable {
    * @throws UnknownProductKeyCException
    */
 
-  public void doToggleProductNotifications(String partnerKey, String productKey) throws UnknownPartnerKeyCException, UnknownProductKeyCException {
+  public void doToggleProductNotifications(String partnerKey, String productKey) throws
+          UnknownPartnerKeyCException, UnknownProductKeyCException {
     Partner partner = doShowPartner(partnerKey);
     Product product = doFindProduct(productKey);
     partner.toggleProductNotification(product);
@@ -287,7 +300,8 @@ public class Warehouse implements Serializable {
    * @param stock
    * @throws UnknownPartnerKeyCException
    */
-  public void doRegisterBatch(String product, String partnerKey, double price, int stock, float reduction, String recipe) throws UnknownPartnerKeyCException {
+  public void doRegisterBatch(String product, String partnerKey, double price, int stock, float reduction, String
+          recipe) throws UnknownPartnerKeyCException {
 
     Partner partner = doShowPartner(partnerKey);
 
@@ -323,7 +337,8 @@ public class Warehouse implements Serializable {
   }
 
 
-  public void doRegisterBreakdown(String partnerKey, String productKey, int amount) throws UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
+  public void doRegisterBreakdown(String partnerKey, String productKey, int amount) throws
+          UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
     Partner partner = doShowPartner(partnerKey);
     Derived product = doFindProduct(productKey);
 
@@ -392,7 +407,8 @@ public class Warehouse implements Serializable {
 
   }
 
-  public void doRegisterSaleTransaction(String partnerKey, String productKey, int amount, int deadline) throws UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
+  public void doRegisterSaleTransaction(String partnerKey, String productKey, int amount, int deadline) throws
+          UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
     try {
       Partner partner = doShowPartner(partnerKey);
       Derived product = doFindProduct(productKey);
@@ -445,7 +461,8 @@ public class Warehouse implements Serializable {
 
   }
 
-  public boolean doRegisterAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws UnknownPartnerKeyCException {
+  public boolean doRegisterAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws
+          UnknownPartnerKeyCException {
 
     try {
       Partner partner = doShowPartner(partnerKey);
@@ -468,7 +485,8 @@ public class Warehouse implements Serializable {
     }
   }
 
-  public void doRegisterTransaction(String productKey, String partnerKey, double price, int amount, float reduction, String recipe) throws UnknownPartnerKeyCException {
+  public void doRegisterTransaction(String productKey, String partnerKey, double price, int amount,
+                                    float reduction, String recipe) throws UnknownPartnerKeyCException {
     try {
       Partner partner = doShowPartner(partnerKey);
       price *= amount;
@@ -498,7 +516,6 @@ public class Warehouse implements Serializable {
     double value = sale.getBaseValue() * (1 + partnerBonus);
     sale.setPaymentDate(time, value);
     partner.addMoneySpentOnSales((int) value);
-    partner.addMoneyExpectedToSpendOnPurchases((int) value);
 
 
   }
@@ -514,9 +531,15 @@ public class Warehouse implements Serializable {
     return Collections.unmodifiableCollection(batchesUnderGivenPrice);
   }
 
-  public Collection<Transaction> doLookupPaymentsByPartner(String partnerKey) throws UnknownPartnerKeyCException {
+  public Collection<String> doLookupPaymentsByPartner(String partnerKey) throws UnknownPartnerKeyCException {
     Partner partner = doShowPartner(partnerKey);
-    return Collections.unmodifiableCollection(partner.getThisTransactions().values());
+    List<String> transactions = new LinkedList<>();
+    for (Transaction transaction : partner.getTransactionList())
+    {
+      transactions.add(transaction.accept(new ShowSale()));
+    }
+
+    return Collections.unmodifiableCollection(transactions);
 
   }
 
@@ -528,14 +551,18 @@ public class Warehouse implements Serializable {
     this.warehouseGlobalBalance += amount;
   }
 
-  public double doShowCurrentBalance() {
+  public double updateSaleTransactions(List<Transaction> transactionsList) {
     double currentBalance = 0;
-    for (Transaction transaction : allTransactions) {
+    for (Transaction transaction : transactionsList) {
       currentBalance += transaction.seePrice(new ShowTransaction(), time);
     }
     return Math.round(currentBalance);
   }
 
+
+  public double doShowCurrentBalance() {
+    return updateSaleTransactions(allTransactions);
+  }
 
 }
 

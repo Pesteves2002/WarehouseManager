@@ -22,17 +22,17 @@ public class Partner implements Serializable, Observer {
   /** PartnerAddress */
   private String partnerAddress;
 
-  /** Partner Status (TO BE IMPROVED) */
+  /** Partner Status */
   private Status status = new Normal(this, 0);
 
   /** Money spent on purchases by the partner */
-  private int moneySpentOnPurchases;
+  private double moneySpentOnPurchases;
 
-  /** money expect to spend on purchase by the partner */
-  private int moneyExpectedToSpendOnPurchases;
+  /** money expect to spend on sales by the partner */
+  private double moneyExpectedToSpendOnSales;
 
   /** money spent on Sales by the partner */
-  private int moneySpentOnSales;
+  private double moneySpentOnSales;
 
   private List<Transaction> transactionList = new LinkedList<>();
 
@@ -40,11 +40,9 @@ public class Partner implements Serializable, Observer {
 
   private Set<Batch> thisBatches = new TreeSet<>(new BatchComparator());
 
-  /** Map with all the Transactions made by the Partner */
-  private Map<Integer, Transaction> thisTransactions = new TreeMap<Integer, Transaction>();
-
   private Map<String, Product> thisNotifications = new TreeMap<>();
 
+  private Delivery delivery = new DefaultNotification();
 
   /**
    * @param partnerKey
@@ -63,11 +61,9 @@ public class Partner implements Serializable, Observer {
     thisNotifications.get(productKey).registerObserver(this);
   }
 
-  public void toggleProductNotification(Product product)
-  {
+  public void toggleProductNotification(Product product) {
 
-    if (thisNotifications.get(product.getProductKey()) == null)
-    {
+    if (thisNotifications.get(product.getProductKey()) == null) {
       addProductNotification(product);
     }
     thisNotifications.remove(product.getProductKey());
@@ -77,28 +73,28 @@ public class Partner implements Serializable, Observer {
     notificationList.add(notification);
   }
 
-  public String showAndClearNotifications() {
-    String s = "";
-    for (Notification notification: notificationList)
-    {
-      s += "\n" + notification.toString() ;
-    }
-    if (!s.equals(""))
-    notificationList.clear();
-    return this.toString() + s;
+  public String deliver() {
+    String output = this + delivery.showAndClearNotifications(notificationList);
+    if (!notificationList.isEmpty())
+      notificationList.clear();
+    return output;
   }
 
+  public void changeDelivery(Delivery delivery)
+  {
+    this.delivery = delivery;
+  }
 
-  public void addMoneySpentOnSales(int moneySpentOnSales) {
+  public void addMoneySpentOnSales(double moneySpentOnSales) {
     this.moneySpentOnSales += moneySpentOnSales;
   }
 
-  public void addMoneySpentOnPurchases(int moneySpentOnPurchases) {
+  public void addMoneySpentOnPurchases(double moneySpentOnPurchases) {
     this.moneySpentOnPurchases += moneySpentOnPurchases;
   }
 
-  public void addMoneyExpectedToSpendOnPurchases(int moneyExpectedToSpendOnPurchases) {
-    this.moneyExpectedToSpendOnPurchases += moneyExpectedToSpendOnPurchases;
+  public void setMoneyExpectedToSpendOnSales(double moneyExpectedToSpendOnSales) {
+    this.moneyExpectedToSpendOnSales = moneyExpectedToSpendOnSales;
   }
 
   /**
@@ -115,8 +111,7 @@ public class Partner implements Serializable, Observer {
     return thisBatches;
   }
 
-  public void removeBatch(Batch batch)
-  {
+  public void removeBatch(Batch batch) {
     thisBatches.remove(batch);
   }
 
@@ -130,9 +125,6 @@ public class Partner implements Serializable, Observer {
 
   }
 
-  public Map<Integer, Transaction> getThisTransactions() {
-    return thisTransactions;
-  }
 
   /**
    * Add a batch to the Tree Map
@@ -158,13 +150,13 @@ public class Partner implements Serializable, Observer {
     }
     if (differenceOfDays >= 0) {
       if (differenceOfDays >= numberOfDays)
-        return status.p1(baseValue,simulate);
-      return status.p2(baseValue, differenceOfDays,simulate);
+        return status.p1(baseValue, simulate);
+      return status.p2(baseValue, differenceOfDays, simulate);
     }
     if (-differenceOfDays <= numberOfDays)
-      return status.p3(baseValue, -differenceOfDays,simulate);
+      return status.p3(baseValue, -differenceOfDays, simulate);
 
-    return status.p4(baseValue, -differenceOfDays,simulate);
+    return status.p4(baseValue, -differenceOfDays, simulate);
   }
 
 
@@ -176,9 +168,9 @@ public class Partner implements Serializable, Observer {
   public String toString() {
 
     return partnerKey + "|" + partnerName + "|" + partnerAddress + "|" + status + "|" +
-            status.getPoints() + "|" + moneySpentOnPurchases + "|" +
-            moneyExpectedToSpendOnPurchases + "|" +
-            moneySpentOnSales;
+            status.getPoints() + "|" + (int) moneySpentOnPurchases + "|" +
+            (int) moneyExpectedToSpendOnSales + "|" +
+            (int) moneySpentOnSales;
   }
 
 }

@@ -242,7 +242,7 @@ public class WarehouseManager {
   }
 
 
-  public Collection<Transaction> lookupPaymentsByPartner(String partnerKey) throws UnknownPartnerKeyCException {
+  public Collection<String> lookupPaymentsByPartner(String partnerKey) throws UnknownPartnerKeyCException {
     return _warehouse.doLookupPaymentsByPartner(partnerKey);
   }
 
