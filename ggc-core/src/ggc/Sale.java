@@ -37,9 +37,10 @@ public class Sale extends Transaction{
     return paymentDate;
   }
 
-  public void setPaymentDate(int paymentDate) {
+  public void setPaymentDate(int paymentDate, double value) {
     this.paymentDate = paymentDate;
     this.salePayed = true;
+    this.currentValue =value;
   }
 
   public boolean isSalePayed() {

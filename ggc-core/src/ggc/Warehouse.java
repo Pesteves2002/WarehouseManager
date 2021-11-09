@@ -496,7 +496,7 @@ public class Warehouse implements Serializable {
     int differenceOfDays = sale.getDeadLine() - time;
     double partnerBonus = partner.pay(differenceOfDays, sale.isDerivedProduct(), (int) sale.getBaseValue(), false);
     double value = sale.getBaseValue() * (1 + partnerBonus);
-    sale.setPaymentDate(time);
+    sale.setPaymentDate(time, value);
     partner.addMoneySpentOnSales((int) value);
     partner.addMoneyExpectedToSpendOnPurchases((int) value);
 
@@ -533,7 +533,7 @@ public class Warehouse implements Serializable {
     for (Transaction transaction : allTransactions) {
       currentBalance += transaction.seePrice(new ShowTransaction(), time);
     }
-    return - Math.round(currentBalance);
+    return Math.round(currentBalance);
   }
 
 

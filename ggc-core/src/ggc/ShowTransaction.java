@@ -45,14 +45,15 @@ public class ShowTransaction extends TransactionVisitor {
 
   @Override
   public double getPriceAcquisition(Acquisition acquisition, int time) {
-    return acquisition.getBaseValue();
+    return  - acquisition.getBaseValue();
   }
 
   @Override
   public double getPriceSale(Sale sale, int time) {
     Partner partner = sale.getPartner();
-
-    return partner.pay(time, sale.isDerivedProduct(),(int) sale.getBaseValue(),true);
+    time = time - sale.getDeadLine();
+    if (sale.isSalePayed()) return sale.getCurrentValue();
+    return - sale.getBaseValue()* (1 + partner.pay(time, sale.isDerivedProduct(),(int) sale.getBaseValue(),true));
   }
 
   @Override
