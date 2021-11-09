@@ -19,8 +19,9 @@ public class Selection extends Status {
     partner.setStatus(new Normal(partner, points));
   }
 
-  public double p1 (int baseValue)
+  public double p1 (int baseValue, boolean simulate)
   {
+    if (simulate) return -0.1;
     points += baseValue *10;
     if (points > 25000)
     {
@@ -29,8 +30,14 @@ public class Selection extends Status {
     return -0.1;
   }
 
-  public double p2 (int baseValue, int differenceOfDays)
+  public double p2 (int baseValue, int differenceOfDays, boolean simulate)
   {
+    if (simulate) {
+      if (differenceOfDays >= 2)
+        return 0.05;
+      return 0;
+    }
+
     points += baseValue *10;
     if (points > 25000)
     {
@@ -41,14 +48,15 @@ public class Selection extends Status {
     return 0;
   }
 
-  public double p3(int baseValue, int differenceOfDays) {
+  public double p3(int baseValue, int differenceOfDays, boolean simulate) {
     if (differenceOfDays > 1 )
       return differenceOfDays * 0.02;
-    return 0.0;
+    return 0;
   }
 
-  public double p4(int baseValue, int differenceOfDays)
+  public double p4(int baseValue, int differenceOfDays, boolean simulate)
   {
+    if (simulate)  return  0.05* differenceOfDays;
     if (differenceOfDays > 2) {
       selectionToNormal();
       points *= 0.1;

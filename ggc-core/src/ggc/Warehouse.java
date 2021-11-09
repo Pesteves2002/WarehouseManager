@@ -38,9 +38,11 @@ public class Warehouse implements Serializable {
 
   private double warehouseGlobalBalance = 0;
 
+  private double warehouseCurrentBalance = 0;
+
   private int transactionNumber = 0;
 
-  List<Transaction> allTransactions = new ArrayList<>();
+  private List<Transaction> allTransactions = new ArrayList<>();
 
   /**
    * TreeMap of all the Partners,
@@ -359,7 +361,7 @@ public class Warehouse implements Serializable {
     if (payment > 0) {
       changeGlobalBalance(payment);
     }
-    Breakdown breakdown = new Breakdown(transactionNumber++, time, partnerKey, productKey, amount, payment, components);
+    Breakdown breakdown = new Breakdown(transactionNumber++, time, partner, productKey, amount, payment, components);
     allTransactions.add(breakdown);
     partner.addTransaction(breakdown);
 
@@ -421,7 +423,7 @@ public class Warehouse implements Serializable {
             int aggregationPrice = 0;
             for (String ingredient : product.getIngredients()) {
               int amountIngredient = doFindProduct(productKey).getQuantityIngredient(ingredient);
-              aggregationPrice += auxSale(doFindProduct(ingredient),amountIngredient);
+              aggregationPrice += auxSale(doFindProduct(ingredient), amountIngredient);
             }
             aggregationPrice *= (1 + product.getReduction());
             price += aggregationPrice;
@@ -430,7 +432,7 @@ public class Warehouse implements Serializable {
         }
 
       }
-      Sale sale = new Sale(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), amount, price, deadline, false, true);
+      Sale sale = new Sale(transactionNumber++, time, partner, product.getProductKey(), amount, price, deadline, false, true);
       partner.addTransaction(sale);
       allTransactions.add(sale);
 
@@ -450,7 +452,7 @@ public class Warehouse implements Serializable {
       Derived product = doFindProduct(productKey);
       if (product != null) {
         doRegisterBatch(product.getProductKey(), partner.getPartnerKey(), price, amount, product.getReduction(), product.getRecipe());
-        Acquisition acquisition = new Acquisition(transactionNumber++, time, partner.getPartnerKey(), product.getProductKey(), amount, amount * price);
+        Acquisition acquisition = new Acquisition(transactionNumber++, time, partner, product.getProductKey(), amount, amount * price);
         allTransactions.add(acquisition);
         partner.addTransaction(acquisition);
         price = -price * amount;
@@ -470,9 +472,10 @@ public class Warehouse implements Serializable {
     try {
       Partner partner = doShowPartner(partnerKey);
       price *= amount;
-      Acquisition acquisition = new Acquisition(transactionNumber++, time, partner.getPartnerKey(), productKey, amount, price);
+      Acquisition acquisition = new Acquisition(transactionNumber++, time, partner, productKey, amount, price);
       allTransactions.add(acquisition);
       partner.addTransaction(acquisition);
+      changeGlobalBalance(-price);
 
     } catch (UnknownPartnerKeyCException e) {
       throw new UnknownPartnerKeyCException(e.getUnknownKey());
@@ -486,20 +489,18 @@ public class Warehouse implements Serializable {
     if (transactionKey >= transactionNumber || transactionKey < 0) {
       throw new UnknownTransactionKeyCException(((Integer) transactionKey).toString());
     }
-    try {
-      Sale sale = (Sale) allTransactions.get(transactionKey);
 
-      Partner partner = doShowPartner(sale.getPartnerKey());
-      int differenceOfDays = sale.getDeadLine() - time;
-      double partnerBonus = partner.pay(differenceOfDays, sale.isDerivedProduct(), (int) sale.getBaseValue());
-      double value = sale.getBaseValue() * (1 + partnerBonus);
-      sale.setPaymentDate(time);
-      partner.addMoneySpentOnSales((int) value);
-      partner.addMoneyExpectedToSpendOnPurchases((int) value);
-    } catch (UnknownPartnerKeyCException e) {
-      // shouldn't happen
-      e.printStackTrace();
-    }
+    // TODO Fix me
+    Sale sale = (Sale) allTransactions.get(transactionKey);
+    Partner partner = sale.getPartner();
+    int differenceOfDays = sale.getDeadLine() - time;
+    double partnerBonus = partner.pay(differenceOfDays, sale.isDerivedProduct(), (int) sale.getBaseValue(), false);
+    double value = sale.getBaseValue() * (1 + partnerBonus);
+    sale.setPaymentDate(time);
+    partner.addMoneySpentOnSales((int) value);
+    partner.addMoneyExpectedToSpendOnPurchases((int) value);
+
+
   }
 
   public Collection<Batch> doLookupProductBatchesUnderGivenPrice(int priceLimit) {
@@ -525,6 +526,14 @@ public class Warehouse implements Serializable {
 
   public void changeGlobalBalance(double amount) {
     this.warehouseGlobalBalance += amount;
+  }
+
+  public double doShowCurrentBalance() {
+    double currentBalance = 0;
+    for (Transaction transaction : allTransactions) {
+      currentBalance += transaction.seePrice(new ShowTransaction(), time);
+    }
+    return - Math.round(currentBalance);
   }
 
 

@@ -1,12 +1,12 @@
 package ggc;
 
-public class ShowAcquisition implements TransactionVisitor {
+public class ShowAcquisition extends TransactionVisitor {
 
   @Override
   public String visitAcquisition(Acquisition acquisition) {
     return "COMPRA" + "|"+
             acquisition.getTransactionKey() + "|" +
-            acquisition.getPartnerKey() + "|" +
+            acquisition.getPartner().getPartnerKey() + "|" +
             acquisition.getProductKey() + "|" +
             acquisition.getAmount() + "|" +
             (int) acquisition.getBaseValue() + "|" +
@@ -20,4 +20,5 @@ public class ShowAcquisition implements TransactionVisitor {
   public String visitBreakdown(Breakdown breakdown) {
     return "";
   }
+
 }

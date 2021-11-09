@@ -78,16 +78,12 @@ public class Partner implements Serializable, Observer {
   }
 
   public String showAndClearNotifications() {
-    String s = "\n";
+    String s = "";
     for (Notification notification: notificationList)
     {
-      s += notification.toString() + "\n";
+      s += "\n" + notification.toString() ;
     }
-    if (!s.equals("\n"))
-    s.substring(0, s.length()-1);
-    else {
-      s = "";
-    }
+    if (!s.equals(""))
     notificationList.clear();
     return this.toString() + s;
   }
@@ -155,20 +151,20 @@ public class Partner implements Serializable, Observer {
     this.status = status;
   }
 
-  public double pay(int differenceOfDays, boolean productDerived, int baseValue) {
+  public double pay(int differenceOfDays, boolean productDerived, int baseValue, boolean simulate) {
     int numberOfDays = 5;
     if (productDerived) {
       numberOfDays = 3;
     }
     if (differenceOfDays >= 0) {
       if (differenceOfDays >= numberOfDays)
-        return status.p1(baseValue);
-      return status.p2(baseValue, differenceOfDays);
+        return status.p1(baseValue,simulate);
+      return status.p2(baseValue, differenceOfDays,simulate);
     }
     if (-differenceOfDays <= numberOfDays)
-      return status.p3(baseValue, -differenceOfDays);
+      return status.p3(baseValue, -differenceOfDays,simulate);
 
-    return status.p4(baseValue, -differenceOfDays);
+    return status.p4(baseValue, -differenceOfDays,simulate);
   }
 
 

@@ -16,8 +16,8 @@ public class Sale extends Transaction{
   private boolean derivedProduct;
 
 
-  public Sale(int transactionKey, int transactionDate, String partnerKey, String productKey, int amount, double baseValue , int deadLine , boolean salePayed , boolean derivedProduct) {
-    super(transactionKey, transactionDate, partnerKey, productKey, amount, baseValue);
+  public Sale(int transactionKey, int transactionDate, Partner partner, String productKey, int amount, double baseValue , int deadLine , boolean salePayed , boolean derivedProduct) {
+    super(transactionKey, transactionDate, partner, productKey, amount, baseValue);
     this.deadLine = deadLine;
     this.currentValue = baseValue;
     this.salePayed = salePayed;
@@ -53,5 +53,10 @@ public class Sale extends Transaction{
   public String accept (TransactionVisitor tv)
   {
     return tv.visitSale(this);
+  }
+
+  public double seePrice (TransactionVisitor tv, int time)
+  {
+    return tv.getPriceSale(this,time);
   }
 }

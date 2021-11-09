@@ -23,9 +23,9 @@ public abstract class Status implements Serializable {
     return points;
   }
 
-  public abstract double p1(int baseValue) ;
-  public abstract double p2(int baseValue, int differenceOfDays) ;
-  public abstract double p3(int baseValue, int differenceOfDays) ;
-  public abstract double p4(int baseValue, int differenceOfDays) ;
+  public abstract double p1(int baseValue, boolean simulate) ;
+  public abstract double p2(int baseValue, int differenceOfDays,boolean simulate) ;
+  public abstract double p3(int baseValue, int differenceOfDays,boolean simulate) ;
+  public abstract double p4(int baseValue, int differenceOfDays,boolean simulate) ;
 
 }

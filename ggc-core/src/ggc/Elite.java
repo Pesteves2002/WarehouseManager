@@ -11,24 +11,27 @@ public class Elite extends Status {
 
   public void eliteToSelection() {partner.setStatus(new Selection(partner, points));  }
 
-  public double p1 (int baseValue)
+  public double p1 (int baseValue, boolean simulate)
   {
+    if (simulate) return -0.1;
     points += baseValue *10;
     return -0.1;
   }
 
-  public double p2 (int baseValue, int differenceOfDays)
+  public double p2 (int baseValue, int differenceOfDays, boolean simulate)
   {
+    if (simulate) return -0.1;
     points += baseValue *10;
-    return 0.1;
+    return -0.1;
   }
 
-  public double p3(int baseValue, int differenceOfDays) {
+  public double p3(int baseValue, int differenceOfDays, boolean simulate) {
     return 0.05;
   }
 
-  public double p4(int baseValue, int differenceOfDays)
+  public double p4(int baseValue, int differenceOfDays, boolean simulate)
   {
+    if (simulate) return 0;
     if (differenceOfDays > 15) {
       eliteToSelection();
       points *= 0.25;

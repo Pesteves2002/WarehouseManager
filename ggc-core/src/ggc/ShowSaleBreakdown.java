@@ -1,6 +1,6 @@
 package ggc;
 
-public class ShowSaleBreakdown implements TransactionVisitor {
+public class ShowSaleBreakdown extends TransactionVisitor {
 
   @Override
   public String visitAcquisition(Acquisition acquisition) {
@@ -14,7 +14,7 @@ public class ShowSaleBreakdown implements TransactionVisitor {
     }
     return "VENDA" + "|" +
             sale.getTransactionKey() + "|" +
-            sale.getPartnerKey() + "|" +
+            sale.getPartner().getPartnerKey() + "|" +
             sale.getProductKey() + "|" +
             sale.getAmount() + "|" +
             (int) sale.getBaseValue() + "|" +
@@ -27,7 +27,7 @@ public class ShowSaleBreakdown implements TransactionVisitor {
   public String visitBreakdown(Breakdown breakdown) {
     return "DESAGREGAÇÃO" + "|" +
             breakdown.getTransactionKey() + "|" +
-            breakdown.getPartnerKey() + "|" +
+            breakdown.getPartner().getPartnerKey() + "|" +
             breakdown.getProductKey() + "|" +
             breakdown.getAmount() + "|" +
             (int) breakdown.getBaseValue() + "|" +
@@ -36,5 +36,6 @@ public class ShowSaleBreakdown implements TransactionVisitor {
             breakdown.getComponents();
 
   }
+
 
 }

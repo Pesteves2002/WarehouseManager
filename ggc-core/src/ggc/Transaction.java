@@ -10,7 +10,7 @@ public abstract class Transaction implements Serializable {
 
   private int transactionDate;
 
-  private String partnerKey;
+  private Partner partner;
 
   private String productKey;
 
@@ -20,10 +20,10 @@ public abstract class Transaction implements Serializable {
 
   private int paymentDate;
 
-  public Transaction(int transactionKey, int transactionDate, String partnerKey, String productKey, int amount, double baseValue) {
+  public Transaction(int transactionKey, int transactionDate, Partner partner, String productKey, int amount, double baseValue) {
     this.transactionKey = transactionKey;
     this.transactionDate = transactionDate;
-    this.partnerKey = partnerKey;
+    this.partner = partner;
     this.productKey = productKey;
     this.amount = amount;
     this.baseValue = baseValue;
@@ -38,8 +38,8 @@ public abstract class Transaction implements Serializable {
     return transactionDate;
   }
 
-  public String getPartnerKey() {
-    return partnerKey;
+  public Partner getPartner() {
+    return partner;
   }
 
   public String getProductKey() {
@@ -59,5 +59,7 @@ public abstract class Transaction implements Serializable {
   }
 
   public  abstract String accept(TransactionVisitor tv) ;
+
+  public abstract  double seePrice (TransactionVisitor tv, int time);
 
 }

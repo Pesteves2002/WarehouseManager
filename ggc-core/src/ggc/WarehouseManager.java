@@ -214,6 +214,11 @@ public class WarehouseManager {
     return _warehouse.doShowGlobalBalance();
   }
 
+  public double showCurrentBalance()
+  {
+    return _warehouse.doShowCurrentBalance();
+  }
+
   public Collection<String> showPartnerAcquisitions(String partnerKey) throws UnknownPartnerKeyCException
   {
     return _warehouse.doShowPartnerAcquisition(partnerKey);

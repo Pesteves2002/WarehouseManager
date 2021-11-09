@@ -9,8 +9,8 @@ public class Breakdown extends Transaction {
 
   public double paymentValue ;
 
-  public Breakdown(int transactionKey, int transactionDate, String partnerKey, String productKey, int amount, double baseValue, String components) {
-    super(transactionKey, transactionDate, partnerKey, productKey, amount, baseValue);
+  public Breakdown(int transactionKey, int transactionDate, Partner partner, String productKey, int amount, double baseValue, String components) {
+    super(transactionKey, transactionDate, partner, productKey, amount, baseValue);
     this.components = components;
     this.paymentValue = baseValue;
   }
@@ -28,5 +28,8 @@ public class Breakdown extends Transaction {
     return tv.visitBreakdown(this);
   }
 
-
+  @Override
+  public double seePrice(TransactionVisitor tv, int time) {
+    return tv.getPriceBreakDown (this, time);
+  }
 }
