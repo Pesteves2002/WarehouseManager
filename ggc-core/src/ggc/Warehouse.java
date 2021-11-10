@@ -381,7 +381,7 @@ public class Warehouse implements Serializable {
       double price;
       if (doFindProduct(ingredient).getActualStock() == 0) {
         // gets the biggest price
-        price =  doFindProduct(ingredient).getMaxPrice();
+        price = doFindProduct(ingredient).getMaxPrice();
       } else {
         // gets the lowest price
         price = doFindProduct(ingredient).get_batches().getFirst().getPrice();
@@ -412,7 +412,7 @@ public class Warehouse implements Serializable {
    * @return
    */
 
-  public double auxSale(Derived product, int amount) {
+  public double auxSale(Derived product, int amount) throws UnknownProductKeyCException {
     double price = 0;
 
     for (Batch batch : product.get_batches()) {
@@ -421,6 +421,7 @@ public class Warehouse implements Serializable {
         batch.decreaseStock(amount);
         product.reduceStock(amount);
         price += batch.getPrice() * amount;
+        amount = 0;
         break;
       }
       // produto nao suficiente numa batch
@@ -431,6 +432,14 @@ public class Warehouse implements Serializable {
         amount -= numberProducts;
         product.reduceStock(numberProducts);
 
+      }
+      if (amount != 0)
+      {
+        double aggregation = 0;
+        for (String components : product.getIngredients())
+        aggregation += auxSale(doFindProduct(components)  ,amount * product.getQuantityIngredient(components));
+        aggregation *= (1+product.getReduction());
+        price += aggregation;
       }
     }
     return price;
@@ -448,7 +457,7 @@ public class Warehouse implements Serializable {
       if (product.getRecipe().equals("")) {
         if (product.getActualStock() < amount)
           throw new UnavailableProductCException(productKey, amount, product.getActualStock());
-        // Metodo para retirar produtos simples
+
         price = auxSale(product, amount);
 
       } else { // derived products
@@ -459,11 +468,14 @@ public class Warehouse implements Serializable {
 
           int amountNeeded = amount - product.getActualStock();
           // check if there's enough components
-          for (String ingredient : product.getIngredients()) {
-            if (product.getQuantityIngredient(ingredient) * amountNeeded > doFindProduct(ingredient).getActualStock()) {
-              throw new UnavailableProductCException(ingredient, amount, product.getActualStock());
+          try {
+            for (String ingredient : product.getIngredients()) {
+              seeExistenceRecursive(allProducts, ingredient, product.getQuantityIngredient(ingredient) * amountNeeded );
             }
+          } catch (UnknownProductKeyCException e) {
+            throw new UnavailableProductCException(product.getProductKey(), amount, product.getActualStock());
           }
+
           price = product.clearAllStock();
 
           while (amountNeeded > 0) {
@@ -488,6 +500,19 @@ public class Warehouse implements Serializable {
       throw new UnknownProductKeyCException(e.getUnknownKey());
     } catch (UnknownProductKeyCException e) {
       throw new UnknownProductKeyCException(e.getUnknownKey());
+    }
+
+  }
+
+  public void seeExistenceRecursive(Map<String, Derived> products, String ingredient, int amount) throws UnknownProductKeyCException {
+    if (amount <= products.get(doFindProduct(ingredient).getProductKey()).getActualStock())
+      return;
+
+    if (products.get(doFindProduct(ingredient).getProductKey()).getRecipe().equals(""))
+      throw new UnknownProductKeyCException(ingredient);
+
+    for (String components : doFindProduct(ingredient).getIngredients()) {
+      seeExistenceRecursive(products, components, (amount - products.get(doFindProduct(ingredient).getProductKey()).getActualStock()) * doFindProduct(ingredient).getQuantityIngredient(components));
     }
 
   }
