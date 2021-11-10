@@ -1,7 +1,5 @@
 package ggc;
 
-// FIXME import classes (cannot import from pt.tecnico or ggc.app)
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
@@ -15,7 +13,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
 
 import ggc.exceptions.*;
 
@@ -31,17 +28,27 @@ public class Warehouse implements Serializable {
   private static final long serialVersionUID = 202109192006L;
 
   /**
-   * Time of the Warehouse
+   * WarehouseDate of the Warehouse
    */
+  private int warehouseDate = 0;
 
-  private int time = 0;
-
+  /**
+   * Balance of the warehouse without the money from sales not paid
+   */
   private double warehouseGlobalBalance = 0;
 
+  /**
+   * Balance of the warehouse accounting the current sales price
+   */
   private double warehouseCurrentBalance = 0;
 
+  /**
+   * Number of transactions made
+   */
   private int transactionNumber = 0;
-
+  /**
+   * List with all the transactions made in the warehouse
+   */
   private List<Transaction> allTransactions = new ArrayList<>();
 
   /**
@@ -93,20 +100,26 @@ public class Warehouse implements Serializable {
     }
   }
 
-  int doShowTime() {
-    return time;
+  /**
+   * Returns the date of this warehouse
+   *
+   * @return int
+   */
+
+  public int doShowDate() {
+    return warehouseDate;
   }
 
   /**
-   * Advances time, if time <= 0 throws Exception
+   * Advances warehouseDate, if warehouseDate <= 0 throws Exception
    *
    * @@param timeToAdvance
    * @@throws InvalidDateException
    */
-  void doAdvanceTime(int timeToAdvance) throws InvalidDateException {
+  public void doAdvanceDate(int timeToAdvance) throws InvalidDateException {
     if (timeToAdvance <= 0) throw new InvalidDateException(timeToAdvance);
     {
-      time += timeToAdvance;
+      warehouseDate += timeToAdvance;
     }
   }
 
@@ -114,7 +127,7 @@ public class Warehouse implements Serializable {
    * Finds a Product given it productKey
    *
    * @param productKey
-   * @return
+   * @return Derived
    * @throws UnknownProductKeyCException
    */
 
@@ -152,7 +165,7 @@ public class Warehouse implements Serializable {
    * Given a partner, it will return all the batches by the partner
    *
    * @param partnerKey
-   * @return
+   * @return Collection<Batch>
    * @throws UnknownKeyCException
    */
 
@@ -165,7 +178,7 @@ public class Warehouse implements Serializable {
    * Given a product, it will return all the batches with the product
    *
    * @param productKey
-   * @return
+   * @return Collection<Batch>
    * @throws UnknownProductKeyCException
    */
   public Collection<Batch> doShowBatchesByProduct(String productKey) throws UnknownProductKeyCException {
@@ -173,10 +186,15 @@ public class Warehouse implements Serializable {
     return Collections.unmodifiableCollection(product.get_batches());
   }
 
+  /**
+   * Updates the value of unpaid sales of the partner
+   *
+   * @param partner
+   */
   public void updatePartnerSaleValues(Partner partner) {
     double price = updateSaleTransactions(partner.getTransactionList());
     if (price >= 0)
-    partner.setMoneyExpectedToSpendOnSales(price);
+      partner.setMoneyExpectedToSpendOnSales(price);
   }
 
   /**
@@ -186,7 +204,6 @@ public class Warehouse implements Serializable {
    * @return
    * @throws UnknownPartnerKeyCException
    */
-
   public String doRShowPartner(String partnerKey) throws UnknownPartnerKeyCException {
     updatePartnerSaleValues(doShowPartner(partnerKey));
     return doShowPartner(partnerKey).deliver();
@@ -229,7 +246,6 @@ public class Warehouse implements Serializable {
    * @param partnerAddress
    * @throws DuplicateClientCException
    */
-
   void doRegisterPartner(String partnerKey, String partnerName, String partnerAddress) throws
           DuplicateClientCException {
     for (Partner partner : allPartners.values()) {
@@ -247,7 +263,6 @@ public class Warehouse implements Serializable {
    * @throws UnknownPartnerKeyCException
    * @throws UnknownProductKeyCException
    */
-
   public void doToggleProductNotifications(String partnerKey, String productKey) throws
           UnknownPartnerKeyCException, UnknownProductKeyCException {
     Partner partner = doShowPartner(partnerKey);
@@ -262,7 +277,6 @@ public class Warehouse implements Serializable {
    * @return
    * @throws UnknownPartnerKeyCException
    */
-
   public Collection<String> doShowPartnerAcquisition(String partnerKey) throws UnknownPartnerKeyCException {
     Partner partner = doShowPartner(partnerKey);
     List<String> allAcquisitions = new LinkedList<>();
@@ -280,7 +294,6 @@ public class Warehouse implements Serializable {
    * @return
    * @throws UnknownPartnerKeyCException
    */
-
   public Collection<String> doShowPartnerSales(String partnerKey) throws UnknownPartnerKeyCException {
     Partner partner = doShowPartner(partnerKey);
     List<String> allAcquisitions = new LinkedList<>();
@@ -305,7 +318,7 @@ public class Warehouse implements Serializable {
 
     Partner partner = doShowPartner(partnerKey);
 
-    Batch newBatch = new Batch(product, price, stock, partner.getPartnerKey(), reduction);
+    Batch newBatch = new Batch(product, price, stock, partner.getPartnerKey());
 
     if (allProducts.get(product) != null) {
       allProducts.get(product).addStock(stock);
@@ -328,7 +341,6 @@ public class Warehouse implements Serializable {
    * @return
    * @throws UnknownTransactionKeyCException
    */
-
   public String doShowTransaction(int index) throws UnknownTransactionKeyCException {
     if (index >= transactionNumber) {
       throw new UnknownTransactionKeyCException(((Integer) index).toString());
@@ -336,7 +348,16 @@ public class Warehouse implements Serializable {
     return allTransactions.get(index).accept(new ShowTransaction());
   }
 
-
+  /**
+   * Register a breakdown transaction
+   *
+   * @param partnerKey
+   * @param productKey
+   * @param amount
+   * @throws UnknownPartnerKeyCException
+   * @throws UnknownProductKeyCException
+   * @throws UnavailableProductCException
+   */
   public void doRegisterBreakdown(String partnerKey, String productKey, int amount) throws
           UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
     Partner partner = doShowPartner(partnerKey);
@@ -348,8 +369,8 @@ public class Warehouse implements Serializable {
     // if product is not derived
     if (product.getRecipe().equals("")) return;
 
-    int initialValue = 0;
-    int finalValue = 0;
+    double initialValue = 0;
+    double finalValue = 0;
 
     // purchase part
     initialValue = auxSale(product, amount);
@@ -357,13 +378,13 @@ public class Warehouse implements Serializable {
     String components = "";
 
     for (String ingredient : product.getIngredients()) {
-      int price;
+      double price;
       if (doFindProduct(ingredient).getActualStock() == 0) {
         // gets the biggest price
-        price = (int) doFindProduct(ingredient).getMaxPrice();
+        price =  doFindProduct(ingredient).getMaxPrice();
       } else {
         // gets the lowest price
-        price = (int) doFindProduct(ingredient).get_batches().getFirst().getPrice();
+        price = doFindProduct(ingredient).get_batches().getFirst().getPrice();
       }
       doRegisterBatch(ingredient, partner.getPartnerKey(), price, product.getQuantityIngredient(ingredient), doFindProduct(ingredient).getReduction(), doFindProduct(ingredient).getRecipe());
       finalValue += price * product.getQuantityIngredient(ingredient) * amount;
@@ -372,18 +393,26 @@ public class Warehouse implements Serializable {
     }
     components.substring(0, components.length() - 1);
 
-    int payment = initialValue - finalValue;
+    double payment = initialValue - finalValue;
     if (payment > 0) {
       changeGlobalBalance(payment);
     }
-    Breakdown breakdown = new Breakdown(transactionNumber++, time, partner, productKey, amount, payment, components);
+    Breakdown breakdown = new Breakdown(transactionNumber++, warehouseDate, partner, productKey, amount, payment, components);
     allTransactions.add(breakdown);
     partner.addTransaction(breakdown);
 
   }
 
-  public int auxSale(Derived product, int amount) {
-    int price = 0;
+  /**
+   * Given a product and an amount, it will take out the amount from batches of the product
+   *
+   * @param product
+   * @param amount
+   * @return
+   */
+
+  public double auxSale(Derived product, int amount) {
+    double price = 0;
 
     for (Batch batch : product.get_batches()) {
       // produto suficiente numa batch
@@ -407,12 +436,13 @@ public class Warehouse implements Serializable {
 
   }
 
+
   public void doRegisterSaleTransaction(String partnerKey, String productKey, int amount, int deadline) throws
           UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
     try {
       Partner partner = doShowPartner(partnerKey);
       Derived product = doFindProduct(productKey);
-      int price = 0;
+      double price = 0;
 
       if (product.getRecipe().equals("")) {
         if (product.getActualStock() < amount)
@@ -424,7 +454,7 @@ public class Warehouse implements Serializable {
         if (product.getActualStock() > amount) {
           // if there's enough derived products
           price = auxSale(product, amount);
-        } else { // se for preciso criar derivado
+        } else { // if it's needed to create amount
 
           int amountNeeded = amount - product.getActualStock();
           // check if there's enough components
@@ -448,7 +478,7 @@ public class Warehouse implements Serializable {
         }
 
       }
-      Sale sale = new Sale(transactionNumber++, time, partner, product.getProductKey(), amount, price, deadline, false, true);
+      Sale sale = new Sale(transactionNumber++, warehouseDate, partner, product.getProductKey(), amount, price, deadline, false, true);
       partner.addTransaction(sale);
       allTransactions.add(sale);
 
@@ -469,10 +499,11 @@ public class Warehouse implements Serializable {
       Derived product = doFindProduct(productKey);
       if (product != null) {
         doRegisterBatch(product.getProductKey(), partner.getPartnerKey(), price, amount, product.getReduction(), product.getRecipe());
-        Acquisition acquisition = new Acquisition(transactionNumber++, time, partner, product.getProductKey(), amount, amount * price);
+        Acquisition acquisition = new Acquisition(transactionNumber++, warehouseDate, partner, product.getProductKey(), amount, amount * price);
         allTransactions.add(acquisition);
         partner.addTransaction(acquisition);
         price = -price * amount;
+        partner.addMoneySpentOnPurchases(-price);
         changeGlobalBalance(price);
         return true;
       } else {
@@ -490,9 +521,10 @@ public class Warehouse implements Serializable {
     try {
       Partner partner = doShowPartner(partnerKey);
       price *= amount;
-      Acquisition acquisition = new Acquisition(transactionNumber++, time, partner, productKey, amount, price);
+      Acquisition acquisition = new Acquisition(transactionNumber++, warehouseDate, partner, productKey, amount, price);
       allTransactions.add(acquisition);
       partner.addTransaction(acquisition);
+      partner.addMoneySpentOnPurchases(price);
       changeGlobalBalance(-price);
 
     } catch (UnknownPartnerKeyCException e) {
@@ -503,19 +535,20 @@ public class Warehouse implements Serializable {
 
 
   public void doReceivePayment(int transactionKey) throws UnknownTransactionKeyCException {
-    // Fix for purchase and desaggregations
     if (transactionKey >= transactionNumber || transactionKey < 0) {
       throw new UnknownTransactionKeyCException(((Integer) transactionKey).toString());
     }
 
-    // TODO Fix me
-    Sale sale = (Sale) allTransactions.get(transactionKey);
+    Transaction transaction = allTransactions.get(transactionKey);
+    if (!transaction.accept(new ShowTransaction()).substring(0, 5).equals("VENDA")) return;
+    Sale sale = (Sale) transaction;
+    if (sale.isSalePayed()) return;
     Partner partner = sale.getPartner();
-    int differenceOfDays = sale.getDeadLine() - time;
+    int differenceOfDays = sale.getDeadLine() - warehouseDate;
     double partnerBonus = partner.pay(differenceOfDays, sale.isDerivedProduct(), (int) sale.getBaseValue(), false);
     double value = sale.getBaseValue() * (1 + partnerBonus);
-    sale.setPaymentDate(time, value);
-    partner.addMoneySpentOnSales((int) value);
+    sale.setPaymentDate(warehouseDate, value);
+    partner.addMoneySpentOnSales(value);
 
 
   }
@@ -534,13 +567,20 @@ public class Warehouse implements Serializable {
   public Collection<String> doLookupPaymentsByPartner(String partnerKey) throws UnknownPartnerKeyCException {
     Partner partner = doShowPartner(partnerKey);
     List<String> transactions = new LinkedList<>();
-    for (Transaction transaction : partner.getTransactionList())
-    {
+    for (Transaction transaction : partner.getTransactionList()) {
       transactions.add(transaction.accept(new ShowSale()));
     }
-
     return Collections.unmodifiableCollection(transactions);
 
+  }
+
+
+  public double updateSaleTransactions(List<Transaction> transactionsList) {
+    double currentBalance = 0;
+    for (Transaction transaction : transactionsList) {
+      currentBalance += transaction.seePrice(new ShowTransaction(), warehouseDate);
+    }
+    return Math.round(currentBalance);
   }
 
   public double doShowGlobalBalance() {
@@ -550,15 +590,6 @@ public class Warehouse implements Serializable {
   public void changeGlobalBalance(double amount) {
     this.warehouseGlobalBalance += amount;
   }
-
-  public double updateSaleTransactions(List<Transaction> transactionsList) {
-    double currentBalance = 0;
-    for (Transaction transaction : transactionsList) {
-      currentBalance += transaction.seePrice(new ShowTransaction(), time);
-    }
-    return Math.round(currentBalance);
-  }
-
 
   public double doShowCurrentBalance() {
     return updateSaleTransactions(allTransactions);

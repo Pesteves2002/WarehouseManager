@@ -8,15 +8,15 @@ public abstract class Notification implements Serializable {
 
   private String productKey;
 
-  private int productPrice;
+  private double productPrice;
 
-  public Notification(String productKey, int productPrice) {
+  public Notification(String productKey, double productPrice) {
     this.productKey = productKey;
     this.productPrice = productPrice;
   }
 
   @Override
   public String toString() {
-    return productKey + "|" + productPrice;
+    return productKey + "|" + (int) Math.round(productPrice);
   }
 }

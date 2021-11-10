@@ -38,7 +38,7 @@ public class Partner implements Serializable, Observer {
 
   private List<Notification> notificationList = new LinkedList<>();
 
-  private Set<Batch> thisBatches = new TreeSet<>(new BatchComparator());
+  private List<Batch> thisBatches = new LinkedList<>();
 
   private Map<String, Product> thisNotifications = new TreeMap<>();
 
@@ -107,7 +107,8 @@ public class Partner implements Serializable, Observer {
   }
 
 
-  public Set<Batch> getThisBatches() {
+  public List<Batch> getThisBatches() {
+    thisBatches.sort(new BatchComparator());
     return thisBatches;
   }
 
@@ -118,13 +119,7 @@ public class Partner implements Serializable, Observer {
 
   public void addTransaction(Transaction transaction) {
     transactionList.add(transaction);
-    // FIX ME
-    if (transaction instanceof Acquisition) {
-      addMoneySpentOnPurchases((int) transaction.getBaseValue());
-    }
-
   }
-
 
   /**
    * Add a batch to the Tree Map
@@ -159,7 +154,6 @@ public class Partner implements Serializable, Observer {
     return status.p4(baseValue, -differenceOfDays, simulate);
   }
 
-
   /**
    * String representation of the Class Partner
    *
@@ -168,9 +162,9 @@ public class Partner implements Serializable, Observer {
   public String toString() {
 
     return partnerKey + "|" + partnerName + "|" + partnerAddress + "|" + status + "|" +
-            status.getPoints() + "|" + (int) moneySpentOnPurchases + "|" +
-            (int) moneyExpectedToSpendOnSales + "|" +
-            (int) moneySpentOnSales;
+            status.getPoints() + "|" + (int) Math.round(moneySpentOnPurchases) + "|" +
+            (int) Math.round(moneyExpectedToSpendOnSales) + "|" +
+            (int) Math.round(moneySpentOnSales);
   }
 
 }

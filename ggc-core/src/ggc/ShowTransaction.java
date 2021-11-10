@@ -9,7 +9,7 @@ public class ShowTransaction extends TransactionVisitor {
             acquisition.getPartner().getPartnerKey() + "|" +
             acquisition.getProductKey() + "|" +
             acquisition.getAmount() + "|" +
-            (int) acquisition.getBaseValue() + "|" +
+            (int) Math.round(acquisition.getBaseValue()) + "|" +
             acquisition.getPaymentDate();
   }
 
@@ -20,8 +20,8 @@ public class ShowTransaction extends TransactionVisitor {
             sale.getPartner().getPartnerKey() + "|" +
             sale.getProductKey() + "|" +
             sale.getAmount() + "|" +
-            (int) sale.getBaseValue() + "|" +
-            (int) sale.getCurrentValue()+ "|" +
+            (int) Math.round(sale.getBaseValue()) + "|" +
+            (int) Math.round(sale.getCurrentValue()) + "|" +
             sale.getDeadLine() ;
     if (sale.isSalePayed())
       return  s + "|" + sale.getPaymentDate();
@@ -36,7 +36,7 @@ public class ShowTransaction extends TransactionVisitor {
             breakdown.getPartner().getPartnerKey() + "|" +
             breakdown.getProductKey() + "|" +
             breakdown.getAmount() + "|" +
-            (int) breakdown.getBaseValue() + "|" +
+            (int) Math.round(breakdown.getBaseValue()) + "|" +
             breakdown.getPaymentValue()+ "|" +
             breakdown.getPaymentDate() + "|" +
              breakdown.getComponents();

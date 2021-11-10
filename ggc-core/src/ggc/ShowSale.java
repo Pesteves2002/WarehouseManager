@@ -17,8 +17,8 @@ public class ShowSale extends TransactionVisitor{
             sale.getPartner().getPartnerKey() + "|" +
             sale.getProductKey() + "|" +
             sale.getAmount() + "|" +
-            (int) sale.getBaseValue() + "|" +
-            (int) sale.getCurrentValue() + "|" +
+            (int) Math.round(sale.getBaseValue()) + "|" +
+            (int) Math.round(sale.getCurrentValue()) + "|" +
             sale.getDeadLine() + "|" + sale.getPaymentDate();
   }
 

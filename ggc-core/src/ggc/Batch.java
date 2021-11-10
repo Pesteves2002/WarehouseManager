@@ -6,7 +6,7 @@ import java.io.Serializable;
 /**
  * Class that holds a Product, its price, its quantity, the reduction and the partner
  */
-public class Batch implements Serializable{
+public class Batch implements Serializable {
   /** Serial number for serialization */
   private static final long serialVersionUID = 202110262232L;
 
@@ -18,9 +18,6 @@ public class Batch implements Serializable{
 
   /** Stock of the Batch */
   private int stock;
-
-  /** Reduction (only applicable to Derived Products */
-  private double reduction = 0;
 
   /** PartnerID */
   private String partner;
@@ -41,19 +38,6 @@ public class Batch implements Serializable{
 
   }
 
-  /**
-   * Derived Product
-   *
-   * @param product
-   * @param price
-   * @param stock
-   * @param partner
-   * @param reduction
-   */
-  public Batch(String product, double price, int stock, String partner, double reduction) {
-    this(product, price, stock, partner);
-    this.reduction = reduction;
-  }
 
   /**
    * @return ProductID
@@ -88,7 +72,7 @@ public class Batch implements Serializable{
   }
 
   public int emptyStock() {
-    int aux = (int) (stock*price);
+    int aux = (int) (stock * price);
     stock = 0;
     return aux;
   }

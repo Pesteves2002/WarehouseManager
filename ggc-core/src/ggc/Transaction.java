@@ -62,4 +62,9 @@ public abstract class Transaction implements Serializable {
 
   public abstract  double seePrice (TransactionVisitor tv, int time);
 
+  public boolean isSale (Transaction tv)
+  {
+    return tv.isSale(tv);
+  }
+
 }

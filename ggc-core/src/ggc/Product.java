@@ -99,7 +99,6 @@ public class Product implements Serializable, Subject {
    * @param newStock
    */
 
-
   public void addStock(int newStock) {
     if (actualStock == 0) {
       notifyObservers(new New(this.productKey, (int) batches.getFirst().getPrice()));

@@ -77,8 +77,6 @@ public class Derived extends Product {
     return recipe;
   }
 
-
-
   /**
    * Get the String representation of the Derived Product
    *

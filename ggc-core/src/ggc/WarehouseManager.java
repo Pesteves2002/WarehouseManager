@@ -108,7 +108,7 @@ public class WarehouseManager {
    * @return time
    */
   public int time() {
-    return _warehouse.doShowTime();
+    return _warehouse.doShowDate();
   }
 
   /**
@@ -118,7 +118,7 @@ public class WarehouseManager {
    * @@throws InvalidDateException
    */
   public void AdvanceTime(int timeToAdvance) throws InvalidDateException {
-    _warehouse.doAdvanceTime(timeToAdvance);
+    _warehouse.doAdvanceDate(timeToAdvance);
     dirtyBit = true;
   }
 

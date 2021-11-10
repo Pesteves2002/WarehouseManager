@@ -12,4 +12,5 @@ public abstract class TransactionVisitor {
 public double getPriceSale (Sale sale, int time) {return 0;}
 
 public double getPriceBreakDown (Breakdown breakdown, int time){return 0;}
+
 }

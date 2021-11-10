@@ -9,7 +9,7 @@ public class ShowAcquisition extends TransactionVisitor {
             acquisition.getPartner().getPartnerKey() + "|" +
             acquisition.getProductKey() + "|" +
             acquisition.getAmount() + "|" +
-            (int) acquisition.getBaseValue() + "|" +
+            (int) Math.round(acquisition.getBaseValue()) + "|" +
             acquisition.getPaymentDate();
   }
 

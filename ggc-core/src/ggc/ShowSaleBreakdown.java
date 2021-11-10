@@ -17,8 +17,8 @@ public class ShowSaleBreakdown extends TransactionVisitor {
             sale.getPartner().getPartnerKey() + "|" +
             sale.getProductKey() + "|" +
             sale.getAmount() + "|" +
-            (int) sale.getBaseValue() + "|" +
-            (int) sale.getCurrentValue() + "|" +
+            (int) Math.round(sale.getBaseValue()) + "|" +
+            (int) Math.round(sale.getCurrentValue()) + "|" +
             sale.getDeadLine() + "|" + sale.getPaymentDate();
   }
 
@@ -30,8 +30,8 @@ public class ShowSaleBreakdown extends TransactionVisitor {
             breakdown.getPartner().getPartnerKey() + "|" +
             breakdown.getProductKey() + "|" +
             breakdown.getAmount() + "|" +
-            (int) breakdown.getBaseValue() + "|" +
-            (int) breakdown.getPaymentValue() + "|" +
+            (int) Math.round(breakdown.getBaseValue()) + "|" +
+            (int) Math.round(breakdown.getPaymentValue()) + "|" +
             breakdown.getPaymentDate() + "|" +
             breakdown.getComponents();
 
