@@ -23,6 +23,11 @@ public abstract class Status implements Serializable {
     return points;
   }
 
+  public void addPoints(int points)
+  {
+    this.points += points;
+  }
+
   public abstract double p1(int baseValue, boolean simulate) ;
   public abstract double p2(int baseValue, int differenceOfDays,boolean simulate) ;
   public abstract double p3(int baseValue, int differenceOfDays,boolean simulate) ;

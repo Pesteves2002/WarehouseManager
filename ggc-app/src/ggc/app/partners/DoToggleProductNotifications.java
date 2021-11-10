@@ -6,10 +6,7 @@ import ggc.exceptions.UnknownProductKeyCException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import ggc.WarehouseManager;
-import ggc.app.exceptions.DuplicatePartnerKeyException;
-import ggc.exceptions.DuplicateClientCException;
 import ggc.app.exceptions.UnknownProductKeyException;
-// import ggc.exceptions.UnknownProductKeyCException; (TO DO)
 
 /**
  * Toggle product-related notifications.
@@ -24,7 +21,6 @@ class DoToggleProductNotifications extends Command<WarehouseManager> {
 
   @Override
   public void execute() throws CommandException {
-    //FIXME implement command
     try {
       String partnerKey = stringField("partnerKey");
       String productKey = stringField("productKey");

@@ -396,6 +396,7 @@ public class Warehouse implements Serializable {
     double payment = initialValue - finalValue;
     if (payment > 0) {
       changeGlobalBalance(payment);
+      partner.addPoints((int) Math.round(payment));
     }
     Breakdown breakdown = new Breakdown(transactionNumber++, warehouseDate, partner, productKey, amount, payment, components);
     allTransactions.add(breakdown);

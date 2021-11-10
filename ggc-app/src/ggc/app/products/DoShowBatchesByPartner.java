@@ -18,7 +18,6 @@ class DoShowBatchesByPartner extends Command<WarehouseManager> {
 
   @Override
   public final void execute() throws CommandException {
-    //FIXME implement command
     try {
       String partnerKey = stringField("partnerKey");
       _display.popup(_receiver.showBatchesByPartner(partnerKey));

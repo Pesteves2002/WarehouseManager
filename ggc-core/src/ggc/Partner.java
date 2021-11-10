@@ -138,6 +138,11 @@ public class Partner implements Serializable, Observer {
     this.status = status;
   }
 
+  public void addPoints(int points)
+  {
+    status.addPoints(points);
+  }
+
   public double pay(int differenceOfDays, boolean productDerived, int baseValue, boolean simulate) {
     int numberOfDays = 5;
     if (productDerived) {

@@ -1,6 +1,5 @@
 package ggc.app.transactions;
 
-import ggc.exceptions.UnknownKeyCException;
 import ggc.exceptions.UnknownPartnerKeyCException;
 import ggc.exceptions.UnknownProductKeyCException;
 import pt.tecnico.uilib.forms.Form;
@@ -10,7 +9,6 @@ import ggc.WarehouseManager;
 import ggc.app.exceptions.UnknownPartnerKeyException;
 import ggc.app.exceptions.UnknownProductKeyException;
 import ggc.app.exceptions.UnavailableProductException;
-// import ggc.exceptions.UnknownProductKeyCException; (TO DO)
 
 
 /**
@@ -55,8 +53,6 @@ public class DoRegisterAcquisitionTransaction extends Command<WarehouseManager> 
           }
           recipe = recipe.substring(0,recipe.length() - 1);
           _receiver.registerNewProduct(productKey, partnerKey, price, amount, (float) reduction, recipe);
-          _receiver.changePrice(-price); // FIXME change name
-
         }
       }
 

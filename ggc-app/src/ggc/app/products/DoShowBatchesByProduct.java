@@ -18,7 +18,6 @@ class DoShowBatchesByProduct extends Command<WarehouseManager> {
 
   @Override
   public final void execute() throws CommandException {
-    // FIX ME
     try {
       String productKey = stringField("productKey");
       _display.popup( _receiver.showBatchesByProduct(productKey));

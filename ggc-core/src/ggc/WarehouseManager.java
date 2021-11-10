@@ -210,7 +210,6 @@ public class WarehouseManager {
   }
 
   public double showGlobalBalance() {
-    // Fix me
     return _warehouse.doShowGlobalBalance();
   }
 
@@ -235,10 +234,6 @@ public class WarehouseManager {
 
   public void receivePayment(int transactionKey) throws UnknownTransactionKeyCException {
     _warehouse.doReceivePayment(transactionKey);
-  }
-
-  public void changePrice(int amount) {
-    _warehouse.changeGlobalBalance(amount);
   }
 
 

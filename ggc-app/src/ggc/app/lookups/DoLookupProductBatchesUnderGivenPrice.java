@@ -16,7 +16,6 @@ public class DoLookupProductBatchesUnderGivenPrice extends Command<WarehouseMana
 
   @Override
   public void execute() throws CommandException {
-    //FIXME implement command
     int priceLimit = integerField("priceLimit");
     _display.popup(_receiver.lookupProductBatchesUnderGivenPrice(priceLimit));
   }

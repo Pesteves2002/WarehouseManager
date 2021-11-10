@@ -1,12 +1,10 @@
 package ggc.app.transactions;
 
-import ggc.exceptions.UnknownPartnerKeyCException;
 import ggc.exceptions.UnknownTransactionKeyCException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import ggc.WarehouseManager;
 import ggc.app.exceptions.UnknownTransactionKeyException;
-// import ggc.app.exceptions.UnknownTransactionKeyCException; (TO DO)
 
 
 /**
@@ -21,7 +19,6 @@ public class DoShowTransaction extends Command<WarehouseManager> {
 
   @Override
   public final void execute() throws CommandException {
-    //FIXME implement command
     try {
       int transactionKey = integerField("transactionKey");
       _display.popup(_receiver.showTransaction(transactionKey));

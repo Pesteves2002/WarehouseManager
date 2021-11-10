@@ -5,8 +5,6 @@ import ggc.exceptions.UnknownPartnerKeyCException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import ggc.WarehouseManager;
-import ggc.app.exceptions.DuplicatePartnerKeyException;
-import ggc.exceptions.DuplicateClientCException;
 
 /**
  * Show all transactions for a specific partner.
@@ -20,7 +18,6 @@ class DoShowPartnerSales extends Command<WarehouseManager> {
 
   @Override
   public void execute() throws CommandException {
-    //FIXME implement command
     try {
       String partnerKey = stringField("partnerKey");
       _display.popup(_receiver.showPartnerSales(partnerKey));

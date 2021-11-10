@@ -9,8 +9,6 @@ import ggc.WarehouseManager;
 import ggc.app.exceptions.UnknownPartnerKeyException;
 import ggc.app.exceptions.UnknownProductKeyException;
 import ggc.app.exceptions.UnavailableProductException;
-// import ggc.exceptions.UnknownProductKeyCException; (TO DO)
-
 
 /**
  *
@@ -28,13 +26,11 @@ public class DoRegisterSaleTransaction extends Command<WarehouseManager> {
 
   @Override
   public final void execute() throws CommandException {
-    //FIXME implement command
     try {
       String partnerKey = stringField("partnerKey");
       String productKey = stringField("productKey");
       int amount = integerField("amount");
       int deadLine = integerField("deadLine");
-
       _receiver.registerSaleTransaction(partnerKey, productKey, amount, deadLine);
     } catch (UnknownPartnerKeyCException e) {
       throw new UnknownPartnerKeyException(e.getUnknownKey());

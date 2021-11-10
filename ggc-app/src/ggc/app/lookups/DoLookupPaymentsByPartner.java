@@ -4,7 +4,6 @@ import ggc.exceptions.UnknownPartnerKeyCException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import ggc.WarehouseManager;
-import ggc.exceptions.UnknownKeyCException;
 import ggc.app.exceptions.UnknownPartnerKeyException;
 
 /**
@@ -19,7 +18,6 @@ public class DoLookupPaymentsByPartner extends Command<WarehouseManager> {
 
   @Override
   public void execute() throws CommandException {
-    //FIXME implement command
     try {
       String partnerKey = stringField("partnerKey");
       _display.popup(_receiver.lookupPaymentsByPartner(partnerKey));
