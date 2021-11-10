@@ -363,7 +363,7 @@ public class Warehouse implements Serializable {
         price = (int) doFindProduct(ingredient).getMaxPrice();
       } else {
         // gets the lowest price
-        price = (int) doFindProduct(ingredient).get_batches().first().getPrice();
+        price = (int) doFindProduct(ingredient).get_batches().getFirst().getPrice();
       }
       doRegisterBatch(ingredient, partner.getPartnerKey(), price, product.getQuantityIngredient(ingredient), doFindProduct(ingredient).getReduction(), doFindProduct(ingredient).getRecipe());
       finalValue += price * product.getQuantityIngredient(ingredient) * amount;

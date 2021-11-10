@@ -27,7 +27,7 @@ public class Product implements Serializable, Subject {
   /**
    * All the batches that have the product
    */
-  private TreeSet<Batch> batches = new TreeSet<Batch>(new BatchComparator());
+  private LinkedList<Batch> batches = new LinkedList<>();
 
   /**
    * @param productKey
@@ -72,7 +72,7 @@ public class Product implements Serializable, Subject {
    *
    * @return Tree<Batch>
    */
-  public TreeSet<Batch> get_batches() {
+  public LinkedList<Batch> get_batches() {
     return batches;
   }
 
@@ -102,7 +102,7 @@ public class Product implements Serializable, Subject {
 
   public void addStock(int newStock) {
     if (actualStock == 0) {
-      notifyObservers(new New(this.productKey, (int) batches.first().getPrice()));
+      notifyObservers(new New(this.productKey, (int) batches.getFirst().getPrice()));
     }
 
     actualStock += newStock;
@@ -132,6 +132,7 @@ public class Product implements Serializable, Subject {
       notifyObservers(new Bargain(this.productKey,  (int) newBatch.getPrice()));
     }
     batches.add(newBatch);
+    batches.sort(new BatchComparator());
     changeMinMaxPrice(newBatch.getPrice());
 
   }
