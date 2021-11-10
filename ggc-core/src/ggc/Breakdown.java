@@ -7,7 +7,7 @@ public class Breakdown extends Transaction {
 
   private String components;
 
-  public double paymentValue ;
+  public double paymentValue;
 
   public Breakdown(int transactionKey, int transactionDate, Partner partner, String productKey, int amount, double baseValue, String components) {
     super(transactionKey, transactionDate, partner, productKey, amount, baseValue);
@@ -15,12 +15,12 @@ public class Breakdown extends Transaction {
     this.paymentValue = baseValue;
   }
 
-  public double getPaymentValue() {
-    return paymentValue;
-  }
-
   public String getComponents() {
     return components;
+  }
+
+  public double getPaymentValue() {
+    return paymentValue;
   }
 
   @Override
@@ -30,6 +30,6 @@ public class Breakdown extends Transaction {
 
   @Override
   public double seePrice(TransactionVisitor tv, int time) {
-    return tv.getPriceBreakDown (this, time);
+    return tv.getPriceBreakDown(this, time);
   }
 }

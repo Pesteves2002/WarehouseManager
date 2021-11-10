@@ -55,10 +55,66 @@ public class Partner implements Serializable, Observer {
     this.partnerAddress = partnerAddress;
   }
 
+  /**
+   * Return the partnerID
+   *
+   * @return partnerID
+   */
+  public String getPartnerKey() {
+    return partnerKey;
+  }
+
+
+  public List<Batch> getThisBatches() {
+    thisBatches.sort(new BatchComparator());
+    return thisBatches;
+  }
+
+  public List<Transaction> getTransactionList() {
+    return transactionList;
+  }
+
+
+  public void setMoneyExpectedToSpendOnSales(double moneyExpectedToSpendOnSales) {
+    this.moneyExpectedToSpendOnSales = moneyExpectedToSpendOnSales;
+  }
+
+  protected void setStatus(Status status) {
+    this.status = status;
+  }
+
+
   public void addProductNotification(Product product) {
     String productKey = product.getProductKey();
     thisNotifications.put(productKey, product);
     thisNotifications.get(productKey).registerObserver(this);
+  }
+
+  public void addMoneySpentOnSales(double moneySpentOnSales) {
+    this.moneySpentOnSales += moneySpentOnSales;
+  }
+
+  public void addMoneySpentOnPurchases(double moneySpentOnPurchases) {
+    this.moneySpentOnPurchases += moneySpentOnPurchases;
+  }
+
+  public void addTransaction(Transaction transaction) {
+    transactionList.add(transaction);
+  }
+
+  /**
+   * Add a batch to the Tree Map
+   *
+   * @param batch
+   */
+  public void addBatch(String productKey, Batch batch) {
+    thisBatches.add(batch);
+  }
+
+
+  public void addPoints(int points)
+  {
+    status.addPoints(points);
   }
 
   public void toggleProductNotification(Product product) {
@@ -85,63 +141,10 @@ public class Partner implements Serializable, Observer {
     this.delivery = delivery;
   }
 
-  public void addMoneySpentOnSales(double moneySpentOnSales) {
-    this.moneySpentOnSales += moneySpentOnSales;
-  }
-
-  public void addMoneySpentOnPurchases(double moneySpentOnPurchases) {
-    this.moneySpentOnPurchases += moneySpentOnPurchases;
-  }
-
-  public void setMoneyExpectedToSpendOnSales(double moneyExpectedToSpendOnSales) {
-    this.moneyExpectedToSpendOnSales = moneyExpectedToSpendOnSales;
-  }
-
-  /**
-   * Return the partnerID
-   *
-   * @return partnerID
-   */
-  public String getPartnerKey() {
-    return partnerKey;
-  }
-
-
-  public List<Batch> getThisBatches() {
-    thisBatches.sort(new BatchComparator());
-    return thisBatches;
-  }
-
   public void removeBatch(Batch batch) {
     thisBatches.remove(batch);
   }
 
-
-  public void addTransaction(Transaction transaction) {
-    transactionList.add(transaction);
-  }
-
-  /**
-   * Add a batch to the Tree Map
-   *
-   * @param batch
-   */
-  public void addBatch(String productKey, Batch batch) {
-    thisBatches.add(batch);
-  }
-
-  public List<Transaction> getTransactionList() {
-    return transactionList;
-  }
-
-  protected void setStatus(Status status) {
-    this.status = status;
-  }
-
-  public void addPoints(int points)
-  {
-    status.addPoints(points);
-  }
 
   public double pay(int differenceOfDays, boolean productDerived, int baseValue, boolean simulate) {
     int numberOfDays = 5;

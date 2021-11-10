@@ -123,17 +123,42 @@ public class WarehouseManager {
   }
 
   /**
-   * Gives the Warehouse everything to register a new Partner
+   * Returns a Collection with all the Products
    *
-   * @param key
-   * @param name
-   * @param address
-   * @throws DuplicateClientCException
+   * @return Collection<Product>
    */
+  public Collection<Product> showAllProducts() {
+    return _warehouse.doShowAllProducts();
+  }
 
-  public void registerPartner(String key, String name, String address) throws DuplicateClientCException {
-    _warehouse.doRegisterPartner(key, name, address);
-    dirtyBit = true;
+  /**
+   * Returns a Collection with all the Batches
+   *
+   * @return Collection<Batch>
+   */
+  public Collection<Batch> showAllBatches() {
+    return _warehouse.doShowAllBatches();
+  }
+
+
+  /**
+   * Returns a Collection with all the Batches owned by a Partner
+   *
+   * @return Collection<Batch>
+   */
+  public Collection<Batch> showBatchesByPartner(String partnerKey) throws UnknownKeyCException {
+    return _warehouse.doShowBatchesByPartner(partnerKey);
+  }
+
+  /**
+   * Returns a Collection with all the Batches of a Product
+   *
+   * @param productKey
+   * @return
+   * @throws UnknownKeyCException
+   */
+  public Collection<Batch> showBatchesByProduct(String productKey) throws UnknownKeyCException {
+    return _warehouse.doShowBatchesByProduct(productKey);
   }
 
   /**
@@ -156,93 +181,197 @@ public class WarehouseManager {
     return _warehouse.doShowAllPartners();
   }
 
-  /**
-   * Returns a Collection with all the Products
-   *
-   * @return Collection<Product>
-   */
-  public Collection<Product> showAllProducts() {
-    return _warehouse.doShowAllProducts();
-  }
 
   /**
-   * Returns a Collection with all the Batches
+   * Gives the Warehouse everything to register a new Partner
    *
-   * @return Collection<Batch>
+   * @param key
+   * @param name
+   * @param address
+   * @throws DuplicateClientCException
    */
-  public Collection<Batch> showAllBatches() {
-    return _warehouse.doShowAllBatches();
+
+  public void registerPartner(String key, String name, String address) throws DuplicateClientCException {
+    _warehouse.doRegisterPartner(key, name, address);
+    dirtyBit = true;
   }
 
   /**
-   * Returns a Collection with all the Batches owned by a Partner
+   * Toggles the notifications of a product to the partner
    *
-   * @return Collection<Batch>
+   * @param partnerKey
+   * @param productKey
+   * @throws UnknownPartnerKeyCException
+   * @throws UnknownProductKeyCException
    */
-  public Collection<Batch>  showBatchesByPartner(String partnerKey) throws UnknownKeyCException {
-    return _warehouse.doShowBatchesByPartner(partnerKey);
+
+  public void toggleProductNotifications(String partnerKey, String productKey) throws UnknownPartnerKeyCException, UnknownProductKeyCException {
+    _warehouse.doToggleProductNotifications(partnerKey, productKey);
+    dirtyBit = true;
   }
 
-  public Collection<Batch> showBatchesByProduct(String productKey) throws UnknownKeyCException {
-    return _warehouse.doShowBatchesByProduct(productKey);
+  /**
+   * Shows the acquisitions made by the partner
+   *
+   * @param partnerKey
+   * @return Collection<String>
+   * @throws UnknownPartnerKeyCException
+   */
+
+  public Collection<String> showPartnerAcquisitions(String partnerKey) throws UnknownPartnerKeyCException {
+    return _warehouse.doShowPartnerAcquisition(partnerKey);
   }
 
-  public Collection<Batch> lookupProductBatchesUnderGivenPrice(int priceLimit) {
-    return _warehouse.doLookupProductBatchesUnderGivenPrice(priceLimit);
+  /**
+   * Shows the sales and breakdowns made by the partner
+   *
+   * @param partnerKey
+   * @return Collection<String>
+   * @throws UnknownPartnerKeyCException
+   */
+
+  public Collection<String> showPartnerSales(String partnerKey) throws UnknownPartnerKeyCException {
+    return _warehouse.doShowPartnerSales(partnerKey);
   }
 
-  public boolean registerAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws UnknownPartnerKeyCException, UnknownProductKeyCException {
-    return _warehouse.doRegisterAcquisitionTransaction(partnerKey, productKey, price, amount);
-  }
-
-  public void toggleProductNotifications(String partnerKey, String productKey) throws UnknownPartnerKeyCException, UnknownProductKeyCException
-  {
-    _warehouse.doToggleProductNotifications(partnerKey,productKey);
-  }
-
-  public void registerNewProduct(String product, String partnerKey, double price, int stock, float reduction, String recipe) throws UnknownPartnerKeyCException, UnknownProductKeyCException {
-    _warehouse.doRegisterBatch(product, partnerKey, price, stock, reduction, recipe);
-    _warehouse.doRegisterTransaction(product, partnerKey, price, stock, reduction, recipe);
-  }
+  /**
+   * Shows a transaction
+   *
+   * @param index
+   * @return representation of a transaction
+   * @throws UnknownTransactionKeyCException
+   */
 
   public String showTransaction(int index) throws UnknownTransactionKeyCException {
     return _warehouse.doShowTransaction(index);
   }
 
-  public double showGlobalBalance() {
-    return _warehouse.doShowGlobalBalance();
+  /**
+   * Registers a breakdown transaction
+   *
+   * @param partnerKey
+   * @param productKey
+   * @param amout
+   * @throws UnknownPartnerKeyCException
+   * @throws UnknownProductKeyCException
+   * @throws UnavailableProductCException
+   */
+
+  public void registerBreakdownTransaction(String partnerKey, String productKey, int amout) throws UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
+    _warehouse.doRegisterBreakdown(partnerKey, productKey, amout);
+    dirtyBit = true;
   }
 
-  public double showCurrentBalance()
-  {
-    return _warehouse.doShowCurrentBalance();
-  }
-
-  public Collection<String> showPartnerAcquisitions(String partnerKey) throws UnknownPartnerKeyCException
-  {
-    return _warehouse.doShowPartnerAcquisition(partnerKey);
-  }
-
-  public Collection<String> showPartnerSales(String partnerKey) throws UnknownPartnerKeyCException
-  {
-    return _warehouse.doShowPartnerSales(partnerKey);
-  }
+  /**
+   * Registers a sale transaction
+   *
+   * @param partnerKey
+   * @param productKey
+   * @param amount
+   * @param deadline
+   * @throws UnknownPartnerKeyCException
+   * @throws UnknownProductKeyCException
+   * @throws UnavailableProductCException
+   */
 
   public void registerSaleTransaction(String partnerKey, String productKey, int amount, int deadline) throws UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
     _warehouse.doRegisterSaleTransaction(partnerKey, productKey, amount, deadline);
+    dirtyBit = true;
   }
+
+  /**
+   * Registers a acquisition transaction
+   *
+   * @param partnerKey
+   * @param productKey
+   * @param price
+   * @param amount
+   * @return boolean
+   * @throws UnknownPartnerKeyCException
+   * @throws UnknownProductKeyCException
+   */
+
+  public boolean registerAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws UnknownPartnerKeyCException, UnknownProductKeyCException {
+    boolean acquisitionCompleted = _warehouse.doRegisterAcquisitionTransaction(partnerKey, productKey, price, amount);
+    if (acquisitionCompleted) {
+      dirtyBit = true;
+    }
+    return acquisitionCompleted;
+
+  }
+
+  /**
+   * Registers a new product in the context of an acquisition
+   *
+   * @param product
+   * @param partnerKey
+   * @param price
+   * @param stock
+   * @param reduction
+   * @param recipe
+   * @throws UnknownPartnerKeyCException
+   * @throws UnknownProductKeyCException
+   */
+
+  public void registerNewProduct(String product, String partnerKey, double price, int stock, float reduction, String recipe) throws UnknownPartnerKeyCException, UnknownProductKeyCException {
+    _warehouse.doRegisterBatch(product, partnerKey, price, stock, reduction, recipe);
+    _warehouse.doRegisterTransaction(product, partnerKey, price, stock, reduction, recipe);
+    dirtyBit = true;
+  }
+
+  /**
+   * Receive a payment of a sale
+   *
+   * @param transactionKey
+   * @throws UnknownTransactionKeyCException
+   */
 
   public void receivePayment(int transactionKey) throws UnknownTransactionKeyCException {
     _warehouse.doReceivePayment(transactionKey);
+    dirtyBit = true;
   }
 
+  /**
+   * Returns a Collection of Batches with a price below the price given
+   *
+   * @param priceLimit
+   * @return Collecion<Batch>
+   */
+
+  public Collection<Batch> lookupProductBatchesUnderGivenPrice(int priceLimit) {
+    return _warehouse.doLookupProductBatchesUnderGivenPrice(priceLimit);
+  }
+
+  /**
+   * Shows the all the payments made by the partner
+   *
+   * @param partnerKey
+   * @return Collection<String>
+   * @throws UnknownPartnerKeyCException
+   */
 
   public Collection<String> lookupPaymentsByPartner(String partnerKey) throws UnknownPartnerKeyCException {
     return _warehouse.doLookupPaymentsByPartner(partnerKey);
   }
 
-  public void registerBreakdownTransaction (String partnerKey, String productKey, int amout) throws UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException
-  {
-    _warehouse.doRegisterBreakdown(partnerKey,productKey,amout);
+  /**
+   * Returns the globalBalance
+   *
+   * @return double
+   */
+
+  public double showGlobalBalance() {
+    return _warehouse.doShowGlobalBalance();
   }
+
+  /**
+   * Returns the balance of the warehouse including non paid sales
+   *
+   * @return double
+   */
+
+  public double showCurrentBalance() {
+    return _warehouse.doShowCurrentBalance();
+  }
+
 }

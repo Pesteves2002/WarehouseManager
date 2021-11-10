@@ -42,23 +42,6 @@ public class Product implements Serializable, Subject {
     this.minPrice = maxPrice;
   }
 
-  public void registerObserver(Observer o) {
-    observers.add(o);
-  }
-
-  public void removeObserver(Observer o) {
-    int i = observers.indexOf(o);
-    if (i >= 0) {
-      observers.remove(i);
-    }
-  }
-
-  public void notifyObservers(Notification notification) {
-    for (Observer observer : observers) {
-      observer.update(notification);
-    }
-  }
-
   public String getProductKey() {
     return productKey;
   }
@@ -103,9 +86,13 @@ public class Product implements Serializable, Subject {
     if (actualStock == 0) {
       notifyObservers(new New(this.productKey, (int) batches.getFirst().getPrice()));
     }
-
     actualStock += newStock;
   }
+
+  public void reduceStock(int amount) {
+    this.actualStock -= amount;
+  }
+
 
   /**
    * If a new batch has a bigger price for a product, the
@@ -136,12 +123,21 @@ public class Product implements Serializable, Subject {
 
   }
 
-
-  public void reduceStock(int amount) {
-    this.actualStock -= amount;
+  public void registerObserver(Observer o) {
+    observers.add(o);
   }
 
-
+  public void removeObserver(Observer o) {
+    int i = observers.indexOf(o);
+    if (i >= 0) {
+      observers.remove(i);
+    }
+  }
+  public void notifyObservers(Notification notification) {
+    for (Observer observer : observers) {
+      observer.update(notification);
+    }
+  }
   /**
    * String Representation of the Product class
    *
