@@ -84,8 +84,6 @@ public class Batch implements Serializable {
    */
   @Override
   public String toString() {
-    if (stock == 0) return "";
-
     return product + "|" + partner + "|" + Math.round(price) + "|" + stock;
   }
 

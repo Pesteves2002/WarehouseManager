@@ -71,7 +71,9 @@ public class Product implements Serializable, Subject {
     int price = 0;
     for (Batch batch : batches) {
       price += batch.emptyStock();
+      batches.remove(batch);
     }
+
     this.setActualStock(0);
     return price;
   }
@@ -88,7 +90,11 @@ public class Product implements Serializable, Subject {
 
   public void addStock(int newStock) {
     if (actualStock == 0) {
-      notifyObservers(new New(this.productKey, (int) batches.getFirst().getPrice()));
+      int price = (int) this.maxPrice;
+      if (!batches.isEmpty()) {
+         price = (int) batches.getFirst().getPrice();
+      }
+      notifyObservers(new New(this.productKey, price));
     }
     actualStock += newStock;
   }

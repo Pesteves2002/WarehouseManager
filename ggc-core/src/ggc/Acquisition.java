@@ -20,4 +20,6 @@ public class Acquisition extends Transaction{
   public double seePrice(TransactionVisitor tv, int time) {
     return tv.getPriceAcquisition(this, time);
   }
+
+  public double paySale( ShowSale tv, int warehouseDate) {return tv.paySale(this, warehouseDate);}
 }

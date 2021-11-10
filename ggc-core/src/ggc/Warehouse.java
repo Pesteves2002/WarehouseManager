@@ -204,7 +204,7 @@ public class Warehouse implements Serializable {
    * @return
    * @throws UnknownPartnerKeyCException
    */
-  public String doRShowPartner(String partnerKey) throws UnknownPartnerKeyCException {
+  public String doShowPartnerNotifications(String partnerKey) throws UnknownPartnerKeyCException {
     updatePartnerSaleValues(doShowPartner(partnerKey));
     return doShowPartner(partnerKey).deliver();
   }
@@ -213,8 +213,8 @@ public class Warehouse implements Serializable {
    * Returns a Partner given its partnerKey
    *
    * @param partnerKey
-   * @return
-   * @throws UnknownKeyCException
+   * @return partner
+   * @throws UnknownPartnerKeyCException
    */
   public Partner doShowPartner(String partnerKey) throws UnknownPartnerKeyCException {
     for (Partner partner : allPartners.values()) {
@@ -342,7 +342,7 @@ public class Warehouse implements Serializable {
    * @throws UnknownTransactionKeyCException
    */
   public String doShowTransaction(int index) throws UnknownTransactionKeyCException {
-    if (index >= transactionNumber) {
+    if (index >= transactionNumber || index < 0) {
       throw new UnknownTransactionKeyCException(((Integer) index).toString());
     }
     return allTransactions.get(index).accept(new ShowTransaction());
@@ -379,14 +379,15 @@ public class Warehouse implements Serializable {
 
     for (String ingredient : product.getIngredients()) {
       double price;
-      if (doFindProduct(ingredient).getActualStock() == 0) {
+      Derived component = doFindProduct(ingredient);
+      if (component.getActualStock() == 0) {
         // gets the biggest price
-        price = doFindProduct(ingredient).getMaxPrice();
+        price = component.getMaxPrice();
       } else {
         // gets the lowest price
-        price = doFindProduct(ingredient).get_batches().getFirst().getPrice();
+        price = component.get_batches().getFirst().getPrice();
       }
-      doRegisterBatch(ingredient, partner.getPartnerKey(), price, product.getQuantityIngredient(ingredient), doFindProduct(ingredient).getReduction(), doFindProduct(ingredient).getRecipe());
+      doRegisterBatch(ingredient, partner.getPartnerKey(), price, product.getQuantityIngredient(ingredient), component.getReduction(), component.getRecipe());
       finalValue += price * product.getQuantityIngredient(ingredient) * amount;
       components += ingredient + ":" + product.getQuantityIngredient(ingredient) * amount + ":" + (int) (finalValue / product.getQuantityIngredient(ingredient)) + "#";
 
@@ -409,14 +410,14 @@ public class Warehouse implements Serializable {
    *
    * @param product
    * @param amount
-   * @return
+   * @return price
    */
 
   public double auxSale(Derived product, int amount) throws UnknownProductKeyCException {
     double price = 0;
 
     for (Batch batch : product.get_batches()) {
-      // produto suficiente numa batch
+      // enough product in a batch
       if (amount < batch.getStock()) {
         batch.decreaseStock(amount);
         product.reduceStock(amount);
@@ -431,7 +432,7 @@ public class Warehouse implements Serializable {
         amount = 0;
         break;
       }
-      // produto nao suficiente numa batch
+      // not enough product in a batch
       else {
         int numberProducts = batch.getStock();
         price += batch.emptyStock();
@@ -441,6 +442,7 @@ public class Warehouse implements Serializable {
 
       }
     }
+    // if it clears all the batches and there's still product to make
     if (amount != 0) {
       double aggregation = 0;
       for (String components : product.getIngredients())
@@ -450,39 +452,48 @@ public class Warehouse implements Serializable {
 
     }
     return price;
-
   }
 
+  /**
+   * Creates a new sale transaction
+   *
+   * @param partnerKey
+   * @param productKey
+   * @param amount
+   * @param deadline
+   * @throws UnknownProductKeyCException
+   * @throws UnavailableProductCException
+   * @throws UnknownPartnerKeyCException
+   */
 
   public void doRegisterSaleTransaction(String partnerKey, String productKey, int amount, int deadline) throws
-          UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
+          UnknownProductKeyCException, UnavailableProductCException, UnknownPartnerKeyCException {
     try {
       Partner partner = doShowPartner(partnerKey);
       Derived product = doFindProduct(productKey);
       double price = 0;
-
+      Sale sale;
+      // if product is simple
       if (product.getRecipe().equals("")) {
         if (product.getActualStock() < amount)
           throw new UnavailableProductCException(productKey, amount, product.getActualStock());
 
         price = auxSale(product, amount);
-
+        sale = new Sale(transactionNumber++, warehouseDate, partner, product.getProductKey(), amount, price, deadline, false, false);
       } else { // derived products
-        if (product.getActualStock() > amount) {
+        if (product.getActualStock() >= amount) {
           // if there's enough derived products
           price = auxSale(product, amount);
         } else { // if it's needed to create amount
 
           int amountNeeded = amount - product.getActualStock();
-          // check if there's enough components
 
+          // check if there's enough components
           for (String ingredient : product.getIngredients()) {
             seeExistenceRecursive(allProducts, ingredient, product.getQuantityIngredient(ingredient) * amountNeeded);
           }
 
-
           price = product.clearAllStock();
-
 
           while (amountNeeded > 0) {
             double aggregationPrice = 0;
@@ -496,29 +507,37 @@ public class Warehouse implements Serializable {
           }
           product.calculateAggregationPrice(allProducts);
         }
-
+        sale = new Sale(transactionNumber++, warehouseDate, partner, product.getProductKey(), amount, price, deadline, false, true);
       }
-      Sale sale = new Sale(transactionNumber++, warehouseDate, partner, product.getProductKey(), amount, price, deadline, false, true);
+
       partner.addTransaction(sale);
       allTransactions.add(sale);
 
-
     } catch (UnknownPartnerKeyCException e) {
-      throw new UnknownProductKeyCException(e.getUnknownKey());
+      throw new UnknownPartnerKeyCException(e.getUnknownKey());
     } catch (UnknownProductKeyCException e) {
       throw new UnknownProductKeyCException(e.getUnknownKey());
     }
-
   }
+
+  /**
+   * Check if a product can be created recursively
+   *
+   * @param products
+   * @param ingredient
+   * @param amount
+   * @throws UnavailableProductCException
+   */
 
   public void seeExistenceRecursive(Map<String, Derived> products, String ingredient, int amount) throws UnavailableProductCException {
     try {
-      if (amount <= products.get(doFindProduct(ingredient).getProductKey()).getActualStock())
-        return;
+      if (amount <= products.get(doFindProduct(ingredient).getProductKey()).getActualStock()) return;
 
+      // if product is simple
       if (products.get(doFindProduct(ingredient).getProductKey()).getRecipe().equals(""))
         throw new UnavailableProductCException(ingredient, amount, products.get(doFindProduct(ingredient).getProductKey()).getActualStock());
 
+      // starts recursion for the components of the product
       for (String components : doFindProduct(ingredient).getIngredients()) {
         seeExistenceRecursive(products, components, (amount - products.get(doFindProduct(ingredient).getProductKey()).getActualStock()) * doFindProduct(ingredient).getQuantityIngredient(components));
       }
@@ -527,6 +546,16 @@ public class Warehouse implements Serializable {
       e.printStackTrace();
     }
   }
+
+  /**
+   * Register a new Transaction, if a product is not known it returns false
+   * @param partnerKey
+   * @param productKey
+   * @param price
+   * @param amount
+   * @return boolean
+   * @throws UnknownPartnerKeyCException
+   */
 
   public boolean doRegisterAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws
           UnknownPartnerKeyCException {
@@ -553,7 +582,7 @@ public class Warehouse implements Serializable {
     }
   }
 
-  public void doRegisterTransaction(String productKey, String partnerKey, double price, int amount,
+  public void doRegisterTransactionNewProduct(String productKey, String partnerKey, double price, int amount,
                                     float reduction, String recipe) throws UnknownPartnerKeyCException {
     try {
       Partner partner = doShowPartner(partnerKey);
@@ -570,27 +599,30 @@ public class Warehouse implements Serializable {
 
   }
 
-
+  /**
+   * Pays the sale transaction
+   *
+   * @param transactionKey
+   * @throws UnknownTransactionKeyCException
+   */
   public void doReceivePayment(int transactionKey) throws UnknownTransactionKeyCException {
     if (transactionKey >= transactionNumber || transactionKey < 0) {
       throw new UnknownTransactionKeyCException(((Integer) transactionKey).toString());
     }
 
     Transaction transaction = allTransactions.get(transactionKey);
-    if (!transaction.accept(new ShowTransaction()).substring(0, 5).equals("VENDA")) return;
-    Sale sale = (Sale) transaction;
-    if (sale.isSalePayed()) return;
-    Partner partner = sale.getPartner();
-    int differenceOfDays = sale.getDeadLine() - warehouseDate;
-    double partnerBonus = partner.pay(differenceOfDays, sale.isDerivedProduct(), (int) sale.getBaseValue(), false);
-    double value = sale.getBaseValue() * (1 + partnerBonus);
-    sale.setPaymentDate(warehouseDate, value);
+
+    double value = transaction.paySale(new ShowSale(), warehouseDate);
+    Partner partner = transaction.getPartner();
     partner.addMoneySpentOnSales(value);
     warehouseGlobalBalance += (value);
-
-
   }
 
+  /**
+   * Creates a Collection with all batches under a Given Prices
+   * @param priceLimit
+   * @return Collection<Batch>
+   */
   public Collection<Batch> doLookupProductBatchesUnderGivenPrice(int priceLimit) {
     List<Batch> batchesUnderGivenPrice = new ArrayList<>();
     for (Product product : allProducts.values()) {
@@ -602,6 +634,12 @@ public class Warehouse implements Serializable {
     return Collections.unmodifiableCollection(batchesUnderGivenPrice);
   }
 
+  /**
+   * Return the transactions paid by the partner
+   * @param partnerKey
+   * @return Collection<String>
+   * @throws UnknownPartnerKeyCException
+   */
   public Collection<String> doLookupPaymentsByPartner(String partnerKey) throws UnknownPartnerKeyCException {
     Partner partner = doShowPartner(partnerKey);
     List<String> transactions = new LinkedList<>();
@@ -609,9 +647,13 @@ public class Warehouse implements Serializable {
       transactions.add(transaction.accept(new ShowSale()));
     }
     return Collections.unmodifiableCollection(transactions);
-
   }
 
+  /**
+   * Calculates the current balance iterating through the transaction list
+   * @param transactionsList
+   * @return
+   */
 
   public double updateSaleTransactions(List<Transaction> transactionsList) {
     double currentBalance = 0;
@@ -621,13 +663,28 @@ public class Warehouse implements Serializable {
     return Math.round(currentBalance);
   }
 
+  /**
+   * Returns the Global balance of the warehouse
+   * @return double
+   */
+
   public double doShowGlobalBalance() {
     return warehouseGlobalBalance;
   }
 
+  /**
+   * Adds or subtracts an amount to the global balance of the warehouse
+   * @return double
+   */
+
   public void changeGlobalBalance(double amount) {
     this.warehouseGlobalBalance += amount;
   }
+
+  /**
+   * Calls the method updateSaleTransaction
+   * @return double
+   */
 
   public double doShowCurrentBalance() {
     return updateSaleTransactions(allTransactions);

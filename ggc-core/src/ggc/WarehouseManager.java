@@ -169,7 +169,7 @@ public class WarehouseManager {
    * @throws UnknownKeyCException
    */
   public String showPartner(String id) throws UnknownKeyCException {
-    return _warehouse.doRShowPartner(id);
+    return _warehouse.doShowPartnerNotifications(id);
   }
 
   /**
@@ -315,7 +315,7 @@ public class WarehouseManager {
 
   public void registerNewProduct(String product, String partnerKey, double price, int stock, float reduction, String recipe) throws UnknownPartnerKeyCException, UnknownProductKeyCException {
     _warehouse.doRegisterBatch(product, partnerKey, price, stock, reduction, recipe);
-    _warehouse.doRegisterTransaction(product, partnerKey, price, stock, reduction, recipe);
+    _warehouse.doRegisterTransactionNewProduct(product, partnerKey, price, stock, reduction, recipe);
     dirtyBit = true;
   }
 

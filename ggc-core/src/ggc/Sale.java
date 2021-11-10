@@ -61,6 +61,5 @@ public class Sale extends Transaction{
     return tv.getPriceSale(this,time);
   }
 
-
-
+  public double paySale( ShowSale tv, int warehouseDate) {return tv.paySale(this, warehouseDate);}
 }
