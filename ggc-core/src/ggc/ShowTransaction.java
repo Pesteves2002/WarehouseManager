@@ -51,9 +51,9 @@ public class ShowTransaction extends TransactionVisitor {
   @Override
   public double getPriceSale(Sale sale, int time) {
     Partner partner = sale.getPartner();
-    time = time - sale.getDeadLine();
+    time = sale.getDeadLine() - time;
     if (sale.isSalePayed()) return sale.getCurrentValue();
-    return - sale.getBaseValue()* (1 + partner.pay(time, sale.isDerivedProduct(),(int) sale.getBaseValue(),true));
+    return sale.getBaseValue()* (1 + partner.pay(time, sale.isDerivedProduct(),(int) sale.getBaseValue(),true));
   }
 
   @Override

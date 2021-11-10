@@ -67,13 +67,17 @@ public class Product implements Serializable, Subject {
     this.actualStock = actualStock;
   }
 
-  public int clearAllStock() {
+  public double clearAllStock() {
     int price = 0;
     for (Batch batch : batches) {
       price += batch.emptyStock();
     }
     this.setActualStock(0);
     return price;
+  }
+
+  public void setMaxPrice(double maxPrice) {
+    this.maxPrice = maxPrice;
   }
 
   /**
@@ -106,6 +110,8 @@ public class Product implements Serializable, Subject {
     if (minPrice > value)
       minPrice = value;
   }
+
+
 
   /**
    * Add the batch to the Map

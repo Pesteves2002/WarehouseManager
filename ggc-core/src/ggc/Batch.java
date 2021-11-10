@@ -71,8 +71,8 @@ public class Batch implements Serializable {
     stock -= amount;
   }
 
-  public int emptyStock() {
-    int aux = (int) (stock * price);
+  public double emptyStock() {
+    double aux =  (stock * price);
     stock = 0;
     return aux;
   }

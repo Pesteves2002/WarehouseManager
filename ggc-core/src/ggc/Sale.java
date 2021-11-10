@@ -11,7 +11,7 @@ public class Sale extends Transaction{
 
   private int paymentDate  = 0;
 
-  private boolean salePayed;
+  private boolean salePayed ;
 
   private boolean derivedProduct;
 

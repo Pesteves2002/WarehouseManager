@@ -77,6 +77,19 @@ public class Derived extends Product {
     return recipe;
   }
 
+
+  public void calculateAggregationPrice(Map<String,Derived> allProducts)
+  {
+    double price = 0;
+    if (this.getRecipe().equals("")) return;
+    for (String  ingredient: ingredients)
+    {
+      price += allProducts.get(ingredient).getMaxPrice() * quantityIngredients.get(ingredient);
+    }
+    price *= (1+ this.reduction);
+    setMaxPrice(price);
+  }
+
   /**
    * Get the String representation of the Derived Product
    *

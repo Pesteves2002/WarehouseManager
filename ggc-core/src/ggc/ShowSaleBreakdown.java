@@ -9,9 +9,11 @@ public class ShowSaleBreakdown extends TransactionVisitor {
 
   @Override
   public String visitSale(Sale sale) {
-    if (!sale.isSalePayed()) {
-      return "";
+    String s = "";
+    if (sale.isSalePayed()) {
+      s = "|" + sale.getPaymentDate();
     }
+
     return "VENDA" + "|" +
             sale.getTransactionKey() + "|" +
             sale.getPartner().getPartnerKey() + "|" +
@@ -19,7 +21,7 @@ public class ShowSaleBreakdown extends TransactionVisitor {
             sale.getAmount() + "|" +
             (int) Math.round(sale.getBaseValue()) + "|" +
             (int) Math.round(sale.getCurrentValue()) + "|" +
-            sale.getDeadLine() + "|" + sale.getPaymentDate();
+            sale.getDeadLine() + s;
   }
 
 
