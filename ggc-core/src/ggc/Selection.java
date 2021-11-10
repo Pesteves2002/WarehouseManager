@@ -34,7 +34,7 @@ public class Selection extends Status {
   {
     if (simulate) {
       if (differenceOfDays >= 2)
-        return 0.05;
+        return -0.05;
       return 0;
     }
 
@@ -49,7 +49,7 @@ public class Selection extends Status {
   }
 
   public double p3(int baseValue, int differenceOfDays, boolean simulate) {
-    if (differenceOfDays > 1 )
+    if (- differenceOfDays > 1 )
       return differenceOfDays * 0.02;
     return 0;
   }

@@ -42,16 +42,16 @@ public class Normal extends Status {
   }
 
   public double p3(int baseValue, int differenceOfDays, boolean simulate) {
-    if (simulate) return -differenceOfDays * 0.05;
+    if (simulate) return differenceOfDays * 0.05;
     points = 0;
-    return -differenceOfDays * 0.05;
+    return differenceOfDays * 0.05;
   }
 
   public double p4(int baseValue, int differenceOfDays, boolean simulate) {
-    if (simulate) return -differenceOfDays * 0.1;
+    if (simulate) return differenceOfDays * 0.1;
 
     points = 0;
-    return -differenceOfDays * 0.1;
+    return differenceOfDays * 0.1;
   }
 
   /** String representation of the Normal Status */

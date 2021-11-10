@@ -388,7 +388,7 @@ public class Warehouse implements Serializable {
       }
       doRegisterBatch(ingredient, partner.getPartnerKey(), price, product.getQuantityIngredient(ingredient), doFindProduct(ingredient).getReduction(), doFindProduct(ingredient).getRecipe());
       finalValue += price * product.getQuantityIngredient(ingredient) * amount;
-      components += ingredient + ":" + product.getQuantityIngredient(ingredient) * amount + ":" + (int)( finalValue / product.getQuantityIngredient(ingredient) ) + "#";
+      components += ingredient + ":" + product.getQuantityIngredient(ingredient) * amount + ":" + (int) (finalValue / product.getQuantityIngredient(ingredient)) + "#";
 
     }
     components = components.substring(0, components.length() - 1);
@@ -424,10 +424,8 @@ public class Warehouse implements Serializable {
         amount = 0;
         break;
       }
-      if (amount == batch.getStock())
-      {
-        price += batch.getPrice()*amount;
-        batch.emptyStock();
+      if (amount == batch.getStock()) {
+        price += batch.emptyStock();
         product.clearAllStock();
         product.calculateAggregationPrice(allProducts);
         amount = 0;
@@ -442,14 +440,14 @@ public class Warehouse implements Serializable {
         product.reduceStock(numberProducts);
 
       }
-      if (amount != 0)
-      {
-        double aggregation = 0;
-        for (String components : product.getIngredients())
-        aggregation += auxSale(doFindProduct(components)  ,amount * product.getQuantityIngredient(components));
-        aggregation *= (1+product.getReduction());
-        price += aggregation;
-      }
+    }
+    if (amount != 0) {
+      double aggregation = 0;
+      for (String components : product.getIngredients())
+        aggregation += auxSale(doFindProduct(components), amount * product.getQuantityIngredient(components));
+      aggregation *= (1 + product.getReduction());
+      price += aggregation;
+
     }
     return price;
 
@@ -478,10 +476,9 @@ public class Warehouse implements Serializable {
           int amountNeeded = amount - product.getActualStock();
           // check if there's enough components
 
-            for (String ingredient : product.getIngredients()) {
-              seeExistenceRecursive(allProducts, ingredient, product.getQuantityIngredient(ingredient) * amountNeeded );
-            }
-
+          for (String ingredient : product.getIngredients()) {
+            seeExistenceRecursive(allProducts, ingredient, product.getQuantityIngredient(ingredient) * amountNeeded);
+          }
 
 
           price = product.clearAllStock();
@@ -514,7 +511,7 @@ public class Warehouse implements Serializable {
 
   }
 
-  public void seeExistenceRecursive(Map<String, Derived> products, String ingredient, int amount) throws UnavailableProductCException  {
+  public void seeExistenceRecursive(Map<String, Derived> products, String ingredient, int amount) throws UnavailableProductCException {
     try {
       if (amount <= products.get(doFindProduct(ingredient).getProductKey()).getActualStock())
         return;
@@ -526,7 +523,9 @@ public class Warehouse implements Serializable {
         seeExistenceRecursive(products, components, (amount - products.get(doFindProduct(ingredient).getProductKey()).getActualStock()) * doFindProduct(ingredient).getQuantityIngredient(components));
       }
     }//shouldn't happen
-    catch (UnknownProductKeyCException e) {e.printStackTrace();}
+    catch (UnknownProductKeyCException e) {
+      e.printStackTrace();
+    }
   }
 
   public boolean doRegisterAcquisitionTransaction(String partnerKey, String productKey, double price, int amount) throws
