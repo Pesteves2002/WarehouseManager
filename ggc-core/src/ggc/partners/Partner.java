@@ -119,7 +119,7 @@ public class Partner implements Serializable, Observer {
   }
 
 
-  public void addPoints(int points)
+  public void addPoints(double points)
   {
     status.addPoints(points);
   }

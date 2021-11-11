@@ -39,7 +39,7 @@ public class ShowTransaction extends TransactionVisitor {
             breakdown.getProductKey() + "|" +
             breakdown.getAmount() + "|" +
             (int) Math.round(breakdown.getBaseValue()) + "|" +
-            breakdown.getPaymentValue()+ "|" +
+            (int) Math.round(breakdown.getPaymentValue()) + "|" +
             breakdown.getPaymentDate() + "|" +
              breakdown.getComponents();
 
@@ -60,6 +60,6 @@ public class ShowTransaction extends TransactionVisitor {
 
   @Override
   public double getPriceBreakDown(Breakdown breakdown, int time) {
-    return breakdown.getPaymentValue() ;
+    return 0 ;
   }
 }

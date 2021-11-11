@@ -249,14 +249,14 @@ public class WarehouseManager {
    *
    * @param partnerKey
    * @param productKey
-   * @param amout
+   * @param amount
    * @throws UnknownPartnerKeyCException
    * @throws UnknownProductKeyCException
    * @throws UnavailableProductCException
    */
 
-  public void registerBreakdownTransaction(String partnerKey, String productKey, int amout) throws UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
-    _warehouse.doRegisterBreakdown(partnerKey, productKey, amout);
+  public void registerBreakdownTransaction(String partnerKey, String productKey, int amount) throws UnknownPartnerKeyCException, UnknownProductKeyCException, UnavailableProductCException {
+    _warehouse.doRegisterBreakdown(partnerKey, productKey, amount);
     dirtyBit = true;
   }
 

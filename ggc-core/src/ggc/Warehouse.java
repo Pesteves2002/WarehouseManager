@@ -398,9 +398,9 @@ public class Warehouse implements Serializable {
         // gets the lowest price
         price = component.get_batches().getFirst().getPrice();
       }
-      doRegisterBatch(ingredient, partner.getPartnerKey(), price, product.getQuantityIngredient(ingredient), component.getReduction(), component.getRecipe());
+      doRegisterBatch(ingredient, partner.getPartnerKey(), price, amount* product.getQuantityIngredient(ingredient), component.getReduction(), component.getRecipe());
       finalValue += price * product.getQuantityIngredient(ingredient) * amount;
-      components += ingredient + ":" + product.getQuantityIngredient(ingredient) * amount + ":" + (int) (finalValue / product.getQuantityIngredient(ingredient)) + "#";
+      components += ingredient + ":" + product.getQuantityIngredient(ingredient) * amount + ":" + (int) Math.round (price * amount* product.getQuantityIngredient(ingredient)) + "#";
 
     }
     components = components.substring(0, components.length() - 1);
@@ -408,7 +408,7 @@ public class Warehouse implements Serializable {
     double payment = initialValue - finalValue;
     if (payment > 0) {
       changeGlobalBalance(payment);
-      partner.addPoints((int) Math.round(payment));
+      partner.addPoints( payment * 10);
     }
     Breakdown breakdown = new Breakdown(transactionNumber++, warehouseDate, partner, productKey, amount, payment, components);
     allTransactions.add(breakdown);

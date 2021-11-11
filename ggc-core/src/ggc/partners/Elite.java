@@ -14,14 +14,14 @@ public class Elite extends Status {
   public double p1 (int baseValue, boolean simulate)
   {
     if (simulate) return -0.1;
-    this.points += baseValue *10;
+    this.points += baseValue *10 * 0.9;
     return -0.1;
   }
 
   public double p2 (int baseValue, int differenceOfDays, boolean simulate)
   {
     if (simulate) return -0.1;
-    this.points += baseValue *10;
+    this.points += baseValue *10 * 0.9;
     return -0.1;
   }
 

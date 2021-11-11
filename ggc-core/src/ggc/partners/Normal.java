@@ -16,7 +16,7 @@ public class Normal extends Status {
   public double p1(int baseValue, boolean simulate) {
     if (simulate) return -0.1;
 
-    this.points += baseValue * 10;
+    this.points += baseValue  * 10 * 0.9;
     if (points > 2000) {
 
       if (points > 10000) {
