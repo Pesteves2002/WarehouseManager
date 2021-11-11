@@ -333,7 +333,6 @@ public class Warehouse implements Serializable {
 
     if (allProducts.get(product) != null) {
       allProducts.get(product).addStock(stock);
-      allProducts.get(product).changeMinMaxPrice(price);
     } else {
       Derived newProduct = new Derived(product, price, stock, recipe, reduction);
       allProducts.put(product, newProduct);

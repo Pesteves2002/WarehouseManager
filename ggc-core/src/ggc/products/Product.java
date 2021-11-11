@@ -37,15 +37,15 @@ public class Product implements Serializable, Subject {
 
   /**
    * @param productKey
-   * @param maxPrice
+   * @param price
    * @param actualStock
    */
-  public Product(String productKey, double maxPrice, int actualStock) {
+  public Product(String productKey, double price, int actualStock) {
 
     this.productKey = productKey;
-    this.maxPrice = maxPrice;
+    this.maxPrice = 0;
     this.actualStock = actualStock;
-    this.minPrice = maxPrice;
+    this.minPrice = 9999999;
   }
 
   public String getProductKey() {
@@ -130,7 +130,7 @@ public class Product implements Serializable, Subject {
   public void addBatch(Batch newBatch) {
 
 
-    if (newBatch.getPrice() <= minPrice && !batches.isEmpty()) {
+    if (newBatch.getPrice() < minPrice && !batches.isEmpty()) {
       notifyObservers(new Bargain(this.productKey, (int) newBatch.getPrice()));
     }
     batches.add(newBatch);
