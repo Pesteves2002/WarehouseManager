@@ -156,8 +156,9 @@ public class Warehouse implements Serializable {
   public Collection<Batch> doShowAllBatches() {
     List<Batch> allBatches = new ArrayList<Batch>();
     for (Product product : allProducts.values())
-      for (Batch batch : product.get_batches())
-        allBatches.add(batch);
+      if (product.get_batches() != null)
+        for (Batch batch : product.get_batches())
+          allBatches.add(batch);
     return allBatches;
   }
 
@@ -169,8 +170,12 @@ public class Warehouse implements Serializable {
    * @throws UnknownKeyCException
    */
 
-  public Collection<Batch> doShowBatchesByPartner(String partnerKey) throws UnknownKeyCException {
+  public Collection<Batch> doShowBatchesByPartner(String partnerKey) throws UnknownPartnerKeyCException {
     Partner partner = doShowPartner(partnerKey);
+    List<Batch> batches = new LinkedList<>();
+    for (Batch batch : doShowPartner(partnerKey).getThisBatches())
+      if (batch.getStock() ==0)
+        partner.removeBatch(batch);
     return Collections.unmodifiableCollection(partner.getThisBatches());
   }
 
@@ -183,7 +188,13 @@ public class Warehouse implements Serializable {
    */
   public Collection<Batch> doShowBatchesByProduct(String productKey) throws UnknownProductKeyCException {
     Product product = doFindProduct(productKey);
-    return Collections.unmodifiableCollection(product.get_batches());
+    if (product.get_batches() != null)
+      return Collections.unmodifiableCollection(product.get_batches());
+    // if a product has no batches
+    Batch dummy = new Batch("p", 0, 0, "p");
+    List<Batch> dummyList = new LinkedList<Batch>();
+    dummyList.add(dummy);
+    return Collections.unmodifiableCollection(dummyList);
   }
 
   /**
@@ -549,6 +560,7 @@ public class Warehouse implements Serializable {
 
   /**
    * Register a new Transaction, if a product is not known it returns false
+   *
    * @param partnerKey
    * @param productKey
    * @param price
@@ -583,7 +595,7 @@ public class Warehouse implements Serializable {
   }
 
   public void doRegisterTransactionNewProduct(String productKey, String partnerKey, double price, int amount,
-                                    float reduction, String recipe) throws UnknownPartnerKeyCException {
+                                              float reduction, String recipe) throws UnknownPartnerKeyCException {
     try {
       Partner partner = doShowPartner(partnerKey);
       price *= amount;
@@ -620,22 +632,25 @@ public class Warehouse implements Serializable {
 
   /**
    * Creates a Collection with all batches under a Given Prices
+   *
    * @param priceLimit
    * @return Collection<Batch>
    */
   public Collection<Batch> doLookupProductBatchesUnderGivenPrice(int priceLimit) {
     List<Batch> batchesUnderGivenPrice = new ArrayList<>();
     for (Product product : allProducts.values()) {
-      for (Batch batch : product.get_batches()) {
-        if (batch.getPrice() < priceLimit)
-          batchesUnderGivenPrice.add(batch);
-      }
+      if (product.get_batches() != null)
+        for (Batch batch : product.get_batches()) {
+          if (batch.getPrice() < priceLimit)
+            batchesUnderGivenPrice.add(batch);
+        }
     }
     return Collections.unmodifiableCollection(batchesUnderGivenPrice);
   }
 
   /**
    * Return the transactions paid by the partner
+   *
    * @param partnerKey
    * @return Collection<String>
    * @throws UnknownPartnerKeyCException
@@ -651,6 +666,7 @@ public class Warehouse implements Serializable {
 
   /**
    * Calculates the current balance iterating through the transaction list
+   *
    * @param transactionsList
    * @return
    */
@@ -665,6 +681,7 @@ public class Warehouse implements Serializable {
 
   /**
    * Returns the Global balance of the warehouse
+   *
    * @return double
    */
 
@@ -674,6 +691,7 @@ public class Warehouse implements Serializable {
 
   /**
    * Adds or subtracts an amount to the global balance of the warehouse
+   *
    * @return double
    */
 
@@ -683,6 +701,7 @@ public class Warehouse implements Serializable {
 
   /**
    * Calls the method updateSaleTransaction
+   *
    * @return double
    */
 

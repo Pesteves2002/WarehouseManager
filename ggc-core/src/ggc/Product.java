@@ -91,9 +91,6 @@ public class Product implements Serializable, Subject {
   public void addStock(int newStock) {
     if (actualStock == 0) {
       int price = (int) this.maxPrice;
-      if (!batches.isEmpty()) {
-         price = (int) batches.getFirst().getPrice();
-      }
       notifyObservers(new New(this.productKey, price));
     }
     actualStock += newStock;
@@ -101,6 +98,7 @@ public class Product implements Serializable, Subject {
 
   public void reduceStock(int amount) {
     this.actualStock -= amount;
+
   }
 
 
@@ -118,7 +116,6 @@ public class Product implements Serializable, Subject {
   }
 
 
-
   /**
    * Add the batch to the Map
    *
@@ -126,8 +123,9 @@ public class Product implements Serializable, Subject {
    */
   public void addBatch(Batch newBatch) {
 
+
     if (newBatch.getPrice() <= minPrice && !batches.isEmpty()) {
-      notifyObservers(new Bargain(this.productKey,  (int) newBatch.getPrice()));
+      notifyObservers(new Bargain(this.productKey, (int) newBatch.getPrice()));
     }
     batches.add(newBatch);
     batches.sort(new BatchComparator());
@@ -145,11 +143,13 @@ public class Product implements Serializable, Subject {
       observers.remove(i);
     }
   }
+
   public void notifyObservers(Notification notification) {
     for (Observer observer : observers) {
       observer.update(notification);
     }
   }
+
   /**
    * String Representation of the Product class
    *

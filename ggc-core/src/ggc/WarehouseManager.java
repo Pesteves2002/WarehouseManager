@@ -335,7 +335,7 @@ public class WarehouseManager {
    * Returns a Collection of Batches with a price below the price given
    *
    * @param priceLimit
-   * @return Collecion<Batch>
+   * @return Collection<Batch>
    */
 
   public Collection<Batch> lookupProductBatchesUnderGivenPrice(int priceLimit) {
