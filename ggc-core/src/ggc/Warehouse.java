@@ -323,6 +323,7 @@ public class Warehouse implements Serializable {
    * @param price
    * @param stock
    * @throws UnknownPartnerKeyCException
+   *
    */
   public void doRegisterBatch(String product, String partnerKey, double price, int stock, float reduction, String
           recipe) throws UnknownPartnerKeyCException {
