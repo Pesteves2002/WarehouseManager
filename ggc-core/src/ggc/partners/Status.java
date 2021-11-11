@@ -12,18 +12,18 @@ public abstract class Status implements Serializable {
 
   protected Partner partner;
 
-  protected int points;
+  protected double points;
 
-  public Status(Partner partner, int points) {
+  public Status(Partner partner, double points) {
     this.partner = partner;
     this.points = points;
   }
 
-  public int getPoints() {
+  public double getPoints() {
     return points;
   }
 
-  public void addPoints(int points)
+  public void addPoints(double points)
   {
     this.points += points;
   }

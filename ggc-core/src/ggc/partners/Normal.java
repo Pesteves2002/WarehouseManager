@@ -5,7 +5,7 @@ public class Normal extends Status {
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202110262230L;
 
-  public Normal(Partner partner, int points) {
+  public Normal(Partner partner, double points) {
     super(partner, points);
   }
 

@@ -5,7 +5,7 @@ public class Elite extends Status {
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202110262231L;
 
-  public Elite(Partner partner , int points) {
+  public Elite(Partner partner , double points) {
     super(partner , points);
   }
 
@@ -14,14 +14,14 @@ public class Elite extends Status {
   public double p1 (int baseValue, boolean simulate)
   {
     if (simulate) return -0.1;
-    points += baseValue *10;
+    this.points += baseValue *10;
     return -0.1;
   }
 
   public double p2 (int baseValue, int differenceOfDays, boolean simulate)
   {
     if (simulate) return -0.1;
-    points += baseValue *10;
+    this.points += baseValue *10;
     return -0.1;
   }
 
@@ -33,8 +33,8 @@ public class Elite extends Status {
   {
     if (simulate) return 0;
     if (differenceOfDays > 15) {
+      this.points *= 0.25;
       eliteToSelection();
-      points *= 0.25;
     }
     return  0;
   }

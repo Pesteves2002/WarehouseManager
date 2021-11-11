@@ -3,7 +3,7 @@ package ggc.transactions;
 public class ShowAcquisition extends TransactionVisitor {
 
   @Override
-  public String visitAcquisition(Acquisition acquisition) {
+  public String visitAcquisition(Acquisition acquisition, int time) {
     return "COMPRA" + "|"+
             acquisition.getTransactionKey() + "|" +
             acquisition.getPartner().getPartnerKey() + "|" +
@@ -14,10 +14,10 @@ public class ShowAcquisition extends TransactionVisitor {
   }
 
   @Override
-  public String visitSale(Sale sale) {return "";}
+  public String visitSale(Sale sale, int time) {return "";}
 
   @Override
-  public String visitBreakdown(Breakdown breakdown) {
+  public String visitBreakdown(Breakdown breakdown, int time) {
     return "";
   }
 

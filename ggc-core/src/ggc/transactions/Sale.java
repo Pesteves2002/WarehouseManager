@@ -53,9 +53,9 @@ public class Sale extends Transaction{
     return derivedProduct;
   }
 
-  public String accept (TransactionVisitor tv)
+  public String accept (TransactionVisitor tv, int time)
   {
-    return tv.visitSale(this);
+    return tv.visitSale(this, time);
   }
 
   public double seePrice (TransactionVisitor tv, int time)

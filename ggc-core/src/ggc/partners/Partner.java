@@ -152,7 +152,7 @@ public class Partner implements Serializable, Observer {
     thisBatches.remove(batch);
   }
 
-
+  // differenceOfDays positive if on time, negative otherwise
   public double pay(int differenceOfDays, boolean productDerived, int baseValue, boolean simulate) {
     int numberOfDays = 5;
     if (productDerived) {
@@ -163,7 +163,7 @@ public class Partner implements Serializable, Observer {
         return status.p1(baseValue, simulate);
       return status.p2(baseValue, differenceOfDays, simulate);
     }
-    if (-differenceOfDays <= numberOfDays)
+    if (-differenceOfDays < numberOfDays)
       return status.p3(baseValue, -differenceOfDays, simulate);
 
     return status.p4(baseValue, -differenceOfDays, simulate);
@@ -177,7 +177,7 @@ public class Partner implements Serializable, Observer {
   public String toString() {
 
     return partnerKey + "|" + partnerName + "|" + partnerAddress + "|" + status + "|" +
-            status.getPoints() + "|" + (int) Math.round(moneySpentOnPurchases) + "|" +
+            (int) Math.round(status.getPoints()) + "|" + (int) Math.round(moneySpentOnPurchases) + "|" +
             (int) Math.round(moneyExpectedToSpendOnSales) + "|" +
             (int) Math.round(moneySpentOnSales);
   }

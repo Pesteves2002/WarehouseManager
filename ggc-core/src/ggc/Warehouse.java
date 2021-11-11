@@ -293,7 +293,7 @@ public class Warehouse implements Serializable {
     List<String> allAcquisitions = new LinkedList<>();
 
     for (Transaction transaction : partner.getTransactionList()) {
-      allAcquisitions.add(transaction.accept(new ShowAcquisition()));
+      allAcquisitions.add(transaction.accept(new ShowAcquisition(), warehouseDate));
     }
     return Collections.unmodifiableCollection(allAcquisitions);
   }
@@ -310,7 +310,7 @@ public class Warehouse implements Serializable {
     List<String> allAcquisitions = new LinkedList<>();
 
     for (Transaction transaction : partner.getTransactionList()) {
-      allAcquisitions.add(transaction.accept(new ShowSaleBreakdown()));
+      allAcquisitions.add(transaction.accept(new ShowSaleBreakdown(),warehouseDate));
     }
     return Collections.unmodifiableCollection(allAcquisitions);
   }
@@ -356,7 +356,7 @@ public class Warehouse implements Serializable {
     if (index >= transactionNumber || index < 0) {
       throw new UnknownTransactionKeyCException(((Integer) index).toString());
     }
-    return allTransactions.get(index).accept(new ShowTransaction());
+    return allTransactions.get(index).accept(new ShowTransaction(),warehouseDate);
   }
 
   /**
@@ -659,7 +659,7 @@ public class Warehouse implements Serializable {
     Partner partner = doShowPartner(partnerKey);
     List<String> transactions = new LinkedList<>();
     for (Transaction transaction : partner.getTransactionList()) {
-      transactions.add(transaction.accept(new ShowSale()));
+      transactions.add(transaction.accept(new ShowSale(),warehouseDate));
     }
     return Collections.unmodifiableCollection(transactions);
   }

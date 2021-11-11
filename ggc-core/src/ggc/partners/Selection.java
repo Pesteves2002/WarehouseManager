@@ -5,7 +5,7 @@ public class Selection extends Status {
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202110262228L;
 
-  public Selection(Partner partner, int points) {
+  public Selection(Partner partner, double points) {
     super(partner, points);
   }
 

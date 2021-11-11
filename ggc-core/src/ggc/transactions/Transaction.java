@@ -60,7 +60,7 @@ public abstract class Transaction implements Serializable {
     return paymentDate;
   }
 
-  public  abstract String accept(TransactionVisitor tv) ;
+  public  abstract String accept(TransactionVisitor tv, int time) ;
 
   public abstract  double seePrice (TransactionVisitor tv, int time);
 

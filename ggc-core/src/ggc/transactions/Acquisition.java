@@ -14,8 +14,8 @@ public class Acquisition extends Transaction{
   }
 
   @Override
-  public String accept(TransactionVisitor tv) {
-    return tv.visitAcquisition(this);
+  public String accept(TransactionVisitor tv, int time) {
+    return tv.visitAcquisition(this, time);
   }
 
   @Override

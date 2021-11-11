@@ -1,11 +1,11 @@
 package ggc.transactions;
 
 public abstract class TransactionVisitor {
-  public  String visitAcquisition (Acquisition acquisition) {return "";}
+  public  String visitAcquisition (Acquisition acquisition, int time) {return "";}
 
-  public  String visitSale (Sale sale){return "";}
+  public  String visitSale (Sale sale, int time){return "";}
 
-  public   String visitBreakdown (Breakdown breakdown){return "";}
+  public   String visitBreakdown (Breakdown breakdown, int time){return "";}
 
   public double getPriceAcquisition(Acquisition acquisition, int time) {return 0;}
 

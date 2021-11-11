@@ -26,8 +26,8 @@ public class Breakdown extends Transaction {
   }
 
   @Override
-  public String accept(TransactionVisitor tv) {
-    return tv.visitBreakdown(this);
+  public String accept(TransactionVisitor tv, int time) {
+    return tv.visitBreakdown(this, time);
   }
 
   @Override
