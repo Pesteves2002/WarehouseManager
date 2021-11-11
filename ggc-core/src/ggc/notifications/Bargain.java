@@ -1,16 +1,16 @@
-package ggc;
+package ggc.notifications;
 
-public class New extends Notification{
+public class Bargain extends Notification{
 
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202110262229L;
 
-  public New(String productKey, double productPrice) {
+  public Bargain(String productKey, double productPrice) {
     super(productKey, productPrice);
   }
 
   @Override
   public String toString() {
-    return "NEW" + "|" + super.toString();
+    return "BARGAIN" + "|" + super.toString();
   }
 }

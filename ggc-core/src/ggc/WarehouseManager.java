@@ -2,21 +2,19 @@ package ggc;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.Serializable;
 
 import java.io.ObjectOutputStream;
-import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 
 import java.io.ObjectInputStream;
-import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.TreeSet;
 
 import ggc.exceptions.*;
+import ggc.partners.Partner;
+import ggc.products.Batch;
+import ggc.products.Product;
 
 /**
  * Façade for access.

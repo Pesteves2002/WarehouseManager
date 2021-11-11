@@ -1,4 +1,10 @@
-package ggc;
+package ggc.products;
+
+import ggc.notifications.Bargain;
+import ggc.notifications.New;
+import ggc.notifications.Notification;
+import ggc.notifications.Observer;
+import ggc.notifications.Subject;
 
 import java.io.Serializable;
 import java.util.*;
@@ -22,7 +28,7 @@ public class Product implements Serializable, Subject {
 
   private double minPrice;
 
-  private ArrayList<Observer> observers = new ArrayList<>();
+  private ArrayList<ggc.notifications.Observer> observers = new ArrayList<>();
 
   /**
    * All the batches that have the product
@@ -133,11 +139,11 @@ public class Product implements Serializable, Subject {
 
   }
 
-  public void registerObserver(Observer o) {
+  public void registerObserver(ggc.notifications.Observer o) {
     observers.add(o);
   }
 
-  public void removeObserver(Observer o) {
+  public void removeObserver(ggc.notifications.Observer o) {
     int i = observers.indexOf(o);
     if (i >= 0) {
       observers.remove(i);

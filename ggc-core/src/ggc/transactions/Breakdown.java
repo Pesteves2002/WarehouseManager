@@ -1,4 +1,6 @@
-package ggc;
+package ggc.transactions;
+
+import ggc.partners.Partner;
 
 public class Breakdown extends Transaction {
 

@@ -1,4 +1,4 @@
-package ggc;
+package ggc.transactions;
 
 public abstract class TransactionVisitor {
   public  String visitAcquisition (Acquisition acquisition) {return "";}

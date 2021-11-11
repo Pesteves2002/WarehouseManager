@@ -1,4 +1,4 @@
-package ggc;
+package ggc.partners;
 
 
 public class Normal extends Status {

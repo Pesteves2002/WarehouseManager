@@ -1,9 +1,16 @@
-package ggc;
+package ggc.partners;
+
+import ggc.products.Batch;
+import ggc.products.BatchComparator;
+import ggc.products.Product;
+import ggc.notifications.DefaultNotification;
+import ggc.notifications.Delivery;
+import ggc.notifications.Notification;
+import ggc.notifications.Observer;
+import ggc.transactions.Transaction;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * This class represents the owner of some batches,

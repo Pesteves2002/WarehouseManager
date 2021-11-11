@@ -1,4 +1,4 @@
-package ggc;
+package ggc.notifications;
 
 import java.io.Serializable;
 

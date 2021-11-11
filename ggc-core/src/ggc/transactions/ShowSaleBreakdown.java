@@ -1,4 +1,4 @@
-package ggc;
+package ggc.transactions;
 
 public class ShowSaleBreakdown extends TransactionVisitor {
 

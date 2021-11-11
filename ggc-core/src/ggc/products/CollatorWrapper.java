@@ -1,4 +1,4 @@
-package ggc;
+package ggc.products;
 
 import java.text.Collator;
 import java.util.Comparator;

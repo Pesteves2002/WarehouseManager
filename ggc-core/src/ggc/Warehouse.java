@@ -6,15 +6,15 @@ import java.io.Serializable;
 import java.util.*;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 import ggc.exceptions.*;
+import ggc.partners.Partner;
+import ggc.products.Batch;
+import ggc.products.CollatorWrapper;
+import ggc.products.Derived;
+import ggc.products.Product;
+import ggc.transactions.*;
 
 /**
  * Class Warehouse implements a warehouse.
