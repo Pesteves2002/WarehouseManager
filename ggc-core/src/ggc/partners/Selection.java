@@ -5,8 +5,8 @@ public class Selection extends Status {
   /** Serial number for serialization. */
   private static final long serialVersionUID = 202110262228L;
 
-  public Selection(Partner partner, double points) {
-    super(partner, points);
+  public Selection(Partner partner, double point) {
+    super(partner, point);
   }
 
 
@@ -22,7 +22,7 @@ public class Selection extends Status {
   public double p1 (int baseValue, boolean simulate)
   {
     if (simulate) return -0.1;
-    points += baseValue *10;
+    this.points += baseValue *10;
     if (points > 25000)
     {
       selectionToElite();
@@ -38,7 +38,7 @@ public class Selection extends Status {
       return 0;
     }
 
-    points += baseValue *10;
+    this.points += baseValue *10;
     if (points > 25000)
     {
       selectionToElite();
@@ -49,7 +49,7 @@ public class Selection extends Status {
   }
 
   public double p3(int baseValue, int differenceOfDays, boolean simulate) {
-    if (- differenceOfDays > 1 )
+    if (differenceOfDays > 1 )
       return differenceOfDays * 0.02;
     return 0;
   }
@@ -59,7 +59,7 @@ public class Selection extends Status {
     if (simulate)  return  0.05* differenceOfDays;
     if (differenceOfDays > 2) {
       selectionToNormal();
-      points *= 0.1;
+      this.points *= 0.1;
     }
     return  0.05 * differenceOfDays;
   }

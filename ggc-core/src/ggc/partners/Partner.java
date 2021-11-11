@@ -163,7 +163,7 @@ public class Partner implements Serializable, Observer {
         return status.p1(baseValue, simulate);
       return status.p2(baseValue, differenceOfDays, simulate);
     }
-    if (-differenceOfDays < numberOfDays)
+    if (-differenceOfDays <= numberOfDays)
       return status.p3(baseValue, -differenceOfDays, simulate);
 
     return status.p4(baseValue, -differenceOfDays, simulate);

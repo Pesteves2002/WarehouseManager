@@ -34,6 +34,7 @@ public class ShowSale extends TransactionVisitor {
   }
 
   public double paySale(Sale sale, int warehouseDate) {
+    if (sale.isSalePayed()) return 0;
     Partner partner = sale.getPartner();
     // positive if on time, negative otherwise
     int differenceOfDays = sale.getDeadLine() - warehouseDate;
