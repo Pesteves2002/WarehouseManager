@@ -19,7 +19,7 @@ public class Normal extends Status {
     this.points += baseValue  * 10 * 0.9;
     if (points > 2000) {
 
-      if (points > 10000) {
+      if (points > 25000) {
         partner.setStatus(new Elite(partner, points));
       } else
         partner.setStatus(new Selection(partner, points));
@@ -33,7 +33,7 @@ public class Normal extends Status {
     this.points += baseValue * 10;
     if (points > 2000) {
 
-      if (points > 10000) {
+      if (points > 25000) {
         partner.setStatus(new Elite(partner, points));
       } else
         partner.setStatus(new Selection(partner, points));

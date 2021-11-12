@@ -20,7 +20,7 @@ public class ShowSale extends TransactionVisitor {
             sale.getProductKey() + "|" +
             sale.getAmount() + "|" +
             (int) Math.round(sale.getBaseValue()) + "|" +
-            (int)  Math.round(sale.getCurrentValue()* (1+ sale.seePrice(new ShowSale(),time))) + "|" +
+            (int)  Math.round(sale.seePrice(new ShowSale(),time)) + "|" +
             sale.getDeadLine() + "|" + sale.getPaymentDate();
   }
 
@@ -48,5 +48,22 @@ public class ShowSale extends TransactionVisitor {
     return 0;
   }
 
+  @Override
+  public double getPriceAcquisition(Acquisition acquisition, int time) {
+    return  0;
+  }
+
+  @Override
+  public double getPriceSale(Sale sale, int time) {
+    Partner partner = sale.getPartner();
+    time = sale.getDeadLine() - time;
+    if (sale.isSalePayed()) return sale.getCurrentValue();
+    return sale.getBaseValue()* (1 + partner.pay(time, sale.isDerivedProduct(),(int) sale.getBaseValue(),true));
+  }
+
+  @Override
+  public double getPriceBreakDown(Breakdown breakdown, int time) {
+    return 0 ;
+  }
 
 }

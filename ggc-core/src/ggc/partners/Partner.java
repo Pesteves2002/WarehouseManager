@@ -85,6 +85,9 @@ public class Partner implements Serializable, Observer {
   public void setMoneyExpectedToSpendOnSales(double moneyExpectedToSpendOnSales) {
     this.moneyExpectedToSpendOnSales = moneyExpectedToSpendOnSales;
   }
+  public void addMoneyExpectedToSpendOnSales(double moneyExpectedToSpendOnSales) {
+    this.moneyExpectedToSpendOnSales += moneyExpectedToSpendOnSales;
+  }
 
   protected void setStatus(Status status) {
     this.status = status;

@@ -23,7 +23,7 @@ public class ShowTransaction extends TransactionVisitor {
             sale.getProductKey() + "|" +
             sale.getAmount() + "|" +
             (int) Math.round(sale.getBaseValue()) + "|" +
-            (int)  Math.round(sale.getCurrentValue()* (1+ sale.seePrice(new ShowSale(),time)))  + "|" +
+            (int)  Math.round(sale.seePrice(new ShowSale(),time))  + "|" +
             sale.getDeadLine() ;
     if (sale.isSalePayed())
       return  s + "|" + sale.getPaymentDate();

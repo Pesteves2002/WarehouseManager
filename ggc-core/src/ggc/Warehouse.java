@@ -197,16 +197,7 @@ public class Warehouse implements Serializable {
     return Collections.unmodifiableCollection(dummyList);
   }
 
-  /**
-   * Updates the value of unpaid sales of the partner
-   *
-   * @param partner
-   */
-  public void updatePartnerSaleValues(Partner partner) {
-    double price = updateSaleTransactions(partner.getTransactionList());
-    if (price >= 0)
-      partner.setMoneyExpectedToSpendOnSales(price);
-  }
+
 
   /**
    * Shows partner with notifications
@@ -216,7 +207,6 @@ public class Warehouse implements Serializable {
    * @throws UnknownPartnerKeyCException
    */
   public String doShowPartnerNotifications(String partnerKey) throws UnknownPartnerKeyCException {
-    updatePartnerSaleValues(doShowPartner(partnerKey));
     return doShowPartner(partnerKey).deliver();
   }
 
@@ -230,7 +220,6 @@ public class Warehouse implements Serializable {
   public Partner doShowPartner(String partnerKey) throws UnknownPartnerKeyCException {
     for (Partner partner : allPartners.values()) {
       if (partnerKey.compareToIgnoreCase(partner.getPartnerKey()) == 0) {
-        updatePartnerSaleValues(partner);
         return allPartners.get(partner.getPartnerKey());
       }
     }
@@ -244,8 +233,6 @@ public class Warehouse implements Serializable {
    * @return Collection<Partner>
    */
   public Collection<Partner> doShowAllPartners() {
-    for (Partner partner : allPartners.values())
-      updatePartnerSaleValues(partner);
     return Collections.unmodifiableCollection(allPartners.values());
   }
 
@@ -520,7 +507,7 @@ public class Warehouse implements Serializable {
         }
         sale = new Sale(transactionNumber++, warehouseDate, partner, product.getProductKey(), amount, price, deadline, false, true);
       }
-
+      partner.addMoneyExpectedToSpendOnSales(price);
       partner.addTransaction(sale);
       allTransactions.add(sale);
 
@@ -671,10 +658,10 @@ public class Warehouse implements Serializable {
    * @return
    */
 
-  public double updateSaleTransactions(List<Transaction> transactionsList) {
+  public double updateSaleTransactions(List<Transaction> transactionsList, TransactionVisitor tv) {
     double currentBalance = 0;
     for (Transaction transaction : transactionsList) {
-      currentBalance += transaction.seePrice(new ShowTransaction(), warehouseDate);
+      currentBalance += transaction.seePrice(tv, warehouseDate);
     }
     return Math.round(currentBalance);
   }
@@ -706,7 +693,7 @@ public class Warehouse implements Serializable {
    */
 
   public double doShowCurrentBalance() {
-    return updateSaleTransactions(allTransactions);
+    return updateSaleTransactions(allTransactions, new ShowTransaction());
   }
 
 }
