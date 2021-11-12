@@ -60,6 +60,6 @@ public class ShowTransaction extends TransactionVisitor {
 
   @Override
   public double getPriceBreakDown(Breakdown breakdown, int time) {
-    return 0 ;
+    return -getPriceBreakDown(breakdown,time) ;
   }
 }
